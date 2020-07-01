@@ -376,7 +376,7 @@
     <div @click="addPanel(tree, 'div')">
       增加面板
     </div>
-    <i-upload action="https://wx.huiyou.lht.ren/house/upload-img" :on-success="uploadImgSuccess" :on-preview="uploadPreview" :on-remove="uploadRemove">
+    <i-upload action="https://wx.huiyou.lht.ren/h5/upload-img" :on-success="uploadImgSuccess" :on-preview="uploadPreview" :on-remove="uploadRemove">
       <i-button icon="ios-cloud-upload-outline">增加图片</i-button>
     </i-upload>
     <div @click="addPanel(tree, 'img')">
