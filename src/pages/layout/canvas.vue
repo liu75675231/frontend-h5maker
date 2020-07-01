@@ -29,6 +29,62 @@
             </i-input>
           </i-form-item>
 
+          <i-form-item label="显示方式">
+            <i-select v-model="form.style.display" style="width: 200px" @on-change="changeStyle('display')">
+              <i-option value="none">隐藏</i-option>
+              <i-option value="block">块级显示</i-option>
+              <i-option value="inline-block">内联-块级显示</i-option>
+              <i-option value="inline">内联显示</i-option>
+              <i-option value="flex">flex</i-option>
+            </i-select>
+          </i-form-item>
+
+          <i-form-item label="定位">
+            <i-select v-model="form.style.position" style="width: 200px" @on-change="changeStyle('position')">
+              <i-option value="static">默认定位</i-option>
+              <i-option value="absolute">绝对定位</i-option>
+              <i-option value="relative">相对定位</i-option>
+            </i-select>
+            <i-form-item label="上">
+              <i-input  v-model="form.style.top.val" @on-change="changeStyleWithUnit('top', 'initial')">
+                <i-select slot="append" v-model="form.style.top.unit" style="width: 70px" @on-change="changeStyleWithUnit('top', 'initial')">
+                  <i-option value="rem">rem</i-option>
+                  <i-option value="px">px</i-option>
+                  <i-option value="%">%</i-option>
+                </i-select>
+              </i-input>
+            </i-form-item>
+            <i-form-item label="右">
+              <i-input  v-model="form.style.right.val" @on-change="changeStyleWithUnit('right', 'initial')">
+                <i-select slot="append" v-model="form.style.right.unit" style="width: 70px" @on-change="changeStyleWithUnit('right', 'initial')">
+                  <i-option value="rem">rem</i-option>
+                  <i-option value="px">px</i-option>
+                  <i-option value="%">%</i-option>
+                </i-select>
+              </i-input>
+            </i-form-item>
+            <i-form-item label="下">
+              <i-input  v-model="form.style.bottom.val" @on-change="changeStyleWithUnit('bottom', 'initial')">
+                <i-select slot="append" v-model="form.style.bottom.unit" style="width: 70px" @on-change="changeStyleWithUnit('bottom', 'initial')">
+                  <i-option value="rem">rem</i-option>
+                  <i-option value="px">px</i-option>
+                  <i-option value="%">%</i-option>
+                </i-select>
+              </i-input>
+            </i-form-item>
+            <i-form-item label="左">
+              <i-input  v-model="form.style.left.val" @on-change="changeStyleWithUnit('left', 'initial')">
+                <i-select slot="append" v-model="form.style.left.unit" style="width: 70px" @on-change="changeStyleWithUnit('left', 'initial')">
+                  <i-option value="rem">rem</i-option>
+                  <i-option value="px">px</i-option>
+                  <i-option value="%">%</i-option>
+                </i-select>
+              </i-input>
+            </i-form-item>
+          </i-form-item>
+
+
+
           <i-form-item label="外边距">
             <i-form-item label="上边距" :label-width="80">
               <i-input  v-model="form.style.margin.top.val" @on-change="changeMargin('top')">
@@ -299,20 +355,21 @@
             <i-form-item label="阴影颜色">
               <i-color-picker v-model="form.style.boxShadow.color" @on-change="changeBoxShadow()"/>
             </i-form-item>
-
-
           </i-form-item>
-
-
-
           <i-form-item>
-            <i-button type="primary" @click="addPanel(form.vnode)">增加子面板</i-button>
+            <i-button type="primary" @click="addPanel(form.vnode, 'div')">增加面板</i-button>
+            <div @click="addPanel(form.vnode, 'img')">
+              增加图片
+            </div>
+            <div @click="addPanel(form.vnode, 'span')">
+              增加元素
+            </div>
             <i-button style="margin-left: 8px" @click="removePanel">删除此面板</i-button>
           </i-form-item>
         </i-form>
       </div>
       <div class="panel-tree">
-        <dom-tree :vnode="tree"></dom-tree>
+        <dom-tree :vnode="tree" @nodeclick="handleNodeClick"></dom-tree>
       </div>
     </div>
 
@@ -398,6 +455,12 @@
             });
 
             return createElement('div', {
+              on: {
+                click (e) {
+                  e.stopPropagation();
+                  $this.$emit('nodeclick', vnodeObj);
+                }
+              },
               class: {
                 'domtreenode': true,
               }
@@ -420,6 +483,24 @@
             height: {
               val: '',
               unit: '%',
+            },
+            display: '',
+            position: 'static',
+            top: {
+              val: '',
+              unit: 'rem',
+            },
+            bottom: {
+              val: '',
+              unit: 'rem',
+            },
+            left: {
+              val: '',
+              unit: 'rem',
+            },
+            right: {
+              val: '',
+              unit: 'rem',
             },
             margin: {
               top: {
@@ -558,6 +639,28 @@
       }
     },
     methods: {
+      handleNodeClick (curNode) {
+        if (typeof this.form.vnode === 'object' && curNode !== this.form.vnode) {
+          this.form.vnode.class.curselected = false;
+        }
+        curNode.class.curselected = !curNode.class.curselected;
+        if (curNode.class.curselected) {
+          this.form.textList = [];
+          this.form.vnode = curNode;
+          this.form.parentVNode = curNode.parentVNode;
+          curNode.children.forEach((elem) => {
+            if (typeof elem === 'string') {
+              this.form.textList.push({
+                text: elem,
+              });
+            }
+          });
+        } else {
+          this.form.vnode = undefined;
+          this.form.parentVNode = undefined;
+          this.form.textList = [];
+        }
+      },
       uploadRemove () {
         console.log('asdf');
       },
@@ -631,12 +734,19 @@
         var $this = this;
         const curNode = {
           tag: tagName,
+          parentVNode: parentVNode,
           class: {
             curselected: false,
           },
           style: {
             width: '100%',
             height: 'auto',
+            position: 'static',
+            display: 'block',
+            top: '',
+            bottom: '',
+            left: '',
+            right: '',
             marginLeft: '0',
             marginRight: '0',
             marginTop: '0',
@@ -663,27 +773,7 @@
           on: {
             click (e) {
               e.stopPropagation();
-              if (typeof $this.form.vnode === 'object' && curNode !== $this.form.vnode) {
-                $this.form.vnode.class.curselected = false;
-              }
-              curNode.class.curselected = !curNode.class.curselected;
-              if (curNode.class.curselected) {
-                $this.form.textList = [];
-                $this.form.vnode = curNode;
-                $this.form.parentVNode = parentVNode;
-                curNode.children.forEach((elem) => {
-                  if (typeof elem === 'string') {
-                    $this.form.textList.push({
-                      text: elem,
-                    });
-                  }
-                });
-              } else {
-                $this.form.vnode = undefined;
-                $this.form.parentVNode = undefined;
-                $this.form.textList = [];
-              }
-
+              $this.handleNodeClick(curNode);
             },
           },
           attrs: {
@@ -697,6 +787,10 @@
           curNode.attrs = {
             src: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png',
           }
+          curNode.style.display = 'inline-block';
+        }
+        if (tagName === 'span') {
+          curNode.style.display = 'inline';
         }
         parentVNode.children.push(curNode);
       },
@@ -713,6 +807,8 @@
     height: 667px;
     border: solid 1px #ddd;
     overflow-y: scroll;
+    position: relative;
+    background-color: #fff;
   }
 
   .main-container {
