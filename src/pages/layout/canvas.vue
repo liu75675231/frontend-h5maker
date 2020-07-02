@@ -2,388 +2,473 @@
   <div class="page-canvas">
     <div class="main-container">
       <div class="panel-canvas">
-        <rendered-html v-if="isShow" :vnode="tree"></rendered-html>
+        <div class="wrapper-canvas">
+          <rendered-html v-if="isShow" :vnode="tree"></rendered-html>
+        </div>
       </div>
-      <div class="panel-setting" :style="{ visibility: form.vnode ? 'visible' : 'hidden' }">
-        <i-form class="form" :label-width="80">
-          <i-form-item  v-for="(item, index) in form.textList" :label="'内容' + (index + 1)" :key="index">
-            <i-input v-model="item.text" @on-change="changePanelText(item.text, index)"></i-input>
-          </i-form-item>
+      <div class="editable-panel panel-setting">
+        <div class="editable-title">
+          设置节点
+          <div class="editable-title-opt">
+            <span class="editable-title-opt-item">删除</span>
+            <span class="editable-title-opt-item">新增</span>
+          </div>
+        </div>
+        <div class="editable-content">
+          <i-form class="form" :label-width="80" :style="{ display: form.vnode ? 'block' : 'none' }">
+            <i-form-item  v-for="(item, index) in form.textList" :label="'内容' + (index + 1)" :key="index">
+              <i-input v-model="item.text" @on-change="changePanelText(item.text, index)"></i-input>
+            </i-form-item>
 
-          <i-form-item label="宽度">
-            <i-input  v-model="form.style.width.val" @on-change="changeStyleWithUnit('width', 'auto')">
-              <i-select slot="append" v-model="form.style.width.unit" style="width: 70px" @on-change="changeStyleWithUnit('width', 'auto')">
-                <i-option value="rem">rem</i-option>
-                <i-option value="px">px</i-option>
-                <i-option value="%">%</i-option>
-              </i-select>
-            </i-input>
-          </i-form-item>
-          <i-form-item label="高度">
-            <i-input  v-model="form.style.height.val" @on-change="changeStyleWithUnit('height', 'auto')">
-              <i-select slot="append" v-model="form.style.height.unit" style="width: 70px" @on-change="changeStyleWithUnit('height', 'auto')">
-                <i-option value="rem">rem</i-option>
-                <i-option value="px">px</i-option>
-                <i-option value="%">%</i-option>
-              </i-select>
-            </i-input>
-          </i-form-item>
+            <i-form-item label="链接" v-if="form.vnode && form.vnode.attrs && form.vnode.attrs.src">
+              <img class="setting-img-preview" :src="form.vnode.attrs.src">
+              <i-upload ref="replaceUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*" :on-success="uploadReplaceImgSuccess">
+                <i-button type="primary" icon="ios-cloud-upload-outline">替换图片</i-button>
+              </i-upload>
+            </i-form-item>
 
-          <i-form-item label="显示方式">
-            <i-select v-model="form.style.display" style="width: 200px" @on-change="changeStyle('display')">
-              <i-option value="none">隐藏</i-option>
-              <i-option value="block">块级显示</i-option>
-              <i-option value="inline-block">内联-块级显示</i-option>
-              <i-option value="inline">内联显示</i-option>
-              <i-option value="flex">flex</i-option>
-            </i-select>
-          </i-form-item>
+            <i-form-item label="宽度">
+              <i-input  v-model="form.style.width.val" @on-change="changeStyleWithUnit('width', null)">
+                <i-select slot="append" v-model="form.style.width.unit" style="width: 70px" @on-change="changeStyleWithUnit('width', null)">
+                  <i-option value="rem">rem</i-option>
+                  <i-option value="px">px</i-option>
+                  <i-option value="%">%</i-option>
+                </i-select>
+              </i-input>
+            </i-form-item>
 
-          <i-form-item label="定位">
-            <i-select v-model="form.style.position" style="width: 200px" @on-change="changeStyle('position')">
-              <i-option value="static">默认定位</i-option>
-              <i-option value="absolute">绝对定位</i-option>
-              <i-option value="relative">相对定位</i-option>
-            </i-select>
-            <i-form-item label="上">
-              <i-input  v-model="form.style.top.val" @on-change="changeStyleWithUnit('top', 'initial')">
-                <i-select slot="append" v-model="form.style.top.unit" style="width: 70px" @on-change="changeStyleWithUnit('top', 'initial')">
+            <i-form-item label="高度">
+              <i-input  v-model="form.style.height.val" @on-change="changeStyleWithUnit('height', null)">
+                <i-select slot="append" v-model="form.style.height.unit" style="width: 70px" @on-change="changeStyleWithUnit('height', null)">
                   <i-option value="rem">rem</i-option>
                   <i-option value="px">px</i-option>
                   <i-option value="%">%</i-option>
                 </i-select>
               </i-input>
             </i-form-item>
-            <i-form-item label="右">
-              <i-input  v-model="form.style.right.val" @on-change="changeStyleWithUnit('right', 'initial')">
-                <i-select slot="append" v-model="form.style.right.unit" style="width: 70px" @on-change="changeStyleWithUnit('right', 'initial')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="下">
-              <i-input  v-model="form.style.bottom.val" @on-change="changeStyleWithUnit('bottom', 'initial')">
-                <i-select slot="append" v-model="form.style.bottom.unit" style="width: 70px" @on-change="changeStyleWithUnit('bottom', 'initial')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="左">
-              <i-input  v-model="form.style.left.val" @on-change="changeStyleWithUnit('left', 'initial')">
-                <i-select slot="append" v-model="form.style.left.unit" style="width: 70px" @on-change="changeStyleWithUnit('left', 'initial')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-          </i-form-item>
 
-
-
-          <i-form-item label="外边距">
-            <i-form-item label="上边距" :label-width="80">
-              <i-input  v-model="form.style.margin.top.val" @on-change="changeMargin('top')">
-                <i-select slot="append" v-model="form.style.margin.top.unit" style="width: 70px" @on-change="changeMargin('top')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="右边距" :label-width="80">
-              <i-input  v-model="form.style.margin.right.val" @on-change="changeMargin('right')">
-                <i-select slot="append" v-model="form.style.margin.right.unit" style="width: 70px" @on-change="changeMargin('right')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="下边距" :label-width="80">
-              <i-input  v-model="form.style.margin.bottom.val" @on-change="changeMargin('bottom')">
-                <i-select slot="append" v-model="form.style.margin.bottom.unit" style="width: 70px" @on-change="changeMargin('bottom')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="左边距" :label-width="80">
-              <i-input  v-model="form.style.margin.left.val"@on-change="changeMargin('left')">
-                <i-select slot="append" v-model="form.style.margin.left.unit" style="width: 70px"@on-change="changeMargin('left')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-          </i-form-item>
-
-          <i-form-item label="内边距">
-            <i-form-item label="上边距" :label-width="80">
-              <i-input  v-model="form.style.padding.top.val" @on-change="changePadding('top')">
-                <i-select slot="append" v-model="form.style.padding.top.unit" style="width: 70px" @on-change="changePadding('top')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="右边距" :label-width="80">
-              <i-input  v-model="form.style.padding.right.val" @on-change="changePadding('right')">
-                <i-select slot="append" v-model="form.style.padding.right.unit" style="width: 70px" @on-change="changePadding('right')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="下边距" :label-width="80">
-              <i-input  v-model="form.style.padding.bottom.val" @on-change="changePadding('bottom')">
-                <i-select slot="append" v-model="form.style.padding.bottom.unit" style="width: 70px" @on-change="changePadding('bottom')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="左边距" :label-width="80">
-              <i-input  v-model="form.style.padding.left.val"@on-change="changePadding('left')">
-                <i-select slot="append" v-model="form.style.padding.left.unit" style="width: 70px"@on-change="changePadding('left')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-          </i-form-item>
-
-          <i-form-item label="边框">
-            <i-form-item label="上边框" :label-width="80">
-              <i-input  v-model="form.style.border.top.width.val" @on-change="changeBorder('top')">
-                <i-select slot="append" v-model="form.style.border.top.width.unit" style="width: 70px" @on-change="changeBorder('top')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-              <i-color-picker v-model="form.style.border.top.color" @on-change="changeBorder('top')"/>
-              <i-select v-model="form.style.border.top.style" style="width: 130px" @on-change="changeBorder('top')">
-                <i-option value="none">无边框</i-option>
-                <i-option value="solid">实线</i-option>
-                <i-option value="dashed">虚线</i-option>
-                <i-option value="double">双线</i-option>
+            <i-form-item label="显示方式">
+              <i-select v-model="form.style.display" style="width: 200px" @on-change="changeStyle('display')">
+                <i-option value="none">隐藏</i-option>
+                <i-option value="block">块级显示</i-option>
+                <i-option value="inline-block">内联-块级显示</i-option>
+                <i-option value="inline">内联显示</i-option>
+                <i-option value="flex">flex</i-option>
               </i-select>
             </i-form-item>
-            <i-form-item label="右边框" :label-width="80">
-              <i-input  v-model="form.style.border.right.width.val" @on-change="changeBorder('right')">
-                <i-select slot="append" v-model="form.style.border.right.width.unit" style="width: 70px" @on-change="changeBorder('right')">
+
+            <template v-if="form.style.display === 'flex'">
+              <i-form-item label="扩展比率">
+                <i-input  v-model="form.style.flexGrow" @on-change="changeStyle('flexGrow', null)">
+                </i-input>
+              </i-form-item>
+
+              <i-form-item label="收缩比率">
+                <i-input  v-model="form.style.flexShrink" @on-change="changeStyle('flexShrink', null)">
+                </i-input>
+              </i-form-item>
+
+              <i-form-item label="基准值">
+                <i-input  v-model="form.style.flexBasis.val" @on-change="changeStyleWithUnit('flexBasis', null)">
+                  <i-select slot="append" v-model="form.style.flexBasis.unit" style="width: 70px" @on-change="changeStyleWithUnit('flexBasis', null)">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+
+              <i-form-item label="主轴对齐">
+                <i-select v-model="form.style.justifyContent" style="width: 200px" @on-change="changeStyle('justifyContent')">
+                  <i-option value="flex-start">左对齐</i-option>
+                  <i-option value="flex-end">右对齐</i-option>
+                  <i-option value="center">居中</i-option>
+                  <i-option value="space-between">两端对齐</i-option>
+                  <i-option value="space-around">间隔对齐</i-option>
+                </i-select>
+              </i-form-item>
+
+              <i-form-item label="交叉轴对齐">
+                <i-select v-model="form.style.alignItems" style="width: 200px" @on-change="changeStyle('alignItems')">
+                  <i-option value="flex-start">起点对齐</i-option>
+                  <i-option value="flex-end">终点对齐</i-option>
+                  <i-option value="center">居中</i-option>
+                  <i-option value="baseline">基线对齐</i-option>
+                </i-select>
+              </i-form-item>
+
+              <i-form-item label="是否换行">
+                <i-select v-model="form.style.flexWrap" style="width: 200px" @on-change="changeStyle('flexWrap')">
+                  <i-option value="nowrap">不换行</i-option>
+                  <i-option value="wrap">换行</i-option>
+                </i-select>
+              </i-form-item>
+            </template>
+
+            <i-form-item label="定位">
+              <i-select v-model="form.style.position" style="width: 200px" @on-change="changeStyle('position')">
+                <i-option value="static">默认定位</i-option>
+                <i-option value="absolute">绝对定位</i-option>
+                <i-option value="relative">相对定位</i-option>
+              </i-select>
+              <template v-if="form.style.position !== 'static'">
+                <i-form-item label="上">
+                  <i-input  v-model="form.style.top.val" @on-change="changeStyleWithUnit('top', 'initial')">
+                    <i-select slot="append" v-model="form.style.top.unit" style="width: 70px" @on-change="changeStyleWithUnit('top', 'initial')">
+                      <i-option value="rem">rem</i-option>
+                      <i-option value="px">px</i-option>
+                      <i-option value="%">%</i-option>
+                    </i-select>
+                  </i-input>
+                </i-form-item>
+                <i-form-item label="右">
+                  <i-input  v-model="form.style.right.val" @on-change="changeStyleWithUnit('right', 'initial')">
+                    <i-select slot="append" v-model="form.style.right.unit" style="width: 70px" @on-change="changeStyleWithUnit('right', 'initial')">
+                      <i-option value="rem">rem</i-option>
+                      <i-option value="px">px</i-option>
+                      <i-option value="%">%</i-option>
+                    </i-select>
+                  </i-input>
+                </i-form-item>
+                <i-form-item label="下">
+                  <i-input  v-model="form.style.bottom.val" @on-change="changeStyleWithUnit('bottom', 'initial')">
+                    <i-select slot="append" v-model="form.style.bottom.unit" style="width: 70px" @on-change="changeStyleWithUnit('bottom', 'initial')">
+                      <i-option value="rem">rem</i-option>
+                      <i-option value="px">px</i-option>
+                      <i-option value="%">%</i-option>
+                    </i-select>
+                  </i-input>
+                </i-form-item>
+                <i-form-item label="左">
+                  <i-input  v-model="form.style.left.val" @on-change="changeStyleWithUnit('left', 'initial')">
+                    <i-select slot="append" v-model="form.style.left.unit" style="width: 70px" @on-change="changeStyleWithUnit('left', 'initial')">
+                      <i-option value="rem">rem</i-option>
+                      <i-option value="px">px</i-option>
+                      <i-option value="%">%</i-option>
+                    </i-select>
+                  </i-input>
+                </i-form-item>
+              </template>
+
+            </i-form-item>
+
+
+
+            <i-form-item label="外边距">
+              <i-form-item label="上边距" :label-width="80">
+                <i-input  v-model="form.style.margin.top.val" @on-change="changeMargin('top')">
+                  <i-select slot="append" v-model="form.style.margin.top.unit" style="width: 70px" @on-change="changeMargin('top')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+              <i-form-item label="右边距" :label-width="80">
+                <i-input  v-model="form.style.margin.right.val" @on-change="changeMargin('right')">
+                  <i-select slot="append" v-model="form.style.margin.right.unit" style="width: 70px" @on-change="changeMargin('right')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+              <i-form-item label="下边距" :label-width="80">
+                <i-input  v-model="form.style.margin.bottom.val" @on-change="changeMargin('bottom')">
+                  <i-select slot="append" v-model="form.style.margin.bottom.unit" style="width: 70px" @on-change="changeMargin('bottom')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+              <i-form-item label="左边距" :label-width="80">
+                <i-input  v-model="form.style.margin.left.val"@on-change="changeMargin('left')">
+                  <i-select slot="append" v-model="form.style.margin.left.unit" style="width: 70px"@on-change="changeMargin('left')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+            </i-form-item>
+
+            <i-form-item label="内边距">
+              <i-form-item label="上边距" :label-width="80">
+                <i-input  v-model="form.style.padding.top.val" @on-change="changePadding('top')">
+                  <i-select slot="append" v-model="form.style.padding.top.unit" style="width: 70px" @on-change="changePadding('top')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+              <i-form-item label="右边距" :label-width="80">
+                <i-input  v-model="form.style.padding.right.val" @on-change="changePadding('right')">
+                  <i-select slot="append" v-model="form.style.padding.right.unit" style="width: 70px" @on-change="changePadding('right')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+              <i-form-item label="下边距" :label-width="80">
+                <i-input  v-model="form.style.padding.bottom.val" @on-change="changePadding('bottom')">
+                  <i-select slot="append" v-model="form.style.padding.bottom.unit" style="width: 70px" @on-change="changePadding('bottom')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+              <i-form-item label="左边距" :label-width="80">
+                <i-input  v-model="form.style.padding.left.val"@on-change="changePadding('left')">
+                  <i-select slot="append" v-model="form.style.padding.left.unit" style="width: 70px"@on-change="changePadding('left')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+            </i-form-item>
+
+            <i-form-item label="边框">
+              <i-form-item label="上边框" :label-width="80">
+                <i-input  v-model="form.style.borderTopWidth.val" @on-change="changeStyleWithUnit('borderTopWidth')">
+                  <i-select slot="append" v-model="form.style.borderTopWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderTopWidth')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+                <i-color-picker v-model="form.style.borderTopColor" @on-change="changeStyle('borderTopColor')"/>
+                <i-select v-model="form.style.borderTopStyle" style="width: 130px" @on-change="changeStyle('borderTopStyle')">
+                  <i-option value="none">无边框</i-option>
+                  <i-option value="solid">实线</i-option>
+                  <i-option value="dashed">虚线</i-option>
+                  <i-option value="double">双线</i-option>
+                </i-select>
+              </i-form-item>
+              <i-form-item label="右边框" :label-width="80">
+                <i-input  v-model="form.style.borderRightWidth.val" @on-change="changeStyleWithUnit('borderRightWidth')">
+                  <i-select slot="append" v-model="form.style.borderRightWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderRightWidth')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+                <i-color-picker v-model="form.style.borderRightColor" @on-change="changeStyle('borderRightColor')"/>
+                <i-select v-model="form.style.borderRightStyle" style="width: 130px" @on-change="changeStyle('borderRightStyle')">
+                  <i-option value="none">无边框</i-option>
+                  <i-option value="solid">实线</i-option>
+                  <i-option value="dashed">虚线</i-option>
+                  <i-option value="double">双线</i-option>
+                </i-select>
+              </i-form-item>
+              <i-form-item label="下边框" :label-width="80">
+                <i-input  v-model="form.style.borderBottomWidth.val" @on-change="changeStyleWithUnit('borderBottomWidth')">
+                  <i-select slot="append" v-model="form.style.borderBottomWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderBottomWidth')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+                <i-color-picker v-model="form.style.borderBottomColor" @on-change="changeStyle('borderBottomColor')"/>
+                <i-select v-model="form.style.borderBottomStyle" style="width: 130px" @on-change="changeStyle('borderBottomStyle')">
+                  <i-option value="none">无边框</i-option>
+                  <i-option value="solid">实线</i-option>
+                  <i-option value="dashed">虚线</i-option>
+                  <i-option value="double">双线</i-option>
+                </i-select>
+              </i-form-item>
+              <i-form-item label="左边框" :label-width="80">
+                <i-input  v-model="form.style.borderLeftWidth.val" @on-change="changeStyleWithUnit('borderLeftWidth')">
+                  <i-select slot="append" v-model="form.style.borderLeftWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderLeftWidth')">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+                <i-color-picker v-model="form.style.borderLeftColor" @on-change="changeStyle('borderLeftColor')"/>
+                <i-select v-model="form.style.borderLeftStyle" style="width: 130px" @on-change="changeStyle('borderLeftStyle')">
+                  <i-option value="none">无边框</i-option>
+                  <i-option value="solid">实线</i-option>
+                  <i-option value="dashed">虚线</i-option>
+                  <i-option value="double">双线</i-option>
+                </i-select>
+              </i-form-item>
+            </i-form-item>
+
+            <i-form-item label="颜色">
+              <i-color-picker v-model="form.style.color" @on-change="changeStyle('color')"/>
+            </i-form-item>
+
+            <i-form-item label="背景颜色">
+              <i-color-picker v-model="form.style.backgroundColor" @on-change="changeStyle('backgroundColor')"/>
+            </i-form-item>
+
+            <i-form-item label="背景渐进">
+              <i-input v-model="form.style.backgroundImage.direction" @on-change="changeBackgroundImage"></i-input>
+              <i-form-item label="背景颜色1" :label-width="80">
+                <i-input  v-model="form.style.backgroundImage.color0.len.val" @on-change="changeBackgroundImage">
+                  <i-select slot="append" v-model="form.style.backgroundImage.color0.len.unit" style="width: 70px" @on-change="changeBackgroundImage">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+                <i-color-picker v-model="form.style.backgroundImage.color0.color" @on-change="changeBackgroundImage"/>
+              </i-form-item>
+              <i-form-item label="背景颜色2" :label-width="80">
+                <i-input  v-model="form.style.backgroundImage.color1.len.val" @on-change="changeBackgroundImage">
+                  <i-select slot="append" v-model="form.style.backgroundImage.color1.len.unit" style="width: 70px" @on-change="changeBackgroundImage">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+                <i-color-picker v-model="form.style.backgroundImage.color1.color" @on-change="changeBackgroundImage"/>
+              </i-form-item>
+            </i-form-item>
+
+            <i-form-item label="颜色2">
+              <i-input  v-model="form.style.fontSize.val" @on-change="changeStyleWithUnit('fontSize')">
+                <i-select slot="append" v-model="form.style.fontSize.unit" style="width: 70px" @on-change="changeStyleWithUnit('fontSize')">
                   <i-option value="rem">rem</i-option>
                   <i-option value="px">px</i-option>
                   <i-option value="%">%</i-option>
                 </i-select>
               </i-input>
-              <i-color-picker v-model="form.style.border.right.color" @on-change="changeBorder('right')"/>
-              <i-select v-model="form.style.border.right.style" style="width: 130px" @on-change="changeBorder('right')">
-                <i-option value="none">无边框</i-option>
-                <i-option value="solid">实线</i-option>
-                <i-option value="dashed">虚线</i-option>
-                <i-option value="double">双线</i-option>
+            </i-form-item>
+
+            <i-form-item label="文字间距">
+              <i-input  v-model="form.style.letterSpacing.val" @on-change="changeStyleWithUnit('letterSpacing')">
+                <i-select slot="append" v-model="form.style.letterSpacing.unit" style="width: 70px" @on-change="changeStyleWithUnit('letterSpacing')">
+                  <i-option value="rem">rem</i-option>
+                  <i-option value="px">px</i-option>
+                  <i-option value="%">%</i-option>
+                </i-select>
+              </i-input>
+            </i-form-item>
+
+            <i-form-item label="行高">
+              <i-input  v-model="form.style.lineHeight.val" @on-change="changeStyleWithUnit('lineHeight')">
+                <i-select slot="append" v-model="form.style.lineHeight.unit" style="width: 70px" @on-change="changeStyleWithUnit('lineHeight')">
+                  <i-option value="rem">rem</i-option>
+                  <i-option value="px">px</i-option>
+                </i-select>
+              </i-input>
+            </i-form-item>
+
+            <i-form-item label="圆角">
+              <i-input  v-model="form.style.borderRadius.val" @on-change="changeStyleWithUnit('borderRadius')">
+                <i-select slot="append" v-model="form.style.borderRadius.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderRadius')">
+                  <i-option value="rem">rem</i-option>
+                  <i-option value="px">px</i-option>
+                  <i-option value="%">%</i-option>
+                </i-select>
+              </i-input>
+            </i-form-item>
+
+            <i-form-item label="水平对齐">
+              <i-select v-model="form.style.textAlign" style="width: 200px" @on-change="changeStyle('textAlign')">
+                <i-option value="left">居左</i-option>
+                <i-option value="center">居中</i-option>
+                <i-option value="right">居右</i-option>
               </i-select>
             </i-form-item>
-            <i-form-item label="下边框" :label-width="80">
-              <i-input  v-model="form.style.border.bottom.width.val" @on-change="changeBorder('bottom')">
-                <i-select slot="append" v-model="form.style.border.bottom.width.unit" style="width: 70px" @on-change="changeBorder('bottom')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-              <i-color-picker v-model="form.style.border.bottom.color" @on-change="changeBorder('bottom')"/>
-              <i-select v-model="form.style.border.bottom.style" style="width: 130px" @on-change="changeBorder('bottom')">
-                <i-option value="none">无边框</i-option>
-                <i-option value="solid">实线</i-option>
-                <i-option value="dashed">虚线</i-option>
-                <i-option value="double">双线</i-option>
-              </i-select>
-            </i-form-item>
-            <i-form-item label="左边框" :label-width="80">
-              <i-input  v-model="form.style.border.left.width.val" @on-change="changeBorder('left')">
-                <i-select slot="append" v-model="form.style.border.left.width.unit" style="width: 70px" @on-change="changeBorder('left')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-              <i-color-picker v-model="form.style.border.left.color" @on-change="changeBorder('left')"/>
-              <i-select v-model="form.style.border.left.style" style="width: 130px" @on-change="changeBorder('left')">
-                <i-option value="none">无边框</i-option>
-                <i-option value="solid">实线</i-option>
-                <i-option value="dashed">虚线</i-option>
-                <i-option value="double">双线</i-option>
-              </i-select>
-            </i-form-item>
-          </i-form-item>
 
-          <i-form-item label="颜色">
-            <i-color-picker v-model="form.style.color" @on-change="changeStyle('color')"/>
-          </i-form-item>
-
-          <i-form-item label="背景颜色">
-            <i-color-picker v-model="form.style.backgroundColor" @on-change="changeStyle('backgroundColor')"/>
-          </i-form-item>
-
-          <i-form-item label="背景渐进">
-            <i-input v-model="form.style.backgroundImage.direction" @on-change="changeBackgroundImage"></i-input>
-            <i-form-item label="背景颜色1" :label-width="80">
-              <i-input  v-model="form.style.backgroundImage.color0.len.val" @on-change="changeBackgroundImage">
-                <i-select slot="append" v-model="form.style.backgroundImage.color0.len.unit" style="width: 70px" @on-change="changeBackgroundImage">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-              <i-color-picker v-model="form.style.backgroundImage.color0.color" @on-change="changeBackgroundImage"/>
-            </i-form-item>
-            <i-form-item label="背景颜色2" :label-width="80">
-              <i-input  v-model="form.style.backgroundImage.color1.len.val" @on-change="changeBackgroundImage">
-                <i-select slot="append" v-model="form.style.backgroundImage.color1.len.unit" style="width: 70px" @on-change="changeBackgroundImage">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-              <i-color-picker v-model="form.style.backgroundImage.color1.color" @on-change="changeBackgroundImage"/>
-            </i-form-item>
-          </i-form-item>
-
-          <i-form-item label="颜色2">
-            <i-input  v-model="form.style.fontSize.val" @on-change="changeStyleWithUnit('fontSize')">
-              <i-select slot="append" v-model="form.style.fontSize.unit" style="width: 70px" @on-change="changeStyleWithUnit('fontSize')">
-                <i-option value="rem">rem</i-option>
-                <i-option value="px">px</i-option>
-                <i-option value="%">%</i-option>
-              </i-select>
-            </i-input>
-          </i-form-item>
-
-          <i-form-item label="文字间距">
-            <i-input  v-model="form.style.letterSpacing.val" @on-change="changeStyleWithUnit('letterSpacing')">
-              <i-select slot="append" v-model="form.style.letterSpacing.unit" style="width: 70px" @on-change="changeStyleWithUnit('letterSpacing')">
-                <i-option value="rem">rem</i-option>
-                <i-option value="px">px</i-option>
-                <i-option value="%">%</i-option>
-              </i-select>
-            </i-input>
-          </i-form-item>
-
-          <i-form-item label="行高">
-            <i-input  v-model="form.style.lineHeight.val" @on-change="changeStyleWithUnit('lineHeight')">
-              <i-select slot="append" v-model="form.style.lineHeight.unit" style="width: 70px" @on-change="changeStyleWithUnit('lineHeight')">
-                <i-option value="rem">rem</i-option>
-                <i-option value="px">px</i-option>
-              </i-select>
-            </i-input>
-          </i-form-item>
-
-          <i-form-item label="圆角">
-            <i-input  v-model="form.style.borderRadius.val" @on-change="changeStyleWithUnit('borderRadius')">
-              <i-select slot="append" v-model="form.style.borderRadius.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderRadius')">
-                <i-option value="rem">rem</i-option>
-                <i-option value="px">px</i-option>
-                <i-option value="%">%</i-option>
-              </i-select>
-            </i-input>
-          </i-form-item>
-
-          <i-form-item label="水平对齐">
-            <i-select v-model="form.style.textAlign" style="width: 200px" @on-change="changeStyle('textAlign')">
-              <i-option value="left">居左</i-option>
-              <i-option value="center">居中</i-option>
-              <i-option value="right">居右</i-option>
-            </i-select>
-          </i-form-item>
-
-          <i-form-item label="是否加粗">
-            <i-checkbox v-model="form.style.fontWeight" true-value="bold" false-value="normal" @on-change="changeStyle('fontWeight')"></i-checkbox>
-          </i-form-item>
-
-
-          <i-form-item label="阴影">
-            <i-form-item label="水平位置" :label-width="80">
-              <i-input  v-model="form.style.boxShadow.hShadow.val" @on-change="changeBoxShadow()">
-                <i-select slot="append" v-model="form.style.boxShadow.hShadow.unit" style="width: 70px" @on-change="changeBoxShadow()">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="垂直位置">
-              <i-input  v-model="form.style.boxShadow.vShadow.val" @on-change="changeBoxShadow()">
-                <i-select slot="append" v-model="form.style.boxShadow.vShadow.unit" style="width: 70px" @on-change="changeBoxShadow()">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="模糊距离">
-              <i-input  v-model="form.style.boxShadow.blur.val" @on-change="changeBoxShadow()">
-                <i-select slot="append" v-model="form.style.boxShadow.blur.unit" style="width: 70px" @on-change="changeBoxShadow()">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-            <i-form-item label="阴影尺寸">
-              <i-input v-model="form.style.boxShadow.spread.val" @on-change="changeBoxShadow()">
-                <i-select slot="append" v-model="form.style.boxShadow.spread.unit" style="width: 70px" @on-change="changeBoxShadow()">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
+            <i-form-item label="是否加粗">
+              <i-checkbox v-model="form.style.fontWeight" true-value="bold" false-value="normal" @on-change="changeStyle('fontWeight')"></i-checkbox>
             </i-form-item>
 
-            <i-form-item label="阴影颜色">
-              <i-color-picker v-model="form.style.boxShadow.color" @on-change="changeBoxShadow()"/>
+
+            <i-form-item label="阴影">
+              <i-form-item label="水平位置" :label-width="80">
+                <i-input  v-model="form.style.boxShadow.hShadow.val" @on-change="changeBoxShadow()">
+                  <i-select slot="append" v-model="form.style.boxShadow.hShadow.unit" style="width: 70px" @on-change="changeBoxShadow()">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+              <i-form-item label="垂直位置">
+                <i-input  v-model="form.style.boxShadow.vShadow.val" @on-change="changeBoxShadow()">
+                  <i-select slot="append" v-model="form.style.boxShadow.vShadow.unit" style="width: 70px" @on-change="changeBoxShadow()">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+              <i-form-item label="模糊距离">
+                <i-input  v-model="form.style.boxShadow.blur.val" @on-change="changeBoxShadow()">
+                  <i-select slot="append" v-model="form.style.boxShadow.blur.unit" style="width: 70px" @on-change="changeBoxShadow()">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+              <i-form-item label="阴影尺寸">
+                <i-input v-model="form.style.boxShadow.spread.val" @on-change="changeBoxShadow()">
+                  <i-select slot="append" v-model="form.style.boxShadow.spread.unit" style="width: 70px" @on-change="changeBoxShadow()">
+                    <i-option value="rem">rem</i-option>
+                    <i-option value="px">px</i-option>
+                    <i-option value="%">%</i-option>
+                  </i-select>
+                </i-input>
+              </i-form-item>
+
+              <i-form-item label="阴影颜色">
+                <i-color-picker v-model="form.style.boxShadow.color" @on-change="changeBoxShadow()"/>
+              </i-form-item>
             </i-form-item>
-          </i-form-item>
-          <i-form-item>
-            <i-button type="primary" @click="addPanel(form.vnode, 'div')">增加面板</i-button>
-            <div @click="addPanel(form.vnode, 'img')">
-              增加图片
-            </div>
-            <div @click="addPanel(form.vnode, 'span')">
-              增加元素
-            </div>
-            <i-button style="margin-left: 8px" @click="removePanel">删除此面板</i-button>
-          </i-form-item>
-        </i-form>
+            <i-form-item>
+              <i-button type="primary" @click="addPanel(form.vnode, 'div')">增加子面板</i-button>
+              <template v-if="form.vnode && form.parentVNode">
+                <i-button type="primary" @click="addPanel(form.parentVNode, 'div', { pos: 'prev', curVNode: form.vnode })">前面增加面板</i-button>
+                <i-button type="primary" @click="addPanel(form.parentVNode, 'div', { pos: 'next', curVNode: form.vnode })">后面增加面板</i-button>
+              </template>
+
+              <i-upload ref="nodeUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*" :on-success="uploadNodeImgSuccess" data-type="node">
+                <i-button icon="ios-cloud-upload-outline">增加子图片</i-button>
+              </i-upload>
+              <template v-if="form.vnode && form.vnode.parentVNode">
+                <i-upload ref="nodeUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*" :on-success="uploadNodeImgSuccess" data-type="node">
+                  <i-button icon="ios-cloud-upload-outline">前面增加图片</i-button>
+                </i-upload>
+                <i-upload ref="nodeUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*" :on-success="uploadNodeImgSuccess" data-type="node">
+                  <i-button icon="ios-cloud-upload-outline">后面增加图片</i-button>
+                </i-upload>
+              </template>
+
+              <div @click="addPanel(form.vnode, 'span')">
+                增加子元素
+              </div>
+
+              <template v-if="form.vnode && form.vnode.parentVNode">
+                <div @click="addPanel(form.parentVNode, 'span', { pos: 'prev', curVNode: form.vnode })">
+                  前面增加元素
+                </div>
+                <div @click="addPanel(form.parentVNode, 'span', { pos: 'next', curVNode: form.vnode })">
+                  后面增加元素
+                </div>
+              </template>
+
+              <i-button style="margin-left: 8px" v-if="form.vnode && form.vnode.parentVNode" @click="removePanel">删除此面板</i-button>
+            </i-form-item>
+          </i-form>
+        </div>
+
       </div>
-      <div class="panel-tree">
+      <div class="editable-panel panel-tree">
+        <div class="editable-title">
+          结构树
+        </div>
         <dom-tree :vnode="tree" @nodeclick="handleNodeClick"></dom-tree>
       </div>
-    </div>
-
-    <div @click="addPanel(tree, 'div')">
-      增加面板
-    </div>
-    <i-upload action="https://wx.huiyou.lht.ren/h5/upload-img" :on-success="uploadImgSuccess" :on-preview="uploadPreview" :on-remove="uploadRemove">
-      <i-button icon="ios-cloud-upload-outline">增加图片</i-button>
-    </i-upload>
-    <div @click="addPanel(tree, 'img')">
-      增加图片
-    </div>
-    <div @click="addPanel(tree, 'span')">
-      增加元素
     </div>
   </div>
 
@@ -469,15 +554,21 @@
         },
       },
     },
+    created: {
+
+    },
     data () {
       return {
         isShow: true,
         form: {
           parentVNode: undefined,
           vnode: undefined,
+          attrs: {
+            src: '',
+          },
           style: {
             width: {
-              val: '100',
+              val: null,
               unit: '%',
             },
             height: {
@@ -485,6 +576,15 @@
               unit: '%',
             },
             display: '',
+            flexGrow: null,
+            flexShrink: null,
+            flexBasis: {
+              val: null,
+              unit: 'rem',
+            },
+            justifyContent: null,
+            flexWrap: null,
+            alignItems: null,
             position: 'static',
             top: {
               val: '',
@@ -538,40 +638,30 @@
                 unit: 'rem',
               },
             },
-            border: {
-              top: {
-                style: 'solid',
-                width: {
-                  val: '0',
-                  unit: 'px',
-                },
-                color: '',
-              },
-              bottom: {
-                style: 'solid',
-                width: {
-                  val: '0',
-                  unit: 'px',
-                },
-                color: '',
-              },
-              left: {
-                style: 'solid',
-                width: {
-                  val: '0',
-                  unit: 'px',
-                },
-                color: '',
-              },
-              right: {
-                style: 'solid',
-                width: {
-                  val: '0',
-                  unit: 'px',
-                },
-                color: '',
-              },
+            borderTopWidth: {
+              val: '0',
+              unit: 'px',
             },
+            borderTopColor: "",
+            borderTopStyle: null,
+            borderBottomWidth: {
+              val: '0',
+              unit: 'px',
+            },
+            borderBottomColor: "",
+            borderBottomStyle: null,
+            borderLeftWidth: {
+              val: '0',
+              unit: 'px',
+            },
+            borderLeftColor: "",
+            borderLeftStyle: null,
+            borderRightWidth: {
+              val: '0',
+              unit: 'px',
+            },
+            borderRightColor: "",
+            borderRightStyle: null,
             color: '#000',
             fontSize: {
               val: '1',
@@ -586,7 +676,7 @@
               unit: 'rem',
             },
             lineHeight: {
-              val: '1.4',
+              val: null,
               unit: 'rem',
             },
             textAlign: 'left',
@@ -626,7 +716,7 @@
                 val: 0,
                 unit: 'rem',
               },
-              color: '#000'
+              color: ''
             },
           },
           textList: [],
@@ -634,20 +724,101 @@
         tree: {
           tag: 'div',
           title: '',
+          attrs: {
+          },
+          style: {
+            height: 'initial',
+          },
+          class: {
+            curselected: false,
+          },
           children: [],
         },
       }
     },
+    created () {
+      this.tree = this.generateVNodeData(undefined, 'div');
+    },
     methods: {
+      parseVNodeToFormFuncDic () {
+        return {
+          handleValWithUnit (formData, formKey, data, dataKey) {
+            if (typeof data[dataKey] === 'string' && data[dataKey] !== '') {
+              formData[formKey].val = data[dataKey].match(/^[0-9.]+/)[0];
+              formData[formKey].unit = data[dataKey].match(/\D+$/)[0];
+            } else {
+              formData[formKey].val = data[dataKey];
+            }
+          },
+        }
+      },
       handleNodeClick (curNode) {
         if (typeof this.form.vnode === 'object' && curNode !== this.form.vnode) {
           this.form.vnode.class.curselected = false;
         }
+
         curNode.class.curselected = !curNode.class.curselected;
         if (curNode.class.curselected) {
           this.form.textList = [];
           this.form.vnode = curNode;
           this.form.parentVNode = curNode.parentVNode;
+          const handler = this.parseVNodeToFormFuncDic();
+          Object.keys(this.form.style).forEach((key) => {
+            if (key === 'margin' || key === 'padding') {
+              Object.keys(this.form.style[key]).forEach((mpkey) => {
+                handler.handleValWithUnit(this.form.style[key], mpkey, curNode.style, key + mpkey.replace(mpkey[0],mpkey[0].toUpperCase()))
+              });
+            }
+
+            if (key === 'boxShadow') {
+              if (curNode.style.boxShadow) {
+                const dataArr = curNode.style.boxShadow.split(" ")
+                handler.handleValWithUnit(this.form.style[key], 'hShadow', { data: dataArr[0] }, 'data')
+                handler.handleValWithUnit(this.form.style[key], 'vShadow', { data: dataArr[1] }, 'data')
+                handler.handleValWithUnit(this.form.style[key], 'blur', { data: dataArr[2] }, 'data')
+                handler.handleValWithUnit(this.form.style[key], 'spread', { data: dataArr[3] }, 'data')
+                this.form.style[key].color = dataArr[4];
+              } else {
+                this.form.style[key].hShadow.val = null;
+                this.form.style[key].vShadow.val = null;
+                this.form.style[key].blur.val = null;
+                this.form.style[key].spread.val = null;
+                this.form.style[key].color = '';
+              }
+              return;
+            }
+
+            if (key === 'backgroundImage') {
+              if (curNode.style[key] == null) {
+                this.form.style[key].direction = null;
+                this.form.style[key].color0.len.val = null;
+                this.form.style[key].color0.color = '';
+                this.form.style[key].color1.len.val = null;
+                this.form.style[key].color1.color = '';
+              } else {
+                const itemArr = curNode.style[key].replace("linear-gradient(", "").replace(")", "").split(",");
+                this.form.style[key].direction = Number.parseFloat(itemArr[0]);
+                const color0Arr = itemArr[1].split(" ");
+                this.form.style[key].color0.len.val = color0Arr[1];
+                this.form.style[key].color0.color = color0Arr[0];
+                const color1Arr = itemArr[2].split(" ");
+                this.form.style[key].color1.len.val = color1Arr[1];
+                this.form.style[key].color1.color = color1Arr[0];
+              }
+              return;
+            }
+
+            if (typeof this.form.style[key] !== 'object' || this.form.style[key] == null) {
+              this.form.style[key] = curNode.style[key];
+            } else {
+              if (this.form.style[key].unit !== undefined) {
+                handler.handleValWithUnit(this.form.style, key, curNode.style, key)
+              } else {
+
+              }
+            }
+
+          });
           curNode.children.forEach((elem) => {
             if (typeof elem === 'string') {
               this.form.textList.push({
@@ -661,18 +832,23 @@
           this.form.textList = [];
         }
       },
-      uploadRemove () {
-        console.log('asdf');
+      uploadReplaceImgSuccess (res) {
+        this.$refs.replaceUploadBtn.clearFiles();
+        this.form.vnode.attrs.src = res.url;
       },
-      uploadPreview (file) {
-        console.log(file);
+      uploadRootImgSuccess (res) {
+          this.$refs.rootUploadBtn.clearFiles();
+          this.addPanel(this.tree, 'img', { src: res.url });
       },
-      uploadImgSuccess (res, file, fileList) {
-        console.log(res);
-        console.log(file);
-        console.log(fileList);
+      uploadNodeImgSuccess (res) {
+        this.$refs.nodeUploadBtn.clearFiles();
+        this.addPanel(this.form.vnode, 'img', { src: res.url });
       },
       changeBackgroundImage () {
+        if (this.form.style.backgroundImage.direction === '' || this.form.style.backgroundImage.color0.color === '' || this.form.style.backgroundImage.color0.len.val === '' || this.form.style.backgroundImage.color1.color === '' || this.form.style.backgroundImage.color1.len.val === '') {
+          this.form.vnode.style.backgroundImage = undefined;
+          return;
+        }
         this.form.vnode.style.backgroundImage = `linear-gradient(${ this.form.style.backgroundImage.direction }deg,${ this.form.style.backgroundImage.color0.color } ${ this.form.style.backgroundImage.color0.len.val }${ this.form.style.backgroundImage.color0.len.unit },${ this.form.style.backgroundImage.color1.color } ${ this.form.style.backgroundImage.color1.len.val }${ this.form.style.backgroundImage.color1.len.unit })`;
       },
       changeBoxShadow () {
@@ -682,7 +858,10 @@
         this.form.vnode.style['border' + type.replace(type[0],type[0].toUpperCase())] = this.form.style.border[type].style + ' ' + this.form.style.border[type].width.val + this.form.style.border[type].width.unit + ' ' + this.form.style.border[type].color;
       },
       changeStyleWithUnit (type, defaultVal) {
-        let val = defaultVal || 0;
+        let val = 0;
+        if (defaultVal !== undefined) {
+          val = defaultVal;
+        }
         if (this.form.style[type].val !== "") {
           val = this.form.style[type].val + this.form.style[type].unit;
         }
@@ -730,8 +909,8 @@
         this.form.vnode = undefined;
         this.form.parentVNode = undefined;
       },
-      addPanel (parentVNode, tagName) {
-        var $this = this;
+      generateVNodeData (parentVNode, tagName, data) {
+        const $this = this;
         const curNode = {
           tag: tagName,
           parentVNode: parentVNode,
@@ -739,36 +918,50 @@
             curselected: false,
           },
           style: {
-            width: '100%',
-            height: 'auto',
+            width: null,
+            height: null,
             position: 'static',
             display: 'block',
+            flexGrow: null,
+            flexShrink: null,
+            flexBasis: null,
+            justifyContent: null,
+            flexWrap: null,
+            alignItems: null,
             top: '',
             bottom: '',
             left: '',
             right: '',
-            marginLeft: '0',
-            marginRight: '0',
-            marginTop: '0',
-            marginBottom: '0',
-            paddingLeft: '0',
-            paddingRight: '0',
-            paddingTop: '0',
-            paddingBottom: '0',
-            borderLeft: '0',
-            borderRight: '0',
-            borderTop: '0',
-            borderBottom: '0',
+            marginLeft: null,
+            marginRight: null,
+            marginTop: null,
+            marginBottom: null,
+            paddingLeft: null,
+            paddingRight: null,
+            paddingTop: null,
+            paddingBottom: null,
+            borderLeftWidth: null,
+            borderLeftColor: "",
+            borderLeftStyle: null,
+            borderRightWidth: null,
+            borderRightColor: '',
+            borderRightStyle: null,
+            borderTopWidth: null,
+            borderTopColor: "",
+            borderTopStyle: null,
+            borderBottomWidth: null,
+            borderBottomColor: "",
+            borderBottomStyle: null,
             color: '#000',
             fontSize: '1rem',
-            letterSpacing: '0',
-            borderRadius: '0',
-            lineHeight: '1.4',
+            letterSpacing: null,
+            borderRadius: null,
+            lineHeight: null,
             textAlign: 'left',
             fontWeight: 'normal',
             backgroundColor: '',
             boxShadow: '',
-            backgroundImage: '',
+            backgroundImage: null,
           },
           on: {
             click (e) {
@@ -785,14 +978,35 @@
         }
         if (tagName === 'img') {
           curNode.attrs = {
-            src: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png',
+            src: data.src,
+            width: '100%',
           }
           curNode.style.display = 'inline-block';
         }
         if (tagName === 'span') {
           curNode.style.display = 'inline';
         }
-        parentVNode.children.push(curNode);
+        return curNode;
+      },
+      addPanel (parentVNode, tagName, data) {
+        const curNode = this.generateVNodeData(parentVNode, tagName, data);
+        if (data && data.pos) {
+          let curIndex = -1;
+          parentVNode.children.forEach((elem, index) => {
+            if (elem === data.curVNode) {
+              curIndex = index;
+            }
+          });
+
+          if (data.pos === 'next') {
+            parentVNode.children.splice(curIndex + 1, 0, curNode);
+          } else {
+            parentVNode.children.splice(curIndex, 0, curNode);
+          }
+        } else {
+          parentVNode.children.push(curNode);
+        }
+
       },
     },
   }
@@ -802,7 +1016,7 @@
   .page-canvas {
     height: 100%;
   }
-  .panel-canvas {
+  .wrapper-canvas {
     width: 375px;
     height: 667px;
     border: solid 1px #ddd;
@@ -813,26 +1027,93 @@
 
   .main-container {
     display: flex;
-    justify-content: space-around;
-    margin-top: 30px;
+    height: 100%;
+  }
+
+  .panel-canvas {
+    flex: 1;
+  }
+  .panel-tree {
+    width: 300px;
+    margin-left: 10px;
+    margin-right: 10px;
   }
 
   .panel-setting {
-    width: 375px;
-    height: 667px;
-    border: solid 1px #ddd;
-    overflow-y: auto;
+    width: 400px;
+
   }
 
+  .editable-panel {
+    height: calc(100% - 30px);
+    background-color: #fff;
+    overflow-y: hidden;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    box-shadow: inset 0 0 2px rgba(6, 6, 6, 0.2);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+
+  .editable-panel .editable-title {
+    background-color: #515a6e;
+    color: #fff;
+    padding: 1rem;
+  }
+
+  .editable-panel .editable-title-opt {
+    float: right;
+  }
+  .editable-panel .editable-title-opt-item {
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  .editable-panel .editable-title-opt-item:hover {
+    color: #2d8cf0;
+  }
+  .editable-panel .editable-content {
+    padding: 1rem;
+    height: calc(100% - 53px);
+    overflow: auto;
+  }
+  .editable-panel .editable-content::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width : 10px;  /*高宽分别对应横竖滚动条的尺寸*/
+    height: 1px;
+  }
+  .editable-panel .editable-content::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius   : 10px;
+    background-color: skyblue;
+    background-image: -webkit-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.2) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0.2) 75%,
+            transparent 75%,
+            transparent
+    );
+  }
+  .editable-panel .editable-content::-webkit-scrollbar-track {
+    /*滚动条里面轨道*/
+    box-shadow   : inset 0 0 5px rgba(0, 0, 0, 0.2);
+    background   : #ededed;
+    border-radius: 10px;
+  }
 </style>
 <style>
   .page-canvas .curselected {
-    background-color: #ccc;
+    background-color: #ccc!important;
   }
   .page-canvas .ivu-form-item .ivu-form-item .ivu-form-item-content {
     margin-left: 80px!important;
   }
   .page-canvas .domtreenode {
     margin-left: 10px;
+  }
+  .page-canvas .setting-img-preview {
+    width: 200px;
   }
 </style>

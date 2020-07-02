@@ -1,6 +1,13 @@
 <template>
     <div class="page-head">
-        <i-button type="primary">保存</i-button>
+        <div class="page-title">
+            <i-input placeholder="请输入H5的标题" style="width: 600px" />
+        </div>
+        <div class="page-opt">
+            <i-button type="primary">保存</i-button>
+        </div>
+
+
     </div>
 </template>
 
@@ -12,6 +19,7 @@
 
 <style scoped>
     .page-head {
-        text-align: right;
+        display: flex;
+        justify-content: space-between;
     }
 </style>
