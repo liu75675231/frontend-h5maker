@@ -4,6 +4,7 @@
       <i-input placeholder="请输入H5的标题" style="width: 600px" />
     </div>
     <div class="page-opt">
+      
       <i-button type="primary" @click="copyToClipboard">保存</i-button>
     </div>
   </div>
