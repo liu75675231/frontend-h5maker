@@ -4,11 +4,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
-  entry: './src/index.js',
-  mode: 'production',
-  devServer: {
-    contentBase: './dist',
+  entry: {
+    index: './src/index.js',
+    show: './src/show.js',
   },
+  mode: 'production',
   module: {
     rules: [
       {
@@ -41,8 +41,16 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      title: 'production',
+      inject: true,
+      chunks: ['index'],
       template: 'index.html',
+      filename:  `index.html`,
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      chunks: ['show'],
+      template: 'show.html',
+      filename:  `show.html`,
     }),
     new VueLoaderPlugin(),
   ],

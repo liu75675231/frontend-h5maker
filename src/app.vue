@@ -2,11 +2,11 @@
   <div id="app" class="height-p100">
     <i-layout class="height-p100">
       <i-header>
-        <Head></Head>
+        <Head :id="id"></Head>
       </i-header>
       <i-layout class="container-body">
         <i-content class="container-canvas">
-          <Canvas></Canvas>
+          <Canvas :id="id"></Canvas>
         </i-content>
       </i-layout>
     </i-layout>
@@ -23,11 +23,29 @@
   import Setting from './pages/layout/setting.vue'
   export default {
     name: "app.vue",
+    data () {
+      return {
+        id: '',
+        treeNode: {},
+      };
+    },
     components: {
       Head,
       Canvas,
       Setting,
-    }
+    },
+    created () {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('id')) {
+        this.id = urlParams.get('id');
+      }
+    },
+    methods: {
+      updateTreeNode (treeNode) {
+        console.log(treeNode);
+        this.treeNode = treeNode;
+      },
+    },
   }
 </script>
 

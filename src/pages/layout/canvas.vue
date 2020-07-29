@@ -5,8 +5,9 @@
         <div class="wrapper-canvas editable-panel" :style="{ width: resolutionX == '' ? '375px' : resolutionX + 'px' }">
           <div class="editable-title">
             屏幕显示
+
             <div class="editable-title-opt">
-              分辨率X轴：<i-input size="small" v-model="resolutionX" style="width: 50px;" />&nbsp;px
+              <span class="editable-title-opt-item">更多分辨率</span>
             </div>
           </div>
           <div id="renderedHtml">
@@ -479,6 +480,8 @@
 </template>
 
 <script>
+  import { httpGetH5Data } from '../../http/h5';
+
   export default {
     name: "canvas.vue",
     components: {
@@ -557,6 +560,9 @@
           }
         },
       },
+    },
+    props: {
+      id: String,
     },
     data () {
       return {
@@ -749,7 +755,24 @@
       }
     },
     created () {
-      this.tree = this.generateVNodeData(undefined, 'div');
+      if (this.id) {
+        httpGetH5Data(this.id).then((res) => {
+          this.tree = JSON.parse(res.data.data.data);
+          this.$nextTick(() => {
+            document.querySelector(".domtreenode.curselected").click()
+            document.querySelector(".domtreenode.curselected").click();
+          });
+        });
+      } else {
+        this.tree = this.generateVNodeData(undefined, 'div');
+      }
+
+    },
+    mounted () {
+      const $this = this;
+      this.$root.$on('reqTreeNodeData', () => {
+        $this.$root.$emit('resTreeNodeData', $this.tree);
+      });
     },
     methods: {
       isMatchKwd: function (name) {
