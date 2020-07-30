@@ -29,6 +29,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "copy-to-clipboard": "^3.3.1",
+    "interactjs": "^1.9.20",
     "vue": "^2.6.11"
   }
 }

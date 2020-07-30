@@ -435,6 +435,15 @@
                 <i-color-picker v-model="form.style.boxShadow.color" @on-change="changeBoxShadow()"/>
               </i-form-item>
             </i-form-item>
+
+            <i-form-item label="拖拽" v-if="isMatchKwd('拖拽move')">
+              <i-form-item label="是否开启" :label-width="80">
+                <i-checkbox v-model="form.class.draggable" @on-change="changeClass('draggable')">开启</i-checkbox>
+              </i-form-item>
+              <i-form-item label="目标区域" :label-width="80">
+                <i-checkbox v-model="form.class.dropzone" @on-change="changeClass('dropzone')">开启</i-checkbox>
+              </i-form-item>
+            </i-form-item>
           </i-form>
         </div>
 
@@ -481,6 +490,7 @@
 
 <script>
   import { httpGetH5Data } from '../../http/h5';
+  import { initDragger } from '../../utils/drag';
 
   export default {
     name: "canvas.vue",
@@ -492,6 +502,9 @@
         render (createElement) {
           const renderData = this.generateElementObj(this.vnode, createElement);
           return renderData;
+        },
+        mounted () {
+          initDragger();
         },
         methods: {
           generateElementObj (vnodeObj, createElement) {
@@ -583,6 +596,10 @@
           vnode: undefined,
           attrs: {
             src: '',
+          },
+          class: {
+            draggable: false,
+            dropzone: false,
           },
           style: {
             width: {
@@ -880,6 +897,9 @@
             }
 
           });
+          Object.keys(this.form.class).forEach((key) => {
+            this.form.class[key] = curNode.class[key];
+          });
           curNode.children.forEach((elem) => {
             if (typeof elem === 'string') {
               this.form.textList.push({
@@ -928,6 +948,9 @@
           val = this.form.style[type].val + this.form.style[type].unit;
         }
         this.form.vnode.style[type] = val;
+      },
+      changeClass (type) {
+        this.form.vnode.class[type] = this.form.class[type];
       },
       changeStyle (type) {
         this.form.vnode.style[type] = this.form.style[type];
@@ -985,6 +1008,8 @@
           parentVNode: parentVNode,
           class: {
             curselected: false,
+            draggable: false,
+            dropzone: false,
           },
           style: {
             width: null,

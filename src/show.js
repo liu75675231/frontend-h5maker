@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import { generateVNodeTree } from './utils/render'
 import { httpGetH5Data } from './http/h5';
+import { initDragger } from './utils/drag';
 const urlParams = new URLSearchParams(window.location.search);
 
 httpGetH5Data(urlParams.get('id')).then((res) => {
@@ -9,9 +10,11 @@ httpGetH5Data(urlParams.get('id')).then((res) => {
     el: '#app',
     render: h => {
       const renderData = generateVNodeTree(data, h);
-      console.log(renderData);
       return renderData;
-    }
+    },
+    mounted () {
+      initDragger();
+    },
   })
 
 });
