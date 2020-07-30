@@ -5,15 +5,23 @@
         <div class="wrapper-canvas editable-panel" :style="{ width: resolutionX == '' ? '375px' : resolutionX + 'px' }">
           <div class="editable-title">
             屏幕显示
-
             <div class="editable-title-opt">
               <span class="editable-title-opt-item">更多分辨率</span>
             </div>
           </div>
           <div id="renderedHtml">
+            <div class="selected-area" v-show="selectedRect.isShow" :style="{ top: selectedRect.top + 'px', left: selectedRect.left + 'px' }">
+              <div class="selected-line" :style="{ top: 0, left: 0, width: selectedRect.width + 'px'}"></div>
+              <div class="selected-point" :style="{ top: '-4px', left: (selectedRect.width / 2 - 5) + 'px'}"></div>
+              <div class="selected-line" :style="{ top: 0, left: 0, height: selectedRect.height + 'px'}"></div>
+              <div class="selected-point" :style="{ top: (selectedRect.height / 2 - 5) + 'px', left: '-4px'}"></div>
+              <div class="selected-line" :style="{ top: selectedRect.height + 'px', left: 0, width: selectedRect.width + 'px'}"></div>
+              <div class="selected-point" :style="{ top: (selectedRect.height - 4) + 'px', left: (selectedRect.width / 2 - 5) + 'px'}"></div>
+              <div class="selected-line" :style="{ top: 0, left: selectedRect.width + 'px', height: selectedRect.height + 'px'}"></div>
+              <div class="selected-point" :style="{ top: (selectedRect.height / 2 - 4) + 'px', left: (selectedRect.width - 4) + 'px'}"></div>
+            </div>
             <rendered-html v-if="isShow" :vnode="tree"></rendered-html>
           </div>
-
         </div>
       </div>
       <div class="editable-panel panel-setting">
@@ -491,6 +499,7 @@
 <script>
   import { httpGetH5Data } from '../../http/h5';
   import { initDragger } from '../../utils/drag';
+  import $ from 'jquery';
 
   export default {
     name: "canvas.vue",
@@ -562,6 +571,7 @@
             return createElement('div', {
               on: {
                 click (e) {
+                  console.log(e);
                   e.stopPropagation();
                   $this.$emit('nodeclick', vnodeObj);
                 }
@@ -579,6 +589,13 @@
     },
     data () {
       return {
+        selectedRect: {
+          isShow: false,
+          top: 0,
+          left: 0,
+          width: 0,
+          height: 0,
+        },
         insertNodePopup: {
           isShow: false,
           formVNode: undefined,
@@ -810,6 +827,9 @@
           data.curVNode = this.insertNodePopup.formVNode;
           this.addPanel(this.insertNodePopup.formVNode.parentVNode, this.insertNodePopup.form.type, data);
         }
+        this.$nextTick(() => {
+          this.showSelectedRect($(".curselected").get(0));
+        });
       },
       showInsertNodePopup (formVNode) {
         this.insertNodePopup.isShow = true;
@@ -828,6 +848,16 @@
               formData[formKey].val = data[dataKey];
             }
           },
+        }
+      },
+      showSelectedRect (dom) {
+        const $dom = $(dom), panelOffset = $("#renderedHtml").offset(), offset = $dom.offset()
+        this.selectedRect = {
+          isShow: true,
+          top: offset.top - panelOffset.top,
+          left: offset.left - panelOffset.left,
+          width: $dom.width(),
+          height: $dom.height(),
         }
       },
       handleNodeClick (curNode) {
@@ -998,6 +1028,7 @@
             });
             $this.form.vnode = undefined;
             $this.form.parentVNode = undefined;
+            $this.selectedRect.isShow = false;
           },
         });
       },
@@ -1060,6 +1091,7 @@
           on: {
             click (e) {
               e.stopPropagation();
+              $this.showSelectedRect(e.target);
               $this.handleNodeClick(curNode);
             },
           },
@@ -1243,11 +1275,30 @@
     padding: .5rem;
     border-bottom: solid 1px #ddd;
   }
+
+  #renderedHtml {
+    position: relative;
+  }
+
+  .selected-area {
+    position: absolute;
+  }
+  .selected-line {
+    background-color: #59c7f9;
+    height: 1px;
+    width: 1px;
+    position: absolute;
+  }
+  .selected-point {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    border: 1px solid #59c7f9;
+    border-radius: 10px;
+  }
 </style>
 <style>
-  .page-canvas .curselected {
-    background-color: #ccc!important;
-  }
   .page-canvas .ivu-form-item .ivu-form-item .ivu-form-item-content {
     margin-left: 80px!important;
   }
