@@ -11,7 +11,7 @@
           </div>
           <div id="renderedHtml">
             <div class="selected-area" v-show="selectedRect.isShow" :style="{ top: selectedRect.top + 'px', left: selectedRect.left + 'px' }">
-              <div class="selected-line" :style="{ top: 0, left: 0, width: selectedRect.width + 'px'}"></div>
+              <div class="selected-line" :style="{ top: 0, left: 0, width: selectedRect.width + 'px'}"></div> 
               <div class="selected-point" :style="{ top: '-4px', left: (selectedRect.width / 2 - 5) + 'px'}"></div>
               <div class="selected-line" :style="{ top: 0, left: 0, height: selectedRect.height + 'px'}"></div>
               <div class="selected-point" :style="{ top: (selectedRect.height / 2 - 5) + 'px', left: '-4px'}"></div>
@@ -828,7 +828,7 @@
           this.addPanel(this.insertNodePopup.formVNode.parentVNode, this.insertNodePopup.form.type, data);
         }
         this.$nextTick(() => {
-          this.showSelectedRect($(".curselected").get(0));
+          this.switchSelectedRect($(".curselected").get(0), 'show');
         });
       },
       showInsertNodePopup (formVNode) {
@@ -850,15 +850,24 @@
           },
         }
       },
-      showSelectedRect (dom) {
-        const $dom = $(dom), panelOffset = $("#renderedHtml").offset(), offset = $dom.offset()
-        this.selectedRect = {
-          isShow: true,
-          top: offset.top - panelOffset.top,
-          left: offset.left - panelOffset.left,
-          width: $dom.width(),
-          height: $dom.height(),
+      switchSelectedRect (dom, type) {
+        if (!type) {
+          type = this.selectedRect.isShow ? 'hide' : 'show';
         }
+
+        if (type == 'show') {
+          const $dom = $(dom), panelOffset = $("#renderedHtml").offset(), offset = $dom.offset()
+          this.selectedRect = {
+            isShow: true,
+            top: offset.top - panelOffset.top,
+            left: offset.left - panelOffset.left,
+            width: $dom.width(),
+            height: $dom.height(),
+          }
+        } else {
+          this.selectedRect.isShow = false;
+        }
+
       },
       handleNodeClick (curNode) {
         if (typeof this.form.vnode === 'object' && curNode !== this.form.vnode) {
@@ -1028,7 +1037,7 @@
             });
             $this.form.vnode = undefined;
             $this.form.parentVNode = undefined;
-            $this.selectedRect.isShow = false;
+            $this.switchSelectedRect(undefined, 'hide');
           },
         });
       },
@@ -1091,7 +1100,12 @@
           on: {
             click (e) {
               e.stopPropagation();
-              $this.showSelectedRect(e.target);
+              if (e.target == $(".curselected").get(0)) {
+                $this.switchSelectedRect(e.target);
+              } else {
+                $this.switchSelectedRect(e.target, 'show');
+              }
+
               $this.handleNodeClick(curNode);
             },
           },
