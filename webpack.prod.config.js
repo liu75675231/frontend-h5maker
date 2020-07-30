@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
@@ -39,6 +40,9 @@ module.exports = {
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      H5_ONLINE_HOST: JSON.stringify("https://h5online.lht.ren"),
+    }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,

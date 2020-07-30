@@ -35,7 +35,7 @@
             data: str,
           },
         }).then((res) => {
-          window.location.href = 'http://localhost:8080/show.html?id=' + res.data.data;
+          window.location.href = H5_ONLINE_HOST + '/show.html?id=' + res.data.data;
         });
       });
     },

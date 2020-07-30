@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
@@ -41,6 +42,9 @@ module.exports = {
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      H5_ONLINE_HOST: JSON.stringify("http://localhost:8080"),
+    }),
     new HtmlWebpackPlugin({
       inject: true,
       chunks: ['index'],
