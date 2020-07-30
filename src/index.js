@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './app.vue'
 
-import { Button, Layout, Header, Sider, Content, Input, Form, FormItem, Select, Option, RadioGroup, Radio, ColorPicker, Checkbox, Upload, Modal, Message, Icon } from 'view-design'
+import { Button, Layout, Header, Sider, Content, Input, Form, FormItem, Select, Option, RadioGroup, Radio, ColorPicker, Checkbox, Upload, Modal, Message, Icon, Tabs, TabPane, Collapse, Panel  } from 'view-design'
 import 'view-design/dist/styles/iview.css'
 
 Vue.component('i-button', Button)
@@ -21,6 +21,10 @@ Vue.component('i-checkbox', Checkbox)
 Vue.component('i-upload', Upload)
 Vue.component('i-modal', Modal)
 Vue.component('i-icon', Icon)
+Vue.component('i-tabs', Tabs)
+Vue.component('i-tab-pane', TabPane)
+Vue.component('i-collapse', Collapse)
+Vue.component('i-panel', Panel)
 
 Vue.prototype.$Modal = Modal
 Vue.prototype.$Message = Message

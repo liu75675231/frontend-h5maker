@@ -11,7 +11,7 @@
           </div>
           <div id="renderedHtml">
             <div class="selected-area" v-show="selectedRect.isShow" :style="{ top: selectedRect.top + 'px', left: selectedRect.left + 'px' }">
-              <div class="selected-line" :style="{ top: 0, left: 0, width: selectedRect.width + 'px'}"></div> 
+              <div class="selected-line" :style="{ top: 0, left: 0, width: selectedRect.width + 'px'}"></div>
               <div class="selected-point" :style="{ top: '-4px', left: (selectedRect.width / 2 - 5) + 'px'}"></div>
               <div class="selected-line" :style="{ top: 0, left: 0, height: selectedRect.height + 'px'}"></div>
               <div class="selected-point" :style="{ top: (selectedRect.height / 2 - 5) + 'px', left: '-4px'}"></div>
@@ -32,429 +32,441 @@
             <span class="editable-title-opt-item" v-if="form.vnode && form.vnode.tag !== 'img'" @click="showInsertNodePopup(form.vnode)">新增</span>
           </div>
         </div>
-        <div class="setting-search-panel" v-if="form.vnode">
-          <i-input class="setting-search-input" v-model="form.kwd" placeholder="请输入关键字" />
-        </div>
-        <div class="editable-content">
-          <i-form class="form" :label-width="80" v-if="form.vnode">
-            <i-form-item  v-for="(item, index) in form.textList" :label="'内容'" :key="index" v-if="isMatchKwd('内容content')">
-              <i-input v-model="item.text" @on-change="changePanelText(item.text, index)"></i-input>
-            </i-form-item>
+        <i-tabs>
+          <i-tab-pane label="样式">
+            <div class="editable-content">
+              <i-form class="form" :label-width="80" v-if="form.vnode">
+                <i-form-item  v-for="(item, index) in form.textList" :label="'内容'" :key="index" v-if="isMatchKwd('内容content')">
+                  <i-input v-model="item.text" @on-change="changePanelText(item.text, index)"></i-input>
+                </i-form-item>
 
-            <i-form-item label="链接" v-if="form.vnode && form.vnode.attrs && form.vnode.attrs.src && isMatchKwd('链接地址替换图片imgsrc')">
-              <img class="setting-img-preview" :src="form.vnode.attrs.src">
-              <i-upload ref="replaceUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*" :on-success="uploadReplaceImgSuccess">
-                <i-button type="primary" icon="ios-cloud-upload-outline">替换图片</i-button>
-              </i-upload>
-            </i-form-item>
+                <i-form-item label="链接" v-if="form.vnode && form.vnode.attrs && form.vnode.attrs.src && isMatchKwd('链接地址替换图片imgsrc')">
+                  <img class="setting-img-preview" :src="form.vnode.attrs.src">
+                  <i-upload ref="replaceUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*" :on-success="uploadReplaceImgSuccess">
+                    <i-button type="primary" icon="ios-cloud-upload-outline">替换图片</i-button>
+                  </i-upload>
+                </i-form-item>
 
-            <i-form-item label="宽度" v-if="isMatchKwd('宽度width')">
-              <i-input  v-model="form.style.width.val" @on-change="changeStyleWithUnit('width', null)">
-                <i-select slot="append" v-model="form.style.width.unit" style="width: 70px" @on-change="changeStyleWithUnit('width', null)">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-
-            <i-form-item label="高度" v-if="isMatchKwd('高度height')">
-              <i-input  v-model="form.style.height.val" @on-change="changeStyleWithUnit('height', null)">
-                <i-select slot="append" v-model="form.style.height.unit" style="width: 70px" @on-change="changeStyleWithUnit('height', null)">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-
-            <i-form-item label="显示方式" v-if="isMatchKwd('显示方式display')">
-              <i-select v-model="form.style.display" style="width: 200px" @on-change="changeStyle('display')">
-                <i-option value="none">隐藏</i-option>
-                <i-option value="block">块级显示</i-option>
-                <i-option value="inline-block">内联-块级显示</i-option>
-                <i-option value="inline">内联显示</i-option>
-                <i-option value="flex">flex</i-option>
-              </i-select>
-            </i-form-item>
-
-            <template v-if="form.style.display === 'flex'">
-              <i-form-item label="扩展比率" v-if="isMatchKwd('显示方式display扩展比率flex-grow')">
-                <i-input  v-model="form.style.flexGrow" @on-change="changeStyle('flexGrow', null)">
-                </i-input>
-              </i-form-item>
-
-              <i-form-item label="收缩比率" v-if="isMatchKwd('显示方式display收缩比率flex-shrink')">
-                <i-input  v-model="form.style.flexShrink" @on-change="changeStyle('flexShrink', null)">
-                </i-input>
-              </i-form-item>
-
-              <i-form-item label="基准值" v-if="isMatchKwd('显示方式display基准值flex-basis')">
-                <i-input  v-model="form.style.flexBasis.val" @on-change="changeStyleWithUnit('flexBasis', null)">
-                  <i-select slot="append" v-model="form.style.flexBasis.unit" style="width: 70px" @on-change="changeStyleWithUnit('flexBasis', null)">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-
-              <i-form-item label="主轴对齐" v-if="isMatchKwd('显示方式display主轴对齐justify-content')">
-                <i-select v-model="form.style.justifyContent" style="width: 200px" @on-change="changeStyle('justifyContent')">
-                  <i-option value="flex-start">左对齐</i-option>
-                  <i-option value="flex-end">右对齐</i-option>
-                  <i-option value="center">居中</i-option>
-                  <i-option value="space-between">两端对齐</i-option>
-                  <i-option value="space-around">间隔对齐</i-option>
-                </i-select>
-              </i-form-item>
-
-              <i-form-item label="交叉轴对齐" v-if="isMatchKwd('显示方式display交叉轴对齐align-items')">
-                <i-select v-model="form.style.alignItems" style="width: 200px" @on-change="changeStyle('alignItems')">
-                  <i-option value="flex-start">起点对齐</i-option>
-                  <i-option value="flex-end">终点对齐</i-option>
-                  <i-option value="center">居中</i-option>
-                  <i-option value="baseline">基线对齐</i-option>
-                </i-select>
-              </i-form-item>
-
-              <i-form-item label="是否换行" v-if="isMatchKwd('显示方式display是否换行flex-wrap')">
-                <i-select v-model="form.style.flexWrap" style="width: 200px" @on-change="changeStyle('flexWrap')">
-                  <i-option value="nowrap">不换行</i-option>
-                  <i-option value="wrap">换行</i-option>
-                </i-select>
-              </i-form-item>
-            </template>
-
-            <i-form-item label="定位" v-if="isMatchKwd('定位position')">
-              <i-select v-model="form.style.position" style="width: 200px" @on-change="changeStyle('position')">
-                <i-option value="static">默认定位</i-option>
-                <i-option value="absolute">绝对定位</i-option>
-                <i-option value="relative">相对定位</i-option>
-              </i-select>
-              <template v-if="form.style.position !== 'static'">
-                <i-form-item label="上" v-if="isMatchKwd('定位position上top')">
-                  <i-input  v-model="form.style.top.val" @on-change="changeStyleWithUnit('top', 'initial')">
-                    <i-select slot="append" v-model="form.style.top.unit" style="width: 70px" @on-change="changeStyleWithUnit('top', 'initial')">
+                <i-form-item label="宽度" v-if="isMatchKwd('宽度width')">
+                  <i-input  v-model="form.style.width.val" @on-change="changeStyleWithUnit('width', null)">
+                    <i-select slot="append" v-model="form.style.width.unit" style="width: 70px" @on-change="changeStyleWithUnit('width', null)">
                       <i-option value="rem">rem</i-option>
                       <i-option value="px">px</i-option>
                       <i-option value="%">%</i-option>
                     </i-select>
                   </i-input>
                 </i-form-item>
-                <i-form-item label="右" v-if="isMatchKwd('定位position右right')">
-                  <i-input  v-model="form.style.right.val" @on-change="changeStyleWithUnit('right', 'initial')">
-                    <i-select slot="append" v-model="form.style.right.unit" style="width: 70px" @on-change="changeStyleWithUnit('right', 'initial')">
+
+                <i-form-item label="高度" v-if="isMatchKwd('高度height')">
+                  <i-input  v-model="form.style.height.val" @on-change="changeStyleWithUnit('height', null)">
+                    <i-select slot="append" v-model="form.style.height.unit" style="width: 70px" @on-change="changeStyleWithUnit('height', null)">
                       <i-option value="rem">rem</i-option>
                       <i-option value="px">px</i-option>
                       <i-option value="%">%</i-option>
                     </i-select>
                   </i-input>
                 </i-form-item>
-                <i-form-item label="下" v-if="isMatchKwd('定位position下bottom')">
-                  <i-input  v-model="form.style.bottom.val" @on-change="changeStyleWithUnit('bottom', 'initial')">
-                    <i-select slot="append" v-model="form.style.bottom.unit" style="width: 70px" @on-change="changeStyleWithUnit('bottom', 'initial')">
+
+                <i-form-item label="显示方式" v-if="isMatchKwd('显示方式display')">
+                  <i-select v-model="form.style.display" style="width: 200px" @on-change="changeStyle('display')">
+                    <i-option value="none">隐藏</i-option>
+                    <i-option value="block">块级显示</i-option>
+                    <i-option value="inline-block">内联-块级显示</i-option>
+                    <i-option value="inline">内联显示</i-option>
+                    <i-option value="flex">flex</i-option>
+                  </i-select>
+                </i-form-item>
+
+                <template v-if="form.style.display === 'flex'">
+                  <i-form-item label="扩展比率" v-if="isMatchKwd('显示方式display扩展比率flex-grow')">
+                    <i-input  v-model="form.style.flexGrow" @on-change="changeStyle('flexGrow', null)">
+                    </i-input>
+                  </i-form-item>
+
+                  <i-form-item label="收缩比率" v-if="isMatchKwd('显示方式display收缩比率flex-shrink')">
+                    <i-input  v-model="form.style.flexShrink" @on-change="changeStyle('flexShrink', null)">
+                    </i-input>
+                  </i-form-item>
+
+                  <i-form-item label="基准值" v-if="isMatchKwd('显示方式display基准值flex-basis')">
+                    <i-input  v-model="form.style.flexBasis.val" @on-change="changeStyleWithUnit('flexBasis', null)">
+                      <i-select slot="append" v-model="form.style.flexBasis.unit" style="width: 70px" @on-change="changeStyleWithUnit('flexBasis', null)">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+
+                  <i-form-item label="主轴对齐" v-if="isMatchKwd('显示方式display主轴对齐justify-content')">
+                    <i-select v-model="form.style.justifyContent" style="width: 200px" @on-change="changeStyle('justifyContent')">
+                      <i-option value="flex-start">左对齐</i-option>
+                      <i-option value="flex-end">右对齐</i-option>
+                      <i-option value="center">居中</i-option>
+                      <i-option value="space-between">两端对齐</i-option>
+                      <i-option value="space-around">间隔对齐</i-option>
+                    </i-select>
+                  </i-form-item>
+
+                  <i-form-item label="交叉轴对齐" v-if="isMatchKwd('显示方式display交叉轴对齐align-items')">
+                    <i-select v-model="form.style.alignItems" style="width: 200px" @on-change="changeStyle('alignItems')">
+                      <i-option value="flex-start">起点对齐</i-option>
+                      <i-option value="flex-end">终点对齐</i-option>
+                      <i-option value="center">居中</i-option>
+                      <i-option value="baseline">基线对齐</i-option>
+                    </i-select>
+                  </i-form-item>
+
+                  <i-form-item label="是否换行" v-if="isMatchKwd('显示方式display是否换行flex-wrap')">
+                    <i-select v-model="form.style.flexWrap" style="width: 200px" @on-change="changeStyle('flexWrap')">
+                      <i-option value="nowrap">不换行</i-option>
+                      <i-option value="wrap">换行</i-option>
+                    </i-select>
+                  </i-form-item>
+                </template>
+
+                <i-form-item label="定位" v-if="isMatchKwd('定位position')">
+                  <i-select v-model="form.style.position" style="width: 200px" @on-change="changeStyle('position')">
+                    <i-option value="static">默认定位</i-option>
+                    <i-option value="absolute">绝对定位</i-option>
+                    <i-option value="relative">相对定位</i-option>
+                  </i-select>
+                  <template v-if="form.style.position !== 'static'">
+                    <i-form-item label="上" v-if="isMatchKwd('定位position上top')">
+                      <i-input  v-model="form.style.top.val" @on-change="changeStyleWithUnit('top', 'initial')">
+                        <i-select slot="append" v-model="form.style.top.unit" style="width: 70px" @on-change="changeStyleWithUnit('top', 'initial')">
+                          <i-option value="rem">rem</i-option>
+                          <i-option value="px">px</i-option>
+                          <i-option value="%">%</i-option>
+                        </i-select>
+                      </i-input>
+                    </i-form-item>
+                    <i-form-item label="右" v-if="isMatchKwd('定位position右right')">
+                      <i-input  v-model="form.style.right.val" @on-change="changeStyleWithUnit('right', 'initial')">
+                        <i-select slot="append" v-model="form.style.right.unit" style="width: 70px" @on-change="changeStyleWithUnit('right', 'initial')">
+                          <i-option value="rem">rem</i-option>
+                          <i-option value="px">px</i-option>
+                          <i-option value="%">%</i-option>
+                        </i-select>
+                      </i-input>
+                    </i-form-item>
+                    <i-form-item label="下" v-if="isMatchKwd('定位position下bottom')">
+                      <i-input  v-model="form.style.bottom.val" @on-change="changeStyleWithUnit('bottom', 'initial')">
+                        <i-select slot="append" v-model="form.style.bottom.unit" style="width: 70px" @on-change="changeStyleWithUnit('bottom', 'initial')">
+                          <i-option value="rem">rem</i-option>
+                          <i-option value="px">px</i-option>
+                          <i-option value="%">%</i-option>
+                        </i-select>
+                      </i-input>
+                    </i-form-item>
+                    <i-form-item label="左" v-if="isMatchKwd('定位position左left')">
+                      <i-input  v-model="form.style.left.val" @on-change="changeStyleWithUnit('left', 'initial')">
+                        <i-select slot="append" v-model="form.style.left.unit" style="width: 70px" @on-change="changeStyleWithUnit('left', 'initial')">
+                          <i-option value="rem">rem</i-option>
+                          <i-option value="px">px</i-option>
+                          <i-option value="%">%</i-option>
+                        </i-select>
+                      </i-input>
+                    </i-form-item>
+                  </template>
+                </i-form-item>
+
+                <i-form-item label="外边距" v-if="isMatchKwd('外边距margin')">
+                  <i-form-item label="上边距" :label-width="80">
+                    <i-input  v-model="form.style.margin.top.val" @on-change="changeMargin('top')">
+                      <i-select slot="append" v-model="form.style.margin.top.unit" style="width: 70px" @on-change="changeMargin('top')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                  <i-form-item label="右边距" :label-width="80">
+                    <i-input  v-model="form.style.margin.right.val" @on-change="changeMargin('right')">
+                      <i-select slot="append" v-model="form.style.margin.right.unit" style="width: 70px" @on-change="changeMargin('right')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                  <i-form-item label="下边距" :label-width="80">
+                    <i-input  v-model="form.style.margin.bottom.val" @on-change="changeMargin('bottom')">
+                      <i-select slot="append" v-model="form.style.margin.bottom.unit" style="width: 70px" @on-change="changeMargin('bottom')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                  <i-form-item label="左边距" :label-width="80">
+                    <i-input  v-model="form.style.margin.left.val"@on-change="changeMargin('left')">
+                      <i-select slot="append" v-model="form.style.margin.left.unit" style="width: 70px"@on-change="changeMargin('left')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                </i-form-item>
+
+                <i-form-item label="内边距" v-if="isMatchKwd('内边距padding')">
+                  <i-form-item label="上边距" :label-width="80">
+                    <i-input  v-model="form.style.padding.top.val" @on-change="changePadding('top')">
+                      <i-select slot="append" v-model="form.style.padding.top.unit" style="width: 70px" @on-change="changePadding('top')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                  <i-form-item label="右边距" :label-width="80">
+                    <i-input  v-model="form.style.padding.right.val" @on-change="changePadding('right')">
+                      <i-select slot="append" v-model="form.style.padding.right.unit" style="width: 70px" @on-change="changePadding('right')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                  <i-form-item label="下边距" :label-width="80">
+                    <i-input  v-model="form.style.padding.bottom.val" @on-change="changePadding('bottom')">
+                      <i-select slot="append" v-model="form.style.padding.bottom.unit" style="width: 70px" @on-change="changePadding('bottom')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                  <i-form-item label="左边距" :label-width="80">
+                    <i-input  v-model="form.style.padding.left.val"@on-change="changePadding('left')">
+                      <i-select slot="append" v-model="form.style.padding.left.unit" style="width: 70px"@on-change="changePadding('left')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                </i-form-item>
+
+                <i-form-item label="边框" v-if="isMatchKwd('边框border')">
+                  <i-form-item label="上边框" :label-width="80">
+                    <i-input  v-model="form.style.borderTopWidth.val" @on-change="changeStyleWithUnit('borderTopWidth')">
+                      <i-select slot="append" v-model="form.style.borderTopWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderTopWidth')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                    <i-color-picker v-model="form.style.borderTopColor" @on-change="changeStyle('borderTopColor')"/>
+                    <i-select v-model="form.style.borderTopStyle" style="width: 130px" @on-change="changeStyle('borderTopStyle')">
+                      <i-option value="none">无边框</i-option>
+                      <i-option value="solid">实线</i-option>
+                      <i-option value="dashed">虚线</i-option>
+                      <i-option value="double">双线</i-option>
+                    </i-select>
+                  </i-form-item>
+                  <i-form-item label="右边框" :label-width="80">
+                    <i-input  v-model="form.style.borderRightWidth.val" @on-change="changeStyleWithUnit('borderRightWidth')">
+                      <i-select slot="append" v-model="form.style.borderRightWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderRightWidth')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                    <i-color-picker v-model="form.style.borderRightColor" @on-change="changeStyle('borderRightColor')"/>
+                    <i-select v-model="form.style.borderRightStyle" style="width: 130px" @on-change="changeStyle('borderRightStyle')">
+                      <i-option value="none">无边框</i-option>
+                      <i-option value="solid">实线</i-option>
+                      <i-option value="dashed">虚线</i-option>
+                      <i-option value="double">双线</i-option>
+                    </i-select>
+                  </i-form-item>
+                  <i-form-item label="下边框" :label-width="80">
+                    <i-input  v-model="form.style.borderBottomWidth.val" @on-change="changeStyleWithUnit('borderBottomWidth')">
+                      <i-select slot="append" v-model="form.style.borderBottomWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderBottomWidth')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                    <i-color-picker v-model="form.style.borderBottomColor" @on-change="changeStyle('borderBottomColor')"/>
+                    <i-select v-model="form.style.borderBottomStyle" style="width: 130px" @on-change="changeStyle('borderBottomStyle')">
+                      <i-option value="none">无边框</i-option>
+                      <i-option value="solid">实线</i-option>
+                      <i-option value="dashed">虚线</i-option>
+                      <i-option value="double">双线</i-option>
+                    </i-select>
+                  </i-form-item>
+                  <i-form-item label="左边框" :label-width="80">
+                    <i-input  v-model="form.style.borderLeftWidth.val" @on-change="changeStyleWithUnit('borderLeftWidth')">
+                      <i-select slot="append" v-model="form.style.borderLeftWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderLeftWidth')">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                    <i-color-picker v-model="form.style.borderLeftColor" @on-change="changeStyle('borderLeftColor')"/>
+                    <i-select v-model="form.style.borderLeftStyle" style="width: 130px" @on-change="changeStyle('borderLeftStyle')">
+                      <i-option value="none">无边框</i-option>
+                      <i-option value="solid">实线</i-option>
+                      <i-option value="dashed">虚线</i-option>
+                      <i-option value="double">双线</i-option>
+                    </i-select>
+                  </i-form-item>
+                </i-form-item>
+
+                <i-form-item label="颜色" v-if="isMatchKwd('颜色color')">
+                  <i-color-picker v-model="form.style.color" @on-change="changeStyle('color')"/>
+                </i-form-item>
+
+                <i-form-item label="背景颜色" v-if="isMatchKwd('背景颜色background-color')">
+                  <i-color-picker v-model="form.style.backgroundColor" @on-change="changeStyle('backgroundColor')"/>
+                </i-form-item>
+
+                <i-form-item label="背景渐进" v-if="isMatchKwd('背景渐进background-image')">
+                  <i-input v-model="form.style.backgroundImage.direction" @on-change="changeBackgroundImage"></i-input>
+                  <i-form-item label="背景颜色1" :label-width="80">
+                    <i-input  v-model="form.style.backgroundImage.color0.len.val" @on-change="changeBackgroundImage">
+                      <i-select slot="append" v-model="form.style.backgroundImage.color0.len.unit" style="width: 70px" @on-change="changeBackgroundImage">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                    <i-color-picker v-model="form.style.backgroundImage.color0.color" @on-change="changeBackgroundImage"/>
+                  </i-form-item>
+                  <i-form-item label="背景颜色2" :label-width="80">
+                    <i-input  v-model="form.style.backgroundImage.color1.len.val" @on-change="changeBackgroundImage">
+                      <i-select slot="append" v-model="form.style.backgroundImage.color1.len.unit" style="width: 70px" @on-change="changeBackgroundImage">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                    <i-color-picker v-model="form.style.backgroundImage.color1.color" @on-change="changeBackgroundImage"/>
+                  </i-form-item>
+                </i-form-item>
+
+                <i-form-item label="字体大小" v-if="isMatchKwd('字体大小font-size')">
+                  <i-input  v-model="form.style.fontSize.val" @on-change="changeStyleWithUnit('fontSize')">
+                    <i-select slot="append" v-model="form.style.fontSize.unit" style="width: 70px" @on-change="changeStyleWithUnit('fontSize')">
                       <i-option value="rem">rem</i-option>
                       <i-option value="px">px</i-option>
                       <i-option value="%">%</i-option>
                     </i-select>
                   </i-input>
                 </i-form-item>
-                <i-form-item label="左" v-if="isMatchKwd('定位position左left')">
-                  <i-input  v-model="form.style.left.val" @on-change="changeStyleWithUnit('left', 'initial')">
-                    <i-select slot="append" v-model="form.style.left.unit" style="width: 70px" @on-change="changeStyleWithUnit('left', 'initial')">
+
+                <i-form-item label="文字间距" v-if="isMatchKwd('文字间距letter-spacing')">
+                  <i-input  v-model="form.style.letterSpacing.val" @on-change="changeStyleWithUnit('letterSpacing')">
+                    <i-select slot="append" v-model="form.style.letterSpacing.unit" style="width: 70px" @on-change="changeStyleWithUnit('letterSpacing')">
                       <i-option value="rem">rem</i-option>
                       <i-option value="px">px</i-option>
                       <i-option value="%">%</i-option>
                     </i-select>
                   </i-input>
                 </i-form-item>
-              </template>
-            </i-form-item>
 
-            <i-form-item label="外边距" v-if="isMatchKwd('外边距margin')">
-              <i-form-item label="上边距" :label-width="80">
-                <i-input  v-model="form.style.margin.top.val" @on-change="changeMargin('top')">
-                  <i-select slot="append" v-model="form.style.margin.top.unit" style="width: 70px" @on-change="changeMargin('top')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-              <i-form-item label="右边距" :label-width="80">
-                <i-input  v-model="form.style.margin.right.val" @on-change="changeMargin('right')">
-                  <i-select slot="append" v-model="form.style.margin.right.unit" style="width: 70px" @on-change="changeMargin('right')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-              <i-form-item label="下边距" :label-width="80">
-                <i-input  v-model="form.style.margin.bottom.val" @on-change="changeMargin('bottom')">
-                  <i-select slot="append" v-model="form.style.margin.bottom.unit" style="width: 70px" @on-change="changeMargin('bottom')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-              <i-form-item label="左边距" :label-width="80">
-                <i-input  v-model="form.style.margin.left.val"@on-change="changeMargin('left')">
-                  <i-select slot="append" v-model="form.style.margin.left.unit" style="width: 70px"@on-change="changeMargin('left')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-            </i-form-item>
+                <i-form-item label="行高" v-if="isMatchKwd('行高line-height')">
+                  <i-input  v-model="form.style.lineHeight.val" @on-change="changeStyleWithUnit('lineHeight')">
+                    <i-select slot="append" v-model="form.style.lineHeight.unit" style="width: 70px" @on-change="changeStyleWithUnit('lineHeight')">
+                      <i-option value="rem">rem</i-option>
+                      <i-option value="px">px</i-option>
+                    </i-select>
+                  </i-input>
+                </i-form-item>
 
-            <i-form-item label="内边距" v-if="isMatchKwd('内边距padding')">
-              <i-form-item label="上边距" :label-width="80">
-                <i-input  v-model="form.style.padding.top.val" @on-change="changePadding('top')">
-                  <i-select slot="append" v-model="form.style.padding.top.unit" style="width: 70px" @on-change="changePadding('top')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-              <i-form-item label="右边距" :label-width="80">
-                <i-input  v-model="form.style.padding.right.val" @on-change="changePadding('right')">
-                  <i-select slot="append" v-model="form.style.padding.right.unit" style="width: 70px" @on-change="changePadding('right')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-              <i-form-item label="下边距" :label-width="80">
-                <i-input  v-model="form.style.padding.bottom.val" @on-change="changePadding('bottom')">
-                  <i-select slot="append" v-model="form.style.padding.bottom.unit" style="width: 70px" @on-change="changePadding('bottom')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-              <i-form-item label="左边距" :label-width="80">
-                <i-input  v-model="form.style.padding.left.val"@on-change="changePadding('left')">
-                  <i-select slot="append" v-model="form.style.padding.left.unit" style="width: 70px"@on-change="changePadding('left')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-            </i-form-item>
+                <i-form-item label="圆角" v-if="isMatchKwd('圆角border-radius')">
+                  <i-input  v-model="form.style.borderRadius.val" @on-change="changeStyleWithUnit('borderRadius')">
+                    <i-select slot="append" v-model="form.style.borderRadius.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderRadius')">
+                      <i-option value="rem">rem</i-option>
+                      <i-option value="px">px</i-option>
+                      <i-option value="%">%</i-option>
+                    </i-select>
+                  </i-input>
+                </i-form-item>
 
-            <i-form-item label="边框" v-if="isMatchKwd('边框border')">
-              <i-form-item label="上边框" :label-width="80">
-                <i-input  v-model="form.style.borderTopWidth.val" @on-change="changeStyleWithUnit('borderTopWidth')">
-                  <i-select slot="append" v-model="form.style.borderTopWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderTopWidth')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
+                <i-form-item label="水平对齐" v-if="isMatchKwd('水平对齐text-align')">
+                  <i-select v-model="form.style.textAlign" style="width: 200px" @on-change="changeStyle('textAlign')">
+                    <i-option value="left">居左</i-option>
+                    <i-option value="center">居中</i-option>
+                    <i-option value="right">居右</i-option>
                   </i-select>
-                </i-input>
-                <i-color-picker v-model="form.style.borderTopColor" @on-change="changeStyle('borderTopColor')"/>
-                <i-select v-model="form.style.borderTopStyle" style="width: 130px" @on-change="changeStyle('borderTopStyle')">
-                  <i-option value="none">无边框</i-option>
-                  <i-option value="solid">实线</i-option>
-                  <i-option value="dashed">虚线</i-option>
-                  <i-option value="double">双线</i-option>
-                </i-select>
-              </i-form-item>
-              <i-form-item label="右边框" :label-width="80">
-                <i-input  v-model="form.style.borderRightWidth.val" @on-change="changeStyleWithUnit('borderRightWidth')">
-                  <i-select slot="append" v-model="form.style.borderRightWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderRightWidth')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-                <i-color-picker v-model="form.style.borderRightColor" @on-change="changeStyle('borderRightColor')"/>
-                <i-select v-model="form.style.borderRightStyle" style="width: 130px" @on-change="changeStyle('borderRightStyle')">
-                  <i-option value="none">无边框</i-option>
-                  <i-option value="solid">实线</i-option>
-                  <i-option value="dashed">虚线</i-option>
-                  <i-option value="double">双线</i-option>
-                </i-select>
-              </i-form-item>
-              <i-form-item label="下边框" :label-width="80">
-                <i-input  v-model="form.style.borderBottomWidth.val" @on-change="changeStyleWithUnit('borderBottomWidth')">
-                  <i-select slot="append" v-model="form.style.borderBottomWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderBottomWidth')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-                <i-color-picker v-model="form.style.borderBottomColor" @on-change="changeStyle('borderBottomColor')"/>
-                <i-select v-model="form.style.borderBottomStyle" style="width: 130px" @on-change="changeStyle('borderBottomStyle')">
-                  <i-option value="none">无边框</i-option>
-                  <i-option value="solid">实线</i-option>
-                  <i-option value="dashed">虚线</i-option>
-                  <i-option value="double">双线</i-option>
-                </i-select>
-              </i-form-item>
-              <i-form-item label="左边框" :label-width="80">
-                <i-input  v-model="form.style.borderLeftWidth.val" @on-change="changeStyleWithUnit('borderLeftWidth')">
-                  <i-select slot="append" v-model="form.style.borderLeftWidth.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderLeftWidth')">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-                <i-color-picker v-model="form.style.borderLeftColor" @on-change="changeStyle('borderLeftColor')"/>
-                <i-select v-model="form.style.borderLeftStyle" style="width: 130px" @on-change="changeStyle('borderLeftStyle')">
-                  <i-option value="none">无边框</i-option>
-                  <i-option value="solid">实线</i-option>
-                  <i-option value="dashed">虚线</i-option>
-                  <i-option value="double">双线</i-option>
-                </i-select>
-              </i-form-item>
-            </i-form-item>
+                </i-form-item>
 
-            <i-form-item label="颜色" v-if="isMatchKwd('颜色color')">
-              <i-color-picker v-model="form.style.color" @on-change="changeStyle('color')"/>
-            </i-form-item>
-
-            <i-form-item label="背景颜色" v-if="isMatchKwd('背景颜色background-color')">
-              <i-color-picker v-model="form.style.backgroundColor" @on-change="changeStyle('backgroundColor')"/>
-            </i-form-item>
-
-            <i-form-item label="背景渐进" v-if="isMatchKwd('背景渐进background-image')">
-              <i-input v-model="form.style.backgroundImage.direction" @on-change="changeBackgroundImage"></i-input>
-              <i-form-item label="背景颜色1" :label-width="80">
-                <i-input  v-model="form.style.backgroundImage.color0.len.val" @on-change="changeBackgroundImage">
-                  <i-select slot="append" v-model="form.style.backgroundImage.color0.len.unit" style="width: 70px" @on-change="changeBackgroundImage">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-                <i-color-picker v-model="form.style.backgroundImage.color0.color" @on-change="changeBackgroundImage"/>
-              </i-form-item>
-              <i-form-item label="背景颜色2" :label-width="80">
-                <i-input  v-model="form.style.backgroundImage.color1.len.val" @on-change="changeBackgroundImage">
-                  <i-select slot="append" v-model="form.style.backgroundImage.color1.len.unit" style="width: 70px" @on-change="changeBackgroundImage">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-                <i-color-picker v-model="form.style.backgroundImage.color1.color" @on-change="changeBackgroundImage"/>
-              </i-form-item>
-            </i-form-item>
-
-            <i-form-item label="字体大小" v-if="isMatchKwd('字体大小font-size')">
-              <i-input  v-model="form.style.fontSize.val" @on-change="changeStyleWithUnit('fontSize')">
-                <i-select slot="append" v-model="form.style.fontSize.unit" style="width: 70px" @on-change="changeStyleWithUnit('fontSize')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-
-            <i-form-item label="文字间距" v-if="isMatchKwd('文字间距letter-spacing')">
-              <i-input  v-model="form.style.letterSpacing.val" @on-change="changeStyleWithUnit('letterSpacing')">
-                <i-select slot="append" v-model="form.style.letterSpacing.unit" style="width: 70px" @on-change="changeStyleWithUnit('letterSpacing')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-
-            <i-form-item label="行高" v-if="isMatchKwd('行高line-height')">
-              <i-input  v-model="form.style.lineHeight.val" @on-change="changeStyleWithUnit('lineHeight')">
-                <i-select slot="append" v-model="form.style.lineHeight.unit" style="width: 70px" @on-change="changeStyleWithUnit('lineHeight')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-
-            <i-form-item label="圆角" v-if="isMatchKwd('圆角border-radius')">
-              <i-input  v-model="form.style.borderRadius.val" @on-change="changeStyleWithUnit('borderRadius')">
-                <i-select slot="append" v-model="form.style.borderRadius.unit" style="width: 70px" @on-change="changeStyleWithUnit('borderRadius')">
-                  <i-option value="rem">rem</i-option>
-                  <i-option value="px">px</i-option>
-                  <i-option value="%">%</i-option>
-                </i-select>
-              </i-input>
-            </i-form-item>
-
-            <i-form-item label="水平对齐" v-if="isMatchKwd('水平对齐text-align')">
-              <i-select v-model="form.style.textAlign" style="width: 200px" @on-change="changeStyle('textAlign')">
-                <i-option value="left">居左</i-option>
-                <i-option value="center">居中</i-option>
-                <i-option value="right">居右</i-option>
-              </i-select>
-            </i-form-item>
-
-            <i-form-item label="是否加粗" v-if="isMatchKwd('是否加粗font-weight')">
-              <i-checkbox v-model="form.style.fontWeight" true-value="bold" false-value="normal" @on-change="changeStyle('fontWeight')"></i-checkbox>
-            </i-form-item>
+                <i-form-item label="是否加粗" v-if="isMatchKwd('是否加粗font-weight')">
+                  <i-checkbox v-model="form.style.fontWeight" true-value="bold" false-value="normal" @on-change="changeStyle('fontWeight')"></i-checkbox>
+                </i-form-item>
 
 
-            <i-form-item label="阴影" v-if="isMatchKwd('阴影box-shadow')">
-              <i-form-item label="水平位置" :label-width="80">
-                <i-input  v-model="form.style.boxShadow.hShadow.val" @on-change="changeBoxShadow()">
-                  <i-select slot="append" v-model="form.style.boxShadow.hShadow.unit" style="width: 70px" @on-change="changeBoxShadow()">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-              <i-form-item label="垂直位置">
-                <i-input  v-model="form.style.boxShadow.vShadow.val" @on-change="changeBoxShadow()">
-                  <i-select slot="append" v-model="form.style.boxShadow.vShadow.unit" style="width: 70px" @on-change="changeBoxShadow()">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-              <i-form-item label="模糊距离">
-                <i-input  v-model="form.style.boxShadow.blur.val" @on-change="changeBoxShadow()">
-                  <i-select slot="append" v-model="form.style.boxShadow.blur.unit" style="width: 70px" @on-change="changeBoxShadow()">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
-              <i-form-item label="阴影尺寸">
-                <i-input v-model="form.style.boxShadow.spread.val" @on-change="changeBoxShadow()">
-                  <i-select slot="append" v-model="form.style.boxShadow.spread.unit" style="width: 70px" @on-change="changeBoxShadow()">
-                    <i-option value="rem">rem</i-option>
-                    <i-option value="px">px</i-option>
-                    <i-option value="%">%</i-option>
-                  </i-select>
-                </i-input>
-              </i-form-item>
+                <i-form-item label="阴影" v-if="isMatchKwd('阴影box-shadow')">
+                  <i-form-item label="水平位置" :label-width="80">
+                    <i-input  v-model="form.style.boxShadow.hShadow.val" @on-change="changeBoxShadow()">
+                      <i-select slot="append" v-model="form.style.boxShadow.hShadow.unit" style="width: 70px" @on-change="changeBoxShadow()">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                  <i-form-item label="垂直位置">
+                    <i-input  v-model="form.style.boxShadow.vShadow.val" @on-change="changeBoxShadow()">
+                      <i-select slot="append" v-model="form.style.boxShadow.vShadow.unit" style="width: 70px" @on-change="changeBoxShadow()">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                  <i-form-item label="模糊距离">
+                    <i-input  v-model="form.style.boxShadow.blur.val" @on-change="changeBoxShadow()">
+                      <i-select slot="append" v-model="form.style.boxShadow.blur.unit" style="width: 70px" @on-change="changeBoxShadow()">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
+                  <i-form-item label="阴影尺寸">
+                    <i-input v-model="form.style.boxShadow.spread.val" @on-change="changeBoxShadow()">
+                      <i-select slot="append" v-model="form.style.boxShadow.spread.unit" style="width: 70px" @on-change="changeBoxShadow()">
+                        <i-option value="rem">rem</i-option>
+                        <i-option value="px">px</i-option>
+                        <i-option value="%">%</i-option>
+                      </i-select>
+                    </i-input>
+                  </i-form-item>
 
-              <i-form-item label="阴影颜色">
-                <i-color-picker v-model="form.style.boxShadow.color" @on-change="changeBoxShadow()"/>
-              </i-form-item>
-            </i-form-item>
+                  <i-form-item label="阴影颜色">
+                    <i-color-picker v-model="form.style.boxShadow.color" @on-change="changeBoxShadow()"/>
+                  </i-form-item>
+                </i-form-item>
 
-            <i-form-item label="拖拽" v-if="isMatchKwd('拖拽move')">
-              <i-form-item label="是否开启" :label-width="80">
-                <i-checkbox v-model="form.class.draggable" @on-change="changeClass('draggable')">开启</i-checkbox>
-              </i-form-item>
-              <i-form-item label="目标区域" :label-width="80">
-                <i-checkbox v-model="form.class.dropzone" @on-change="changeClass('dropzone')">开启</i-checkbox>
-              </i-form-item>
-            </i-form-item>
-          </i-form>
-        </div>
-
+                <i-form-item label="拖拽" v-if="isMatchKwd('拖拽move')">
+                  <i-form-item label="是否开启" :label-width="80">
+                    <i-checkbox v-model="form.class.draggable" @on-change="changeClass('draggable')">开启</i-checkbox>
+                  </i-form-item>
+                  <i-form-item label="目标区域" :label-width="80">
+                    <i-checkbox v-model="form.class.dropzone" @on-change="changeClass('dropzone')">开启</i-checkbox>
+                  </i-form-item>
+                </i-form-item>
+                <i-collapse>
+                  <i-panel name="1">
+                    史蒂夫·乔布斯
+                    <p slot="content">史蒂夫·乔布斯（Steve Jobs），1955年2月24日生于美国加利福尼亚州旧金山，美国发明家、企业家、美国苹果公司联合创办人。</p>
+                  </i-panel>
+                  <i-panel name="2">
+                    斯蒂夫·盖瑞·沃兹尼亚克
+                    <p slot="content">斯蒂夫·盖瑞·沃兹尼亚克（Stephen Gary Wozniak），美国电脑工程师，曾与史蒂夫·乔布斯合伙创立苹果电脑（今之苹果公司）。斯蒂夫·盖瑞·沃兹尼亚克曾就读于美国科罗拉多大学，后转学入美国著名高等学府加州大学伯克利分校（UC Berkeley）并获得电机工程及计算机（EECS）本科学位（1987年）。</p>
+                  </i-panel>
+                </i-collapse>
+              </i-form>
+            </div>
+          </i-tab-pane>
+          <i-tab-pane label="动画"></i-tab-pane>
+          <i-tab-pane label="事件"></i-tab-pane>
+        </i-tabs>
       </div>
       <div class="editable-panel panel-tree">
         <div class="editable-title">
