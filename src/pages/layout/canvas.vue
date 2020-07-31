@@ -6,6 +6,7 @@
           <div class="editable-title">
             屏幕显示
             <div class="editable-title-opt">
+              <span class="editable-title-opt-item" @click="showInsertNodePopup(tree)">新增</span>
               <span class="editable-title-opt-item">更多分辨率</span>
             </div>
           </div>
@@ -451,7 +452,7 @@
                     <i-checkbox v-model="form.class.dropzone" @on-change="changeClass('dropzone')">开启</i-checkbox>
                   </i-form-item>
                 </i-form-item>
-                <i-collapse>
+                <i-collapse >
                   <i-panel name="1">
                     史蒂夫·乔布斯
                     <p slot="content">史蒂夫·乔布斯（Steve Jobs），1955年2月24日生于美国加利福尼亚州旧金山，美国发明家、企业家、美国苹果公司联合创办人。</p>
@@ -478,8 +479,34 @@
 
       </div>
     </div>
-    <i-modal class="insert-node-popup" v-model="insertNodePopup.isShow" title="新增节点" @on-ok="submitInsertNodePopup">
+    <i-modal class="insert-node-popup" v-model="insertNodePopup.isShow" :width="1000" :closable="false" @on-ok="submitInsertNodePopup">
+      <div class="insert-panel">
+        <div class="insert-menu">
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'custom' }" @click="changeInsertPopupMenu('custom')">自定义</div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'recently' }" @click="changeInsertPopupMenu('recently')">最近</div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'words' }" @click="changeInsertPopupMenu('words')">文字</div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'image' }" @click="changeInsertPopupMenu('image')">图片</div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'button' }" @click="changeInsertPopupMenu('button')">按钮</div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'icon' }" @click="changeInsertPopupMenu('icon')">图标</div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'panel' }" @click="changeInsertPopupMenu('panel')">面板</div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'layout' }" @click="changeInsertPopupMenu('layout')">布局</div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'list' }" @click="changeInsertPopupMenu('list')">列表</div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'table' }" @click="changeInsertPopupMenu('table')">表格</div>
+        </div>
+        <div class="insert-content">
+          <div @click="selectedInsertNode('words', 'title')">我是标题</div>
+          <div @click="selectedInsertNode('words', 'content')">我是内容</div>
+        </div>
+      </div>
+
       <i-form v-model="insertNodePopup.form" :label-width="80">
+        <i-form-item label="模板选择">
+          <i-radio-group type="button">
+            <i-radio label="default">快捷选择</i-radio>
+            <i-radio label="custom">自定义</i-radio>
+          </i-radio-group>
+        </i-form-item>
+
         <i-form-item label="节点类型">
           <i-radio-group v-model="insertNodePopup.form.type">
             <i-radio label="div">块级元素</i-radio>
@@ -492,7 +519,6 @@
           <i-upload ref="nodeUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*" :on-success="uploadNodeImgSuccess" data-type="node">
             <i-button icon="ios-cloud-upload-outline">上传图片</i-button>
           </i-upload>
-
         </i-form-item>
         <i-form-item label="插入位置">
           <i-radio-group v-model="insertNodePopup.form.pos">
@@ -611,6 +637,7 @@
         insertNodePopup: {
           isShow: false,
           formVNode: undefined,
+          curMenu: 'custom',
           form: {
             pos: 'child',
             type: 'div',
@@ -821,7 +848,13 @@
       });
     },
     methods: {
-      isMatchKwd: function (name) {
+      selectedInsertNode (type, id) {
+        console.log(type);
+      },
+      changeInsertPopupMenu (type) {
+        this.insertNodePopup.curMenu = type;
+      },
+      isMatchKwd (name) {
         if (this.form.kwd === '') {
           return true;
         }
@@ -844,6 +877,7 @@
         });
       },
       showInsertNodePopup (formVNode) {
+        this.insertNodePopup.curMenu = 'custom';
         this.insertNodePopup.isShow = true;
         this.insertNodePopup.formVNode = formVNode;
         this.insertNodePopup.form.pos = 'child';
@@ -1253,7 +1287,7 @@
   }
   .editable-panel .editable-content {
     padding: 1rem;
-    height: calc(100% - 53px);
+    height: calc(100% - 14px);
     overflow: auto;
   }
   .editable-panel .editable-content::-webkit-scrollbar {
@@ -1293,6 +1327,38 @@
     width: 200px;
   }
 
+  .insert-node-popup .insert-panel {
+    display: flex;
+  }
+
+  .insert-node-popup .insert-menu {
+    width: 100px;
+    background-color: #3899ec;
+    color: #fff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+  .insert-node-popup .insert-menu-item {
+    padding: 7px 10px;
+    cursor: pointer;
+  }
+  .insert-node-popup .insert-menu-item:hover, .insert-node-popup .insert-menu-item.selected {
+    background: #2b73b1;
+  }
+  .insert-node-popup .insert-menu-item.selected {
+    cursor: initial;
+  }
+  .insert-node-popup .insert-content {
+    border: solid 1px #3899ec;
+    flex: 1;
+    padding: 5px 10px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+
+
   .panel-tree .editable-content {
     padding-left: 0;
   }
@@ -1323,6 +1389,7 @@
     border: 1px solid #59c7f9;
     border-radius: 10px;
   }
+
 </style>
 <style>
   .page-canvas .ivu-form-item .ivu-form-item .ivu-form-item-content {
@@ -1336,5 +1403,17 @@
   }
   .insert-node-popup .ivu-form-item {
     margin-bottom: 0;
+  }
+
+  .panel-setting .ivu-tabs {
+    height: calc(100% - 38px);
+  }
+
+  .panel-setting .ivu-tabs-content {
+    height: inherit;
+  }
+  .panel-setting .ivu-collapse {
+    margin-left: -16px;
+    margin-right: -16px;
   }
 </style>
