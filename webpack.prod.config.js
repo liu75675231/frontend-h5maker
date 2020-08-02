@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     index: './src/index.js',
     show: './src/show.js',
+    preview: './src/preview.js',
   },
   mode: 'production',
   module: {
@@ -49,6 +50,12 @@ module.exports = {
       chunks: ['index'],
       template: 'index.html',
       filename:  `index.html`,
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      chunks: ['preview'],
+      template: 'preview.html',
+      filename:  `preview.html`,
     }),
     new HtmlWebpackPlugin({
       inject: true,

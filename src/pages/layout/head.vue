@@ -1,7 +1,7 @@
 <template>
   <div class="page-head">
     <div class="page-title">
-      <i-input placeholder="请输入H5的标题" style="width: 600px" />
+      <i-input placeholder="请输入H5的标题" v-model="title" style="width: 600px" />
     </div>
     <div class="page-opt">
       <i-button type="primary" @click="copyToClipboard">源码复制到剪贴板</i-button>
@@ -19,6 +19,11 @@
     props: {
       id: String,
     },
+    data: function () {
+      return {
+        title: '',
+      };
+    },
     mounted () {
       this.$root.$on("resTreeNodeData", (data) => {
         const str = JSON.stringify(data, (key, val) => {
@@ -32,6 +37,7 @@
           method: 'post',
           data: {
             id: this.id,
+            title: this.title,
             data: str,
           },
         }).then((res) => {
