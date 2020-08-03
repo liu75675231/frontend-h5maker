@@ -664,28 +664,42 @@
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'table' }"
                @click="changeInsertPopupMenu('table')">表格
           </div>
-          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'table' }"
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'music' }"
                @click="changeInsertPopupMenu('music')">音乐
           </div>
         </div>
         <div class="insert-content">
           <template v-if="insertNodePopup.curMenu == 'words'">
-            <div @click="selectedInsertNode('words', { fontWeight: 'bold' })">我是标题-块级</div>
-            <div @click="selectedInsertNode('words', { display: 'inline', fontWeight: 'bold' })">我是标题-内联
+            <div style="font-weight: bold;" @click="selectedInsertNode('words', { fontWeight: 'bold' }, { 'children': ['我是标题-块级'] })">我是标题-块级</div>
+            <div style="font-weight: bold;" @click="selectedInsertNode('words', { display: 'inline', fontWeight: 'bold' }, { 'children': ['我是标题-内联'] })">我是标题-内联
             </div>
-            <div @click="selectedInsertNode('words', {})">我是内容-块级</div>
-            <div @click="selectedInsertNode('words', { display: 'inline' })">我是内容-内联</div>
+            <div @click="selectedInsertNode('words', {}, { 'children': ['我是内容-块级'] })">我是内容-块级</div>
+            <div @click="selectedInsertNode('words', { display: 'inline' }, { 'children': ['我是标题-内联'] })">我是内容-内联</div>
           </template>
-          <template v-if="insertNodePopup.curMenu == 'image'">
+          <template v-if="insertNodePopup.curMenu === 'image'">
             <i-upload ref="nodeUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*"
                       :on-success="uploadNodeImgSuccess" data-type="node">
               <i-button icon="ios-cloud-upload-outline">上传图片</i-button>
             </i-upload>
           </template>
+          <template v-if="insertNodePopup.curMenu === 'list'">
+            <div class="content-item canclick" @click="selectDomStructure('list', $event)">
+              <div style="position: relative;border: solid 1px #000;border-radius: .8rem;width: .6rem;display: inline-block;height: .6rem;background-color: transparent;flex-shrink: 0;margin-right: .5rem;"></div>
+              列表前面有一个圆圈</div>
+          </template>
+          <template v-if="insertNodePopup.curMenu === 'panel'">
+            <div @click="selectedInsertNode('panel', {}, {})">
+              空白面板
+            </div>
+            <div class="content-item" style="width: 100%;background: #fff;border-radius: 1rem;box-shadow: 0rem 0.5rem 0.5rem 0.5px #7C7CF5;padding: .5rem 1rem;min-height: 5rem;" @click="selectDomStructure('panel', $event)">
+              <div style="background-color: #5B79FB; font-size: 2rem;padding: .8rem 1.5rem .8rem 3.5rem;color: #fff;margin-left: -1.5rem;letter-spacing: .3rem;border-top-right-radius: 3rem;border-bottom-right-radius: 3rem;display: inline-block;position: relative;font-weight: bold;">
+                <div style="position: absolute;left: 0;bottom: -1.5rem;width: 0;height: 0;border-top: 1.5rem solid #2651C9;border-left: 1.5rem solid transparent"></div>
+                面板标题
+              </div>
+            </div>
+          </template>
         </div>
       </div>
-
-
     </i-modal>
   </div>
 
@@ -1003,16 +1017,84 @@
         this.previewWindowHandler = window.open('/preview.html', '_blank');
         this.previewWindowHandler.vnode = this.tree;
       },
+      selectDomStructure (type, e) {
+        let $root = $(e.target);
+        if (!$root.hasClass("content-item")) {
+          $root = $root.closest(".content-item");
+        }
+        const target = $root.get(0);
+
+        const nodes = target.childNodes;
+        const data = {
+          children: [],
+          style: this.domStyleToVNodeStyleObj(target.getAttribute('style')),
+        };
+
+        for (let i = 0; i < nodes.length; i++) {
+          if (nodes[i].nodeType == 3) {
+            data.children.push(nodes[i].nodeValue);
+          } else if (nodes[i].nodeType == 1) {
+            const children = [];
+            console.log('abcdef');
+            if (nodes[i].childNodes.length > 0) {
+              for (let j = 0; j < nodes[i].childNodes.length; j++) {
+                const curNode = nodes[i].childNodes[j];
+                if (curNode.nodeType == 3) {
+                  children.push(curNode.nodeValue);
+                } else {
+                  children.push({
+                    style: this.domStyleToVNodeStyleObj(curNode.getAttribute('style')),
+                  });
+                }
+              }
+            }
+
+            data.children.push({
+              style: this.domStyleToVNodeStyleObj(nodes[i].getAttribute('style')),
+              children: children,
+            });
+          }
+        }
+
+        this.submitInsertNodePopup(data);
+      },
+      domStyleToVNodeStyleObj (styleStr) {
+        const styleObj = {};
+        const styleArr = styleStr.split(';');
+
+        styleArr.forEach((style) => {
+          const stylePair = style.split(':');
+          if (typeof stylePair[1] == 'string') {
+            stylePair[1] = stylePair[1].trim();
+          }
+          const key = this.strToCamel(stylePair[0]).trim();
+          if (key === 'border') {
+            const valArr = stylePair[1].split(' ');
+            styleObj.borderTopStyle = styleObj.borderLeftStyle = styleObj.borderBottomStyle = styleObj.borderRightStyle = valArr[1];
+            styleObj.borderTopWidth = styleObj.borderLeftWidth = styleObj.borderBottomWidth = styleObj.borderRightWidth = valArr[0];
+            styleObj.borderTopColor = styleObj.borderLeftColor = styleObj.borderBottomColor = styleObj.borderRightColor = valArr[2] + valArr[3] + valArr[4];
+          } else {
+            styleObj[key] = stylePair[1];
+          }
+        });
+        return styleObj;
+      },
+      strToCamel (str) {
+        return str.replace(/([^-])(?:-+([^-]))/g, (_,p1, p2)=>p1+p2.toUpperCase());
+      },
       selectedInsertNode(type, style, attr) {
         const data = {
           style,
+          children: [],
         };
 
         if (type == 'image') {
           this.insertNodePopup.form.type = 'img';
           data.src = attr.src;
         }
-
+        if (attr.children && attr.children.length > 0) {
+          data.children = attr.children;
+        }
         this.submitInsertNodePopup(data);
       },
       changeInsertPopupMenu(type) {
@@ -1023,7 +1105,6 @@
           data = {};
         }
 
-        console.log('sdf');
         if (this.insertNodePopup.form.type === 'img') {
           data.src = data.src;
         }
@@ -1051,7 +1132,7 @@
         return {
           handleValWithUnit(formData, formKey, data, dataKey) {
             if (typeof data[dataKey] === 'string' && data[dataKey] !== '') {
-              formData[formKey].val = data[dataKey].match(/^[0-9.]+/)[0];
+              formData[formKey].val = data[dataKey].match(/^[-0-9.]+/)[0];
               formData[formKey].unit = data[dataKey].match(/\D+$/)[0];
             } else {
               formData[formKey].val = data[dataKey];
@@ -1099,11 +1180,18 @@
             if (key === 'boxShadow') {
               if (curNode.style.boxShadow) {
                 const dataArr = curNode.style.boxShadow.split(" ")
-                handler.handleValWithUnit(this.form.style[key], 'hShadow', {data: dataArr[0]}, 'data')
-                handler.handleValWithUnit(this.form.style[key], 'vShadow', {data: dataArr[1]}, 'data')
-                handler.handleValWithUnit(this.form.style[key], 'blur', {data: dataArr[2]}, 'data')
-                handler.handleValWithUnit(this.form.style[key], 'spread', {data: dataArr[3]}, 'data')
-                this.form.style[key].color = dataArr[4];
+                let offset = dataArr.length - 4;
+
+                handler.handleValWithUnit(this.form.style[key], 'hShadow', {data: dataArr[offset]}, 'data')
+                handler.handleValWithUnit(this.form.style[key], 'vShadow', {data: dataArr[offset + 1]}, 'data')
+                handler.handleValWithUnit(this.form.style[key], 'blur', {data: dataArr[offset + 2]}, 'data')
+                handler.handleValWithUnit(this.form.style[key], 'spread', {data: dataArr[offset + 3]}, 'data')
+                if (dataArr.length === 7) {
+                  this.form.style[key].color = dataArr[0] + dataArr[1] + dataArr[2];
+                } else {
+                  this.form.style[key].color = dataArr[4];
+                }
+
               } else {
                 this.form.style[key].hShadow.val = null;
                 this.form.style[key].vShadow.val = null;
@@ -1313,6 +1401,9 @@
             style[key] = data.style[key];
           });
         }
+
+
+
         const curNode = {
           tag: tagName,
           parentVNode: parentVNode,
@@ -1329,10 +1420,20 @@
             },
           },
           attrs: {},
-          children: parentVNode ? [
-            '请在这里输入内容'
-          ] : [],
+          children: [],
         }
+
+        if (data && data.children && data.children.length > 0) {
+          data.children.forEach((elem) => {
+            if (typeof elem === 'string') {
+              curNode.children.push(elem);
+            } else {
+              console.log(elem);
+              curNode.children.push(this.generateVNodeData(curNode, 'div', elem));
+            }
+          });
+        }
+
         if (tagName === 'img') {
           curNode.attrs = {
             src: data.src,
@@ -1579,6 +1680,25 @@
     border-radius: 10px;
   }
 
+
+  .list-with-circle {
+
+  }
+  .list-with-circle:before {
+    content: '';
+    position: relative;
+    border: solid .3rem #5B79FB;
+    border-radius: .8rem;
+    width: .6rem;
+    display: inline-block;
+    height: .6rem;
+    background-color: transparent;
+    flex-shrink: 0;
+    margin-right: .5rem;
+  }
+  .canclick {
+    cursor: pointer;
+  }
 </style>
 <style>
   .page-canvas .ivu-form-item .ivu-form-item .ivu-form-item-content {
@@ -1613,4 +1733,5 @@
     margin-left: -16px;
     margin-right: -16px;
   }
+
 </style>
