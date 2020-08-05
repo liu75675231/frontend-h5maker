@@ -7,32 +7,15 @@
           <div class="editable-title">
             屏幕显示
             <div class="editable-title-opt">
-              <span v-if="false" class="editable-title-opt-item" @click="preferences.isShowModal = true">首选项</span>
+              <span class="editable-title-opt-item" @click="preferences.isShowModal = true">首选项</span>
               <span class="editable-title-opt-item" @click="showInsertNodePopup(tree)">新增</span>
               <span class="editable-title-opt-item" @click="transToAnotherPage">更多分辨率</span>
             </div>
           </div>
           <div id="renderedHtml">
-            <div class="selected-area" v-show="selectedRect.isShow"
-                 :style="{ top: selectedRect.top + 'px', left: selectedRect.left + 'px' }">
-              <div class="selected-line"
-                   :style="{ top: 0, left: 0, width: selectedRect.width + 'px'}"></div>
-              <div class="selected-point"
-                   :style="{ top: '-4px', left: (selectedRect.width / 2 - 5) + 'px'}"></div>
-              <div class="selected-line"
-                   :style="{ top: 0, left: 0, height: selectedRect.height + 'px'}"></div>
-              <div class="selected-point"
-                   :style="{ top: (selectedRect.height / 2 - 5) + 'px', left: '-4px'}"></div>
-              <div class="selected-line"
-                   :style="{ top: selectedRect.height + 'px', left: 0, width: selectedRect.width + 'px'}"></div>
-              <div class="selected-point"
-                   :style="{ top: (selectedRect.height - 4) + 'px', left: (selectedRect.width / 2 - 5) + 'px'}"></div>
-              <div class="selected-line"
-                   :style="{ top: 0, left: selectedRect.width + 'px', height: selectedRect.height + 'px'}"></div>
-              <div class="selected-point"
-                   :style="{ top: (selectedRect.height / 2 - 4) + 'px', left: (selectedRect.width - 4) + 'px'}"></div>
-            </div>
-            <rendered-html v-if="isShow" :vnode="tree" :previewWindowHandler="previewWindowHandler"></rendered-html>
+
+            <iframe class="iframepreview" src="/iframepreview.html" @load="initIframePreview"></iframe>
+<!--            <rendered-html v-if="isShow" :vnode="tree" :previewWindowHandler="previewWindowHandler"></rendered-html>-->
           </div>
         </div>
       </div>
@@ -66,25 +49,28 @@
 
                 <i-form-item label="宽度">
                   <i-input-number v-model="form.style.width.val"
-                           @on-change="changeStyleWithUnit('width', null)">
+                           @on-change="changeStyleWithUnit('width')">
                   </i-input-number>
                   <i-select v-model="form.style.width.unit" style="width: 70px"
-                            @on-change="changeStyleWithUnit('width', null)">
+                            @on-change="changeStyleWithUnit('width')">
                     <i-option value="rem">rem</i-option>
                     <i-option value="px">px</i-option>
                     <i-option value="%">%</i-option>
+                    <i-option value="vw">vw</i-option>
                   </i-select>
                 </i-form-item>
 
                 <i-form-item label="高度">
                   <i-input-number v-model="form.style.height.val"
-                           @on-change="changeStyleWithUnit('height', null)">
+                           @on-change="changeStyleWithUnit('height')">
                   </i-input-number>
                   <i-select v-model="form.style.height.unit" style="width: 70px"
-                            @on-change="changeStyleWithUnit('height', null)">
+                            @on-change="changeStyleWithUnit('height')">
                     <i-option value="rem">rem</i-option>
                     <i-option value="px">px</i-option>
                     <i-option value="%">%</i-option>
+                    <i-option value="vw">vw</i-option>
+                    <i-option value="vh">vh</i-option>
                   </i-select>
                 </i-form-item>
 
@@ -114,14 +100,15 @@
 
                   <i-form-item label="基准值">
                     <i-input-number v-model="form.style.flexBasis.val"
-                             @on-change="changeStyleWithUnit('flexBasis', null)">
+                             @on-change="changeStyleWithUnit('flexBasis')">
                     </i-input-number>
                     <i-select v-model="form.style.flexBasis.unit"
                               style="width: 70px"
-                              @on-change="changeStyleWithUnit('flexBasis', null)">
+                              @on-change="changeStyleWithUnit('flexBasis')">
                       <i-option value="rem">rem</i-option>
                       <i-option value="px">px</i-option>
                       <i-option value="%">%</i-option>
+                      <i-option value="vw">vw</i-option>
                     </i-select>
                   </i-form-item>
 
@@ -165,50 +152,54 @@
                   <template v-if="form.style.position !== 'static'">
                     <i-form-item label="上" >
                       <i-input-number v-model="form.style.top.val"
-                               @on-change="changeStyleWithUnit('top', 'initial')">
+                               @on-change="changeStyleWithUnit('top')">
                       </i-input-number>
                       <i-select v-model="form.style.top.unit"
                                 style="width: 60px"
-                                @on-change="changeStyleWithUnit('top', 'initial')">
+                                @on-change="changeStyleWithUnit('top')">
                         <i-option value="rem">rem</i-option>
                         <i-option value="px">px</i-option>
                         <i-option value="%">%</i-option>
+                        <i-option value="vw">vw</i-option>
                       </i-select>
                     </i-form-item>
                     <i-form-item label="右">
                       <i-input-number v-model="form.style.right.val"
-                               @on-change="changeStyleWithUnit('right', 'initial')">
+                               @on-change="changeStyleWithUnit('right')">
                       </i-input-number>
                       <i-select v-model="form.style.right.unit"
                                 style="width: 60px"
-                                @on-change="changeStyleWithUnit('right', 'initial')">
+                                @on-change="changeStyleWithUnit('right')">
                         <i-option value="rem">rem</i-option>
                         <i-option value="px">px</i-option>
                         <i-option value="%">%</i-option>
+                        <i-option value="vw">vw</i-option>
                       </i-select>
                     </i-form-item>
                     <i-form-item label="下">
                       <i-input-number v-model="form.style.bottom.val"
-                               @on-change="changeStyleWithUnit('bottom', 'initial')">
+                               @on-change="changeStyleWithUnit('bottom')">
                       </i-input-number>
                       <i-select v-model="form.style.bottom.unit"
                                 style="width: 60px"
-                                @on-change="changeStyleWithUnit('bottom', 'initial')">
+                                @on-change="changeStyleWithUnit('bottom')">
                         <i-option value="rem">rem</i-option>
                         <i-option value="px">px</i-option>
                         <i-option value="%">%</i-option>
+                        <i-option value="vw">vw</i-option>
                       </i-select>
                     </i-form-item>
                     <i-form-item label="左">
                       <i-input-number v-model="form.style.left.val"
-                               @on-change="changeStyleWithUnit('left', 'initial')">
+                               @on-change="changeStyleWithUnit('left')">
                       </i-input-number>
                       <i-select v-model="form.style.left.unit"
                                 style="width: 60px"
-                                @on-change="changeStyleWithUnit('left', 'initial')">
+                                @on-change="changeStyleWithUnit('left')">
                         <i-option value="rem">rem</i-option>
                         <i-option value="px">px</i-option>
                         <i-option value="%">%</i-option>
+                        <i-option value="vw">vw</i-option>
                       </i-select>
                     </i-form-item>
                   </template>
@@ -228,6 +219,7 @@
                     <i-option value="rem">rem</i-option>
                     <i-option value="px">px</i-option>
                     <i-option value="%">%</i-option>
+                    <i-option value="vw">vw</i-option>
                   </i-select>
                 </i-form-item>
 
@@ -240,6 +232,7 @@
                     <i-option value="rem">rem</i-option>
                     <i-option value="px">px</i-option>
                     <i-option value="%">%</i-option>
+                    <i-option value="vw">vw</i-option>
                   </i-select>
                 </i-form-item>
 
@@ -251,6 +244,7 @@
                             @on-change="changeStyleWithUnit('lineHeight')">
                     <i-option value="rem">rem</i-option>
                     <i-option value="px">px</i-option>
+                    <i-option value="vw">vw</i-option>
                   </i-select>
                 </i-form-item>
 
@@ -264,6 +258,7 @@
                     <i-option value="rem">rem</i-option>
                     <i-option value="px">px</i-option>
                     <i-option value="%">%</i-option>
+                    <i-option value="vw">vw</i-option>
                   </i-select>
                 </i-form-item>
 
@@ -295,6 +290,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                         <i-form-item label="右边距" :label-width="80">
@@ -307,6 +303,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                         <i-form-item label="下边距" :label-width="80">
@@ -319,6 +316,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                         <i-form-item label="左边距" :label-width="80">
@@ -330,6 +328,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                       </i-form-item>
@@ -344,6 +343,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                         <i-form-item label="右边距" :label-width="80">
@@ -356,6 +356,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                         <i-form-item label="下边距" :label-width="80">
@@ -368,6 +369,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                         <i-form-item label="左边距" :label-width="80">
@@ -380,6 +382,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                       </i-form-item>
@@ -395,6 +398,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                           <i-color-picker v-model="form.style.borderTopColor"
                                           @on-change="changeStyle('borderTopColor')"/>
@@ -416,6 +420,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                           <i-color-picker v-model="form.style.borderRightColor"
                                           @on-change="changeStyle('borderRightColor')"/>
@@ -437,6 +442,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                           <i-color-picker v-model="form.style.borderBottomColor"
                                           @on-change="changeStyle('borderBottomColor')"/>
@@ -459,6 +465,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                           <i-color-picker v-model="form.style.borderLeftColor"
                                           @on-change="changeStyle('borderLeftColor')"/>
@@ -486,6 +493,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                         <i-form-item label="垂直位置">
@@ -497,6 +505,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                         <i-form-item label="模糊距离">
@@ -508,6 +517,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
                         <i-form-item label="阴影尺寸">
@@ -519,6 +529,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
 
@@ -549,6 +560,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                           <i-color-picker v-model="form.style.backgroundImage.color0.color"
                                           @on-change="changeBackgroundImage"/>
@@ -562,6 +574,7 @@
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
+                            <i-option value="vw">vw</i-option>
                           </i-select>
                           <i-color-picker v-model="form.style.backgroundImage.color1.color"
                                           @on-change="changeBackgroundImage"/>
@@ -671,15 +684,16 @@
             </div>
           </template>
           <template v-if="insertNodePopup.curMenu == 'words'">
-            <div style="font-weight: bold;" @click="selectedInsertNode('words', { fontWeight: 'bold' }, { 'children': ['我是标题-块级'] })">我是标题-块级</div>
-            <div style="font-weight: bold;text-align: center;" @click="selectedInsertNode('words', { fontWeight: 'bold', textAlign: 'center' }, { 'children': ['我是标题-块级-居中'] })">我是标题-块级-居中</div>
-            <div style="font-weight: bold;text-align: right;" @click="selectedInsertNode('words', { fontWeight: 'bold', textAlign: 'right' }, { 'children': ['我是标题-块级-居右'] })">我是标题-块级-居右</div>
-            <div style="font-weight: bold;" @click="selectedInsertNode('words', { display: 'inline', fontWeight: 'bold' }, { 'children': ['我是标题-内联'] })">我是标题-内联
+            <div class="canclick content-item" style="font-weight: bold;" @click="selectDomStructure('words', $event)">我是标题-块级</div>
+            <div class="canclick content-item" style="font-weight: bold;text-align: center;" @click="selectDomStructure('words', $event)">我是标题-块级-居中</div>
+
+            <div class="canclick content-item" style="font-weight: bold;text-align: right;" @click="selectDomStructure('words', $event)">我是标题-块级-居右</div>
+            <div class="canclick content-item" style="font-weight: bold; display: inline;" @click="selectDomStructure('words', $event)">我是标题-内联
             </div>
-            <div @click="selectedInsertNode('words', {}, { 'children': ['我是内容-块级'] })">我是内容-块级</div>
-            <div style="text-align: center;" @click="selectedInsertNode('words', { textAlign: 'center' }, { 'children': ['我是内容-块级-居中'] })">我是内容-块级-居中</div>
-            <div style="text-align: right;" @click="selectedInsertNode('words', { textAlign: 'right' }, { 'children': ['我是内容-块级-居右'] })">我是内容-块级-居右</div>
-            <div @click="selectedInsertNode('words', { display: 'inline' }, { 'children': ['我是标题-内联'] })">我是内容-内联</div>
+            <div class="canclick content-item" @click="selectDomStructure('words', $event)">我是内容-块级</div>
+            <div class="canclick content-item" style="text-align: center;" @click="selectDomStructure('words', $event)">我是内容-块级-居中</div>
+            <div class="canclick content-item" style="text-align: right;" @click="selectDomStructure('words', $event)">我是内容-块级-居右</div>
+            <div class="canclick content-item" style="display: inline;" @click="selectDomStructure('words', $event)">我是内容-内联</div>
           </template>
           <template v-if="insertNodePopup.curMenu === 'image'">
             <i-upload ref="nodeUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*"
@@ -726,7 +740,13 @@
 
     <i-modal v-model="preferences.isShowModal" title="首选项" :footer-hide="true">
       <i-form>
-        <i-form-item label="背景色">
+        <i-form-item label="长度单位">
+          <i-select v-model="preferences.setting.unit" style="width: 100px" @on-change="resetFormDefaultValue">
+            <i-option value="rem">rem</i-option>
+            <i-option value="px">px</i-option>
+            <i-option value="%">%</i-option>
+            <i-option value="vw">vw</i-option>
+          </i-select>
         </i-form-item>
       </i-form>
     </i-modal>
@@ -736,45 +756,11 @@
 
 <script>
   import {httpGetH5Data} from '../../http/h5';
-  import {initDragger} from '../../utils/drag';
   import $ from 'jquery';
 
   export default {
     name: "canvas.vue",
     components: {
-      RenderedHtml: {
-        props: ['vnode', 'previewWindowHandler'],
-        render(createElement) {
-          if (this.previewWindowHandler) {
-            this.previewWindowHandler.vnode = this.vnode;
-          }
-          const renderData = this.generateElementObj(this.vnode, createElement);
-          return renderData;
-        },
-        mounted() {
-          initDragger();
-        },
-        methods: {
-          generateElementObj(vnodeObj, createElement) {
-            const $this = this;
-            const children = [];
-            vnodeObj.children && vnodeObj.children.forEach((elem) => {
-              if (typeof elem === 'string') {
-                children.push(elem);
-              } else {
-                children.push($this.generateElementObj(elem, createElement));
-              }
-            });
-
-            return createElement(vnodeObj.tag, {
-              attrs: JSON.parse(JSON.stringify(vnodeObj.attrs || {})),
-              on: vnodeObj.on || {},
-              style: vnodeObj.style || {},
-              class: vnodeObj.class || {},
-            }, children);
-          },
-        },
-      },
       DomTree: {
         props: {
           vnode: Object,
@@ -792,7 +778,7 @@
           generateDomTreeObj(vnodeObj, createElement) {
             const $this = this;
             const children = [];
-            const curChildren = ['节点：' + vnodeObj.tag];
+            const curChildren = ['节点：' + vnodeObj.nickName];
             if (vnodeObj.parentVNode) {
               curChildren.push(createElement('a', {
                 style: {
@@ -859,23 +845,15 @@
     },
     data() {
       return {
+        iframePreview: null,
         preferences: {
           isShowModal: false,
           setting: {
-            fontSize: '14px',
-            fontUnit: 'px',
-            color: null,
-            backgroundColor: {},
+            unit: 'vw',
           }
         },
         previewWindowHandler: undefined,
-        selectedRect: {
-          isShow: false,
-          top: 0,
-          left: 0,
-          width: 0,
-          height: 0,
-        },
+
         insertNodePopup: {
           isShow: false,
           formVNode: undefined,
@@ -1058,6 +1036,7 @@
         tree: {
           tag: 'div',
           title: '',
+          nickName: 'root',
           attrs: {},
           style: {
             height: 'initial',
@@ -1071,7 +1050,6 @@
     },
     created() {
       if (this.id) {
-
         httpGetH5Data(this.id).then((res) => {
           function iteratorSetParentVNode (curNode, parentVNode) {
             curNode.parentVNode = parentVNode;
@@ -1084,6 +1062,7 @@
           }
           const tree = JSON.parse(res.data.data.data);
           iteratorSetParentVNode(tree, null);
+
           this.tree = tree;
           this.$nextTick(() => {
             document.querySelector(".domtreenode.curselected").click()
@@ -1091,7 +1070,9 @@
           });
         });
       } else {
-        this.tree = this.generateVNodeData(undefined, 'div');
+        this.tree = this.generateVNodeData(undefined, 'div', {
+          nickName: 'root',
+        });
       }
 
     },
@@ -1101,7 +1082,35 @@
         $this.$root.$emit('resTreeNodeData', $this.tree);
       });
     },
+    watch: {
+      tree: {
+        handler () {
+          if (this.iframePreview) {
+            this.iframePreview.vnode = this.tree;
+          }
+        },
+        deep: true,
+
+      },
+    },
     methods: {
+      resetFormDefaultValue () {
+        const $this = this;
+        iteratorSetting(this.form.style);
+        function iteratorSetting (style) {
+          Object.keys(style).forEach((key) => {
+            if (typeof style[key] === 'object' && style[key] !== null) {
+              iteratorSetting(style[key]);
+            } else if (key === 'unit' && style.val == null) {
+              style[key] = $this.preferences.setting.unit;
+            }
+          });
+        }
+      },
+      initIframePreview () {
+        this.iframePreview = $(".iframepreview").get(0).contentWindow;
+        this.iframePreview.vnode = this.tree;
+      },
       transToAnotherPage() {
         this.previewWindowHandler = window.open('/preview.html', '_blank');
         this.previewWindowHandler.vnode = this.tree;
@@ -1116,6 +1125,7 @@
         const nodes = target.childNodes;
         const data = {
           children: [],
+          nickName: type,
           style: this.domStyleToVNodeStyleObj(target.getAttribute('style')),
         };
 
@@ -1147,6 +1157,9 @@
         this.submitInsertNodePopup(data);
       },
       domStyleToVNodeStyleObj (styleStr) {
+        if (!styleStr) {
+          return {};
+        }
         const styleObj = {};
         const styleArr = styleStr.split(';');
 
@@ -1229,9 +1242,9 @@
           data.curVNode = this.insertNodePopup.formVNode;
           this.addPanel(this.insertNodePopup.formVNode.parentVNode, this.insertNodePopup.form.type, data);
         }
-        this.$nextTick(() => {
-          $(".curselected").length > 0 && this.switchSelectedRect($(".curselected").get(0), 'show');
-        });
+//        this.$nextTick(() => {
+//          $(".curselected").length > 0 && this.switchSelectedRect($(".curselected").get(0), 'show');
+//        });
         this.insertNodePopup.isShow = false;
       },
       showInsertNodePopup(formVNode) {
@@ -1254,24 +1267,7 @@
           },
         }
       },
-      switchSelectedRect(dom, type) {
-        if (!type) {
-          type = this.selectedRect.isShow ? 'hide' : 'show';
-        }
 
-        if (type == 'show') {
-          const $dom = $(dom), panelOffset = $("#renderedHtml").offset(), offset = $dom.offset()
-          this.selectedRect = {
-            isShow: true,
-            top: offset.top - panelOffset.top,
-            left: offset.left - panelOffset.left,
-            width: $dom.width(),
-            height: $dom.height(),
-          }
-        } else {
-          this.selectedRect.isShow = false;
-        }
-      },
       handleExchangeNode (originVNode, targetVNode) {
         const vnode = this.generateVNodeData(targetVNode.parentVNode, originVNode.tag, originVNode);
         const index = targetVNode.parentVNode.children.indexOf(targetVNode);
@@ -1361,19 +1357,20 @@
               });
             }
           });
+          this.resetFormDefaultValue();
         } else {
           this.form.vnode = undefined;
           this.form.parentVNode = undefined;
           this.form.textList = [];
         }
 
-        this.$nextTick(() => {
-          if ($(".curselected").length > 0) {
-            this.switchSelectedRect($('.curselected').get(0), 'show');
-          } else {
-            this.switchSelectedRect($('.curselected').get(0), 'hide');
-          }
-        })
+        // this.$nextTick(() => {
+        //   if ($(".curselected").length > 0) {
+        //     this.switchSelectedRect($('.curselected').get(0), 'show');
+        //   } else {
+        //     this.switchSelectedRect($('.curselected').get(0), 'hide');
+        //   }
+        // })
 
       },
       uploadReplaceImgSuccess(res) {
@@ -1401,11 +1398,8 @@
       changeBorder(type) {
         this.form.vnode.style['border' + type.replace(type[0], type[0].toUpperCase())] = this.form.style.border[type].style + ' ' + this.form.style.border[type].width.val + this.form.style.border[type].width.unit + ' ' + this.form.style.border[type].color;
       },
-      changeStyleWithUnit(type, defaultVal) {
-        let val = 0;
-        if (defaultVal !== undefined) {
-          val = defaultVal;
-        }
+      changeStyleWithUnit(type) {
+        let val = null;
         if (this.form.style[type].val !== "" && this.form.style[type].val != null) {
           val = this.form.style[type].val + this.form.style[type].unit;
         }
@@ -1460,13 +1454,14 @@
             });
             $this.form.vnode = undefined;
             $this.form.parentVNode = undefined;
-            $this.switchSelectedRect(undefined, 'hide');
+//            $this.switchSelectedRect(undefined, 'hide');
           },
         });
       },
       generateVNodeData(parentVNode, tagName, data) {
         const $this = this;
 
+        console.log('generatevnodedata');
         const style = {
           width: null,
           height: null,
@@ -1525,6 +1520,7 @@
         const curNode = {
           tag: tagName,
           parentVNode: parentVNode,
+          nickName: data.nickName || tagName,
           class: {
             curselected: false,
             draggable: false,
@@ -1775,44 +1771,14 @@
 
   #renderedHtml {
     position: relative;
+    height: calc(100% - 36px);
   }
 
-  .selected-area {
-    position: absolute;
+  .iframepreview {
+    width: 100%;
+    height: 100%;
   }
 
-  .selected-line {
-    background-color: #59c7f9;
-    height: 1px;
-    width: 1px;
-    position: absolute;
-  }
-
-  .selected-point {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: #fff;
-    border: 1px solid #59c7f9;
-    border-radius: 10px;
-  }
-
-
-  .list-with-circle {
-
-  }
-  .list-with-circle:before {
-    content: '';
-    position: relative;
-    border: solid .3rem #5B79FB;
-    border-radius: .8rem;
-    width: .6rem;
-    display: inline-block;
-    height: .6rem;
-    background-color: transparent;
-    flex-shrink: 0;
-    margin-right: .5rem;
-  }
   .canclick {
     cursor: pointer;
   }

@@ -9,6 +9,7 @@ module.exports = {
     index: './src/index.js',
     show: './src/show.js',
     preview: './src/preview.js',
+    iframepreview: './src/iframepreview.js',
   },
   mode: 'production',
   module: {
@@ -56,6 +57,12 @@ module.exports = {
       chunks: ['preview'],
       template: 'preview.html',
       filename:  `preview.html`,
+    }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      chunks: ['iframepreview'],
+      template: 'iframepreview.html',
+      filename:  `iframepreview.html`,
     }),
     new HtmlWebpackPlugin({
       inject: true,
