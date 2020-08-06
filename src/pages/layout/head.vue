@@ -1,12 +1,19 @@
 <template>
   <div class="page-head">
     <div class="page-title">
-      <i-input placeholder="请输入H5的标题" v-model="title" style="width: 600px" />
+      <i-input :placeholder="$t('titlePlaceholder')" v-model="title" style="width: 600px" />
     </div>
     <div class="page-opt">
-      <i-button type="primary" @click="copyToClipboard">源码复制到剪贴板</i-button>
-      <i-button type="primary" @click="$root.$emit('reqTreeNodeData')">保存</i-button>
+      <i-button type="primary" @click="openHelpPopup">{{ $t('help') }}</i-button>
+      <i-button type="primary" @click="$root.$emit('reqTreeNodeData')">{{ $t('save') }}</i-button>
     </div>
+    <i-modal v-model="helpPopup.isShow">
+      <div>{{ $t('howToUse') }}</div>
+      <div>{{ $t('useNotice1') }}</div>
+      <div>{{ $t('useNotice2') }}</div>
+      <div>{{ $t('useNotice3') }}</div>
+      <div>{{ $t('useNotice4') }}</div>
+    </i-modal>
   </div>
 </template>
 
@@ -22,6 +29,9 @@
     data: function () {
       return {
         title: '',
+        helpPopup: {
+          isShow: false,
+        }
       };
     },
     mounted () {
@@ -46,6 +56,9 @@
       });
     },
     methods: {
+      openHelpPopup () {
+        this.helpPopup.isShow = true;
+      },
       copyToClipboard () {
         copy(`
           <!DOCTYPE html>

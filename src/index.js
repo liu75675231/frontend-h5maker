@@ -2,8 +2,18 @@ import Vue from 'vue'
 import App from './app.vue'
 import Vuex from 'vuex'
 import store from './store'
-import { Button, Layout, Header, Sider, Content, Input, Form, FormItem, Select, Option, RadioGroup, Radio, ColorPicker, Checkbox, Upload, Modal, Message, Icon, Tabs, TabPane, Collapse, Panel, InputNumber  } from 'view-design'
+import VueI18n from 'vue-i18n'
+import i18n from './i18n/editor'
+
+import { locale, Button, Layout, Header, Sider, Content, Input, Form, FormItem, Select, Option, RadioGroup, Radio, ColorPicker, Checkbox, Upload, Modal, Message, Icon, Tabs, TabPane, Collapse, Panel, InputNumber  } from 'view-design'
 import 'view-design/dist/styles/iview.css'
+
+import lang from 'view-design/dist/locale/en-US';
+
+i18n.locale = navigator.language === 'zh' || navigator.language === 'zh-CN' ? 'zh' : 'en';
+if (i18n.locale === 'en') {
+  locale(lang);
+}
 
 Vue.component('i-button', Button)
 Vue.component('i-layout', Layout)
@@ -35,5 +45,6 @@ Vue.prototype.$Message = Message
 new Vue({
   el: '#app',
   store,
+  i18n,
   render: h => h(App)
 })

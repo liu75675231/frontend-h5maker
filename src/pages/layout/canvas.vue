@@ -5,11 +5,11 @@
         <div class="wrapper-canvas editable-panel"
              :style="{ width: resolutionX == '' ? '375px' : resolutionX + 'px' }">
           <div class="editable-title">
-            屏幕显示
+            {{ $t('display') }}
             <div class="editable-title-opt">
-              <span class="editable-title-opt-item" @click="preferences.isShowModal = true">首选项</span>
-              <span class="editable-title-opt-item" @click="showInsertNodePopup(tree)">新增</span>
-              <span class="editable-title-opt-item" @click="transToAnotherPage">更多分辨率</span>
+              <span class="editable-title-opt-item" @click="preferences.isShowModal = true">{{ $t('preferences') }}</span>
+              <span class="editable-title-opt-item" @click="showInsertNodePopup(tree)">{{ $t('add') }}</span>
+              <span class="editable-title-opt-item" @click="transToAnotherPage">{{ $t('moreResolution') }}</span>
             </div>
           </div>
           <div id="renderedHtml">
@@ -21,16 +21,16 @@
       </div>
       <div class="editable-panel panel-setting">
         <div class="editable-title">
-          设置节点
+          {{ $t('setting') }}
           <div class="editable-title-opt">
                         <span class="editable-title-opt-item" v-if="form.vnode && form.vnode.parentVNode"
-                              @click="removePanel">删除</span>
+                              @click="removePanel">{{ $t('remove') }}</span>
             <span class="editable-title-opt-item" v-if="form.vnode && form.vnode.tag !== 'img'"
-                  @click="showInsertNodePopup(form.vnode)">新增</span>
+                  @click="showInsertNodePopup(form.vnode)">{{ $t('add') }}</span>
           </div>
         </div>
         <i-tabs>
-          <i-tab-pane label="样式">
+          <i-tab-pane :label="$t('style')">
             <div class="editable-content">
               <i-form class="form" :label-width="80" v-if="form.vnode">
                 <i-form-item v-for="(item, index) in form.textList" :label="'内容'" :key="index">
@@ -47,7 +47,7 @@
                   </i-upload>
                 </i-form-item>
 
-                <i-form-item label="宽度">
+                <i-form-item :label="$t('width')">
                   <i-input-number v-model="form.style.width.val"
                            @on-change="changeStyleWithUnit('width')">
                   </i-input-number>
@@ -60,7 +60,7 @@
                   </i-select>
                 </i-form-item>
 
-                <i-form-item label="高度">
+                <i-form-item :label="$t('height')">
                   <i-input-number v-model="form.style.height.val"
                            @on-change="changeStyleWithUnit('height')">
                   </i-input-number>
@@ -74,31 +74,31 @@
                   </i-select>
                 </i-form-item>
 
-                <i-form-item label="显示方式">
+                <i-form-item :label="$t('display')">
                   <i-select v-model="form.style.display" style="width: 200px"
                             @on-change="changeStyle('display')">
-                    <i-option value="none">隐藏</i-option>
-                    <i-option value="block">块级显示</i-option>
-                    <i-option value="inline-block">内联-块级显示</i-option>
-                    <i-option value="inline">内联显示</i-option>
+                    <i-option value="none">{{ $t('hidden') }}</i-option>
+                    <i-option value="block">{{ $t('block') }}</i-option>
+                    <i-option value="inline-block">{{ $t('inlineBlock') }}</i-option>
+                    <i-option value="inline">{{ $t('inline') }}</i-option>
                     <i-option value="flex">flex</i-option>
                   </i-select>
                 </i-form-item>
 
                 <template v-if="form.style.display === 'flex'">
-                  <i-form-item label="扩展比率">
+                  <i-form-item :label="$t('grow')">
                     <i-input-number v-model="form.style.flexGrow"
                              @on-change="changeStyle('flexGrow', null)">
                     </i-input-number>
                   </i-form-item>
 
-                  <i-form-item label="收缩比率">
+                  <i-form-item :label="$t('shrink')">
                     <i-input-number v-model="form.style.flexShrink"
                              @on-change="changeStyle('flexShrink', null)">
                     </i-input-number>
                   </i-form-item>
 
-                  <i-form-item label="基准值">
+                  <i-form-item :label="$t('basis')">
                     <i-input-number v-model="form.style.flexBasis.val"
                              @on-change="changeStyleWithUnit('flexBasis')">
                     </i-input-number>
@@ -112,45 +112,45 @@
                     </i-select>
                   </i-form-item>
 
-                  <i-form-item label="主轴对齐">
+                  <i-form-item label="justify-content">
                     <i-select v-model="form.style.justifyContent" style="width: 200px"
                               @on-change="changeStyle('justifyContent')">
-                      <i-option value="flex-start">左对齐</i-option>
-                      <i-option value="flex-end">右对齐</i-option>
-                      <i-option value="center">居中</i-option>
-                      <i-option value="space-between">两端对齐</i-option>
-                      <i-option value="space-around">间隔对齐</i-option>
+                      <i-option value="flex-start">flex-start</i-option>
+                      <i-option value="flex-end">flex-end</i-option>
+                      <i-option value="center">center</i-option>
+                      <i-option value="space-between">space-between</i-option>
+                      <i-option value="space-around">space-around</i-option>
                     </i-select>
                   </i-form-item>
 
-                  <i-form-item label="交叉轴对齐">
+                  <i-form-item label="align-items">
                     <i-select v-model="form.style.alignItems" style="width: 200px"
                               @on-change="changeStyle('alignItems')">
-                      <i-option value="flex-start">起点对齐</i-option>
-                      <i-option value="flex-end">终点对齐</i-option>
-                      <i-option value="center">居中</i-option>
-                      <i-option value="baseline">基线对齐</i-option>
+                      <i-option value="flex-start">flex-start</i-option>
+                      <i-option value="flex-end">flex-end</i-option>
+                      <i-option value="center">center</i-option>
+                      <i-option value="baseline">baseline</i-option>
                     </i-select>
                   </i-form-item>
 
-                  <i-form-item label="是否换行">
+                  <i-form-item :label="$t('isWrap')">
                     <i-select v-model="form.style.flexWrap" style="width: 200px"
                               @on-change="changeStyle('flexWrap')">
-                      <i-option value="nowrap">不换行</i-option>
-                      <i-option value="wrap">换行</i-option>
+                      <i-option value="nowrap">{{ $t('noWrap') }}</i-option>
+                      <i-option value="wrap">{{ $t('wrap') }}</i-option>
                     </i-select>
                   </i-form-item>
                 </template>
 
-                <i-form-item label="定位">
+                <i-form-item :label="$t('position')">
                   <i-select v-model="form.style.position" style="width: 200px"
                             @on-change="changeStyle('position')">
-                    <i-option value="static">默认定位</i-option>
-                    <i-option value="absolute">绝对定位</i-option>
-                    <i-option value="relative">相对定位</i-option>
+                    <i-option value="static">{{ $t('default') }}</i-option>
+                    <i-option value="absolute">{{ $t('absolute') }}</i-option>
+                    <i-option value="relative">{{ $t('relative') }}</i-option>
                   </i-select>
                   <template v-if="form.style.position !== 'static'">
-                    <i-form-item label="上" >
+                    <i-form-item :label="$t('top')" >
                       <i-input-number v-model="form.style.top.val"
                                @on-change="changeStyleWithUnit('top')">
                       </i-input-number>
@@ -163,7 +163,7 @@
                         <i-option value="vw">vw</i-option>
                       </i-select>
                     </i-form-item>
-                    <i-form-item label="右">
+                    <i-form-item :label="$t('right')">
                       <i-input-number v-model="form.style.right.val"
                                @on-change="changeStyleWithUnit('right')">
                       </i-input-number>
@@ -176,7 +176,7 @@
                         <i-option value="vw">vw</i-option>
                       </i-select>
                     </i-form-item>
-                    <i-form-item label="下">
+                    <i-form-item :label="$t('bottom')">
                       <i-input-number v-model="form.style.bottom.val"
                                @on-change="changeStyleWithUnit('bottom')">
                       </i-input-number>
@@ -189,7 +189,7 @@
                         <i-option value="vw">vw</i-option>
                       </i-select>
                     </i-form-item>
-                    <i-form-item label="左">
+                    <i-form-item :label="$t('left')">
                       <i-input-number v-model="form.style.left.val"
                                @on-change="changeStyleWithUnit('left')">
                       </i-input-number>
@@ -205,12 +205,12 @@
                   </template>
                 </i-form-item>
 
-                <i-form-item label="颜色">
+                <i-form-item :label="$t('color')">
                   <i-color-picker v-model="form.style.color" @on-change="changeStyle('color')"/>
                 </i-form-item>
 
 
-                <i-form-item label="字体大小">
+                <i-form-item :label="$t('fontSize')">
                   <i-input-number v-model="form.style.fontSize.val"
                            @on-change="changeStyleWithUnit('fontSize')">
                   </i-input-number>
@@ -223,7 +223,7 @@
                   </i-select>
                 </i-form-item>
 
-                <i-form-item label="文字间距">
+                <i-form-item :label="$t('letterSpacing')">
                   <i-input-number v-model="form.style.letterSpacing.val"
                            @on-change="changeStyleWithUnit('letterSpacing')">
                   </i-input-number>
@@ -236,7 +236,7 @@
                   </i-select>
                 </i-form-item>
 
-                <i-form-item label="行高">
+                <i-form-item :label="$t('lineHeight')">
                   <i-input-number v-model="form.style.lineHeight.val"
                            @on-change="changeStyleWithUnit('lineHeight')">
                   </i-input-number>
@@ -248,7 +248,7 @@
                   </i-select>
                 </i-form-item>
 
-                <i-form-item label="圆角">
+                <i-form-item :label="$t('borderRadius')">
                   <i-input-number v-model="form.style.borderRadius.val"
                            @on-change="changeStyleWithUnit('borderRadius')">
 
@@ -262,26 +262,26 @@
                   </i-select>
                 </i-form-item>
 
-                <i-form-item label="水平对齐">
-                  <i-select v-model="form.style.textAlign" style="width: 200px"
+                <i-form-item :label="$t('align')">
+                  <i-select v-model="form.style.textAlign" style="width: 200px" :placeholder="$t('placeSelect')"
                             @on-change="changeStyle('textAlign')">
-                    <i-option value="left">居左</i-option>
-                    <i-option value="center">居中</i-option>
-                    <i-option value="right">居右</i-option>
+                    <i-option value="left">{{ $t('left') }}</i-option>
+                    <i-option value="center">{{ $t('center') }}</i-option>
+                    <i-option value="right">{{ $t('right') }}</i-option>
                   </i-select>
                 </i-form-item>
 
-                <i-form-item label="是否加粗">
+                <i-form-item :label="$t('fontWeight')">
                   <i-checkbox v-model="form.style.fontWeight" true-value="bold" false-value="normal"
                               @on-change="changeStyle('fontWeight')"></i-checkbox>
                 </i-form-item>
 
                 <i-collapse>
                   <i-panel name="1">
-                    边距
+                    {{ $t('edge') }}
                     <p slot="content">
-                      <i-form-item label="外边距">
-                        <i-form-item label="上边距" :label-width="80">
+                      <i-form-item :label="$t('margin')">
+                        <i-form-item :label="$t('top')" :label-width="80">
                           <i-input-number v-model="form.style.margin.top.val"
                                    @on-change="changeMargin('top')">
                           </i-input-number>
@@ -293,7 +293,7 @@
                             <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="右边距" :label-width="80">
+                        <i-form-item :label="$t('right')" :label-width="80">
                           <i-input-number v-model="form.style.margin.right.val"
                                    @on-change="changeMargin('right')">
                           </i-input-number>
@@ -306,7 +306,7 @@
                             <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="下边距" :label-width="80">
+                        <i-form-item :label="$t('bottom')" :label-width="80">
                           <i-input-number v-model="form.style.margin.bottom.val"
                                    @on-change="changeMargin('bottom')">
                           </i-input-number>
@@ -319,7 +319,7 @@
                             <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="左边距" :label-width="80">
+                        <i-form-item :label="$t('left')" :label-width="80">
                           <i-input-number v-model="form.style.margin.left.val"
                                    @on-change="changeMargin('left')">
                           </i-input-number>
@@ -333,8 +333,8 @@
                         </i-form-item>
                       </i-form-item>
 
-                      <i-form-item label="内边距">
-                        <i-form-item label="上边距" :label-width="80">
+                      <i-form-item :label="$t('padding')">
+                        <i-form-item :label="$t('top')" :label-width="80">
                           <i-input-number v-model="form.style.padding.top.val"
                                    @on-change="changePadding('top')">
                           </i-input-number>
@@ -346,7 +346,7 @@
                             <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="右边距" :label-width="80">
+                        <i-form-item :label="$t('right')" :label-width="80">
                           <i-input-number v-model="form.style.padding.right.val"
                                    @on-change="changePadding('right')">
                           </i-input-number>
@@ -359,7 +359,7 @@
                             <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="下边距" :label-width="80">
+                        <i-form-item :label="$t('bottom')" :label-width="80">
                           <i-input-number v-model="form.style.padding.bottom.val"
                                    @on-change="changePadding('bottom')">
                           </i-input-number>
@@ -372,7 +372,7 @@
                             <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="左边距" :label-width="80">
+                        <i-form-item :label="$t('left')" :label-width="80">
                           <i-input-number v-model="form.style.padding.left.val"
                                    @on-change="changePadding('left')">
                           </i-input-number>
@@ -387,8 +387,8 @@
                         </i-form-item>
                       </i-form-item>
 
-                      <i-form-item label="边框">
-                        <i-form-item label="上边框" :label-width="80">
+                      <i-form-item :label="$t('border')">
+                        <i-form-item :label="$t('top')" :label-width="80">
                           <i-input-number v-model="form.style.borderTopWidth.val"
                                    @on-change="changeStyleWithUnit('borderTopWidth')">
                           </i-input-number>
@@ -403,14 +403,14 @@
                           <i-color-picker v-model="form.style.borderTopColor"
                                           @on-change="changeStyle('borderTopColor')"/>
                           <i-select v-model="form.style.borderTopStyle" style="width: 130px"
-                                    @on-change="changeStyle('borderTopStyle')">
-                            <i-option value="none">无边框</i-option>
-                            <i-option value="solid">实线</i-option>
-                            <i-option value="dashed">虚线</i-option>
-                            <i-option value="double">双线</i-option>
+                                    @on-change="changeStyle('borderTopStyle')" :placeholder="$t('placeSelect')">
+                            <i-option value="none">{{ $t('none') }}</i-option>
+                            <i-option value="solid">{{ $t('solid') }}</i-option>
+                            <i-option value="dashed">{{ $t('dashed') }}</i-option>
+                            <i-option value="double">{{ $t('double') }}</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="右边框" :label-width="80">
+                        <i-form-item :label="$t('right')" :label-width="80">
                           <i-input-number v-model="form.style.borderRightWidth.val"
                                    @on-change="changeStyleWithUnit('borderRightWidth')">
                           </i-input-number>
@@ -425,14 +425,14 @@
                           <i-color-picker v-model="form.style.borderRightColor"
                                           @on-change="changeStyle('borderRightColor')"/>
                           <i-select v-model="form.style.borderRightStyle" style="width: 130px"
-                                    @on-change="changeStyle('borderRightStyle')">
-                            <i-option value="none">无边框</i-option>
-                            <i-option value="solid">实线</i-option>
-                            <i-option value="dashed">虚线</i-option>
-                            <i-option value="double">双线</i-option>
+                                    @on-change="changeStyle('borderRightStyle')" :placeholder="$t('placeSelect')">
+                            <i-option value="none">{{ $t('none') }}</i-option>
+                            <i-option value="solid">{{ $t('solid') }}</i-option>
+                            <i-option value="dashed">{{ $t('dashed') }}</i-option>
+                            <i-option value="double">{{ $t('double') }}</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="下边框" :label-width="80">
+                        <i-form-item :label="$t('bottom')" :label-width="80">
                           <i-input-number v-model="form.style.borderBottomWidth.val"
                                    @on-change="changeStyleWithUnit('borderBottomWidth')">
                           </i-input-number>
@@ -448,14 +448,14 @@
                                           @on-change="changeStyle('borderBottomColor')"/>
                           <i-select v-model="form.style.borderBottomStyle"
                                     style="width: 130px"
-                                    @on-change="changeStyle('borderBottomStyle')">
-                            <i-option value="none">无边框</i-option>
-                            <i-option value="solid">实线</i-option>
-                            <i-option value="dashed">虚线</i-option>
-                            <i-option value="double">双线</i-option>
+                                    @on-change="changeStyle('borderBottomStyle')" :placeholder="$t('placeSelect')">
+                            <i-option value="none">{{ $t('none') }}</i-option>
+                            <i-option value="solid">{{ $t('solid') }}</i-option>
+                            <i-option value="dashed">{{ $t('dashed') }}</i-option>
+                            <i-option value="double">{{ $t('double') }}</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="左边框" :label-width="80">
+                        <i-form-item :label="$t('left')" :label-width="80">
                           <i-input-number v-model="form.style.borderLeftWidth.val"
                                    @on-change="changeStyleWithUnit('borderLeftWidth')">
                           </i-input-number>
@@ -470,21 +470,21 @@
                           <i-color-picker v-model="form.style.borderLeftColor"
                                           @on-change="changeStyle('borderLeftColor')"/>
                           <i-select v-model="form.style.borderLeftStyle" style="width: 130px"
-                                    @on-change="changeStyle('borderLeftStyle')">
-                            <i-option value="none">无边框</i-option>
-                            <i-option value="solid">实线</i-option>
-                            <i-option value="dashed">虚线</i-option>
-                            <i-option value="double">双线</i-option>
+                                    @on-change="changeStyle('borderLeftStyle')" :placeholder="$t('placeSelect')">
+                            <i-option value="none">{{ $t('none') }}</i-option>
+                            <i-option value="solid">{{ $t('solid') }}</i-option>
+                            <i-option value="dashed">{{ $t('dashed') }}</i-option>
+                            <i-option value="double">{{ $t('double') }}</i-option>
                           </i-select>
                         </i-form-item>
                       </i-form-item>
                     </p>
                   </i-panel>
                   <i-panel name="2">
-                    阴影
+                    {{ $t('shadow') }}
                     <p slot="content">
-                      <i-form-item label="阴影">
-                        <i-form-item label="水平位置" :label-width="80">
+                      <i-form-item :label="$t('shadow')">
+                        <i-form-item :label="$t('horizontal')" :label-width="80">
                           <i-input-number v-model="form.style.boxShadow.hShadow.val"
                                    @on-change="changeBoxShadow()">
                           </i-input-number>
@@ -496,7 +496,7 @@
                             <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="垂直位置">
+                        <i-form-item :label="$t('vertical')">
                           <i-input-number v-model="form.style.boxShadow.vShadow.val"
                                    @on-change="changeBoxShadow()">
                           </i-input-number>
@@ -508,7 +508,7 @@
                             <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="模糊距离">
+                        <i-form-item :label="$t('blur')">
                           <i-input-number v-model="form.style.boxShadow.blur.val"
                                    @on-change="changeBoxShadow()">
                           </i-input-number>
@@ -520,7 +520,7 @@
                             <i-option value="vw">vw</i-option>
                           </i-select>
                         </i-form-item>
-                        <i-form-item label="阴影尺寸">
+                        <i-form-item :label="$t('size')">
                           <i-input-number v-model="form.style.boxShadow.spread.val"
                                    @on-change="changeBoxShadow()">
                           </i-input-number>
@@ -533,7 +533,7 @@
                           </i-select>
                         </i-form-item>
 
-                        <i-form-item label="阴影颜色">
+                        <i-form-item :label="$t('color')">
                           <i-color-picker v-model="form.style.boxShadow.color"
                                           @on-change="changeBoxShadow()"/>
                         </i-form-item>
@@ -541,17 +541,17 @@
                     </p>
                   </i-panel>
                   <i-panel name="3">
-                    背景
+                    {{ $t('background') }}
                     <p slot="content">
-                      <i-form-item label="背景颜色">
+                      <i-form-item :label="$t('backgroundColor')">
                         <i-color-picker v-model="form.style.backgroundColor"
                                         @on-change="changeStyle('backgroundColor')"/>
                       </i-form-item>
 
-                      <i-form-item label="背景渐进">
+                      <i-form-item :label="$t('gradients')">
                         <i-input-number v-model="form.style.backgroundImage.direction"
                                  @on-change="changeBackgroundImage"></i-input-number>
-                        <i-form-item label="背景颜色1" :label-width="80">
+                        <i-form-item :label="$t('backgroundColor') + '1'" :label-width="80">
                           <i-input-number v-model="form.style.backgroundImage.color0.len.val"
                                    @on-change="changeBackgroundImage">
                           </i-input-number>
@@ -565,7 +565,7 @@
                           <i-color-picker v-model="form.style.backgroundImage.color0.color"
                                           @on-change="changeBackgroundImage"/>
                         </i-form-item>
-                        <i-form-item label="背景颜色2" :label-width="80">
+                        <i-form-item :label="$t('backgroundColor') + '2'" :label-width="80">
                           <i-input-number v-model="form.style.backgroundImage.color1.len.val"
                                    @on-change="changeBackgroundImage">
                           </i-input-number>
@@ -586,18 +586,18 @@
               </i-form>
             </div>
           </i-tab-pane>
-          <i-tab-pane label="动画"></i-tab-pane>
-          <i-tab-pane label="事件">
+          <i-tab-pane :label="$t('animation')"></i-tab-pane>
+          <i-tab-pane :label="$t('event')">
             <i-form class="form" :label-width="80" v-if="form.vnode">
-              <i-form-item label="拖拽">
-                <i-form-item label="是否开启" :label-width="80">
+              <i-form-item :label="$t('drag')">
+                <i-form-item :label="$t('status')" :label-width="80">
                   <i-checkbox v-model="form.class.draggable"
-                              @on-change="changeClass('draggable')">开启
+                              @on-change="changeClass('draggable')">{{ $t('on') }}
                   </i-checkbox>
                 </i-form-item>
-                <i-form-item label="目标区域" :label-width="80">
+                <i-form-item :label="$t('targetArea')" :label-width="80">
                   <i-checkbox v-model="form.class.dropzone" @on-change="changeClass('dropzone')">
-                    开启
+                    {{ $t('on') }}
                   </i-checkbox>
                 </i-form-item>
               </i-form-item>
@@ -607,7 +607,7 @@
       </div>
       <div class="editable-panel panel-tree">
         <div class="editable-title">
-          结构树
+          {{ $t('structureTree') }}
         </div>
         <div class="editable-content">
           <dom-tree :vnode="tree" @nodeclick="handleNodeClick" @exchangenode="handleExchangeNode"></dom-tree>
@@ -618,25 +618,18 @@
     <i-modal class="insert-node-popup" v-model="insertNodePopup.isShow" :width="1000" :closable="false"
              :footer-hide="true">
       <i-form v-model="insertNodePopup.form" :label-width="80">
-        <i-form-item label="节点类型" v-if="false">
-          <i-radio-group v-model="insertNodePopup.form.type">
-            <i-radio label="div">块级元素</i-radio>
-            <i-radio label="span">内联元素</i-radio>
-            <i-radio label="img">图片</i-radio>
-          </i-radio-group>
-        </i-form-item>
-        <i-form-item label="上传图片" v-if="insertNodePopup.form.type === 'img'">
+        <i-form-item :label="$t('uploadImage')" v-if="insertNodePopup.form.type === 'img'">
           <img class="img-preview" v-if="insertNodePopup.form.img" :src="insertNodePopup.form.img"/>
 
         </i-form-item>
-        <i-form-item label="插入位置">
+        <i-form-item :label="$t('insertPosition')">
           <i-radio-group v-model="insertNodePopup.form.pos">
-            <i-radio label="child">当前元素子级</i-radio>
+            <i-radio label="child">{{ $t('childElement') }}</i-radio>
             <i-radio label="prev" v-if="insertNodePopup.formVNode && insertNodePopup.formVNode.parentVNode">
-              当前元素前面
+              {{ $t('beforeElement') }}
             </i-radio>
             <i-radio label="next" v-if="insertNodePopup.formVNode && insertNodePopup.formVNode.parentVNode">
-              当前元素后面
+              {{ $t('afterElement') }}
             </i-radio>
           </i-radio-group>
         </i-form-item>
@@ -644,91 +637,91 @@
       <div class="insert-panel">
         <div class="insert-menu">
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'custom' }"
-               @click="changeInsertPopupMenu('custom')">自定义
+               @click="changeInsertPopupMenu('custom')">{{ $t('custom') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'recently' }"
-               @click="changeInsertPopupMenu('recently')">最近
+               @click="changeInsertPopupMenu('recently')">{{ $t('recent') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'words' }"
-               @click="changeInsertPopupMenu('words')">文字
+               @click="changeInsertPopupMenu('words')">{{ $t('words') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'image' }"
-               @click="changeInsertPopupMenu('image')">图片
+               @click="changeInsertPopupMenu('image')">{{ $t('image') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'button' }"
-               @click="changeInsertPopupMenu('button')">按钮
+               @click="changeInsertPopupMenu('button')">{{ $t('button') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'icon' }"
-               @click="changeInsertPopupMenu('icon')">图标
+               @click="changeInsertPopupMenu('icon')">{{ $t('icon') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'panel' }"
-               @click="changeInsertPopupMenu('panel')">面板
+               @click="changeInsertPopupMenu('panel')">{{ $t('panel') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'layout' }"
-               @click="changeInsertPopupMenu('layout')">布局
+               @click="changeInsertPopupMenu('layout')">{{ $t('layout') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'list' }"
-               @click="changeInsertPopupMenu('list')">列表
+               @click="changeInsertPopupMenu('list')">{{ $t('list') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'table' }"
-               @click="changeInsertPopupMenu('table')">表格
+               @click="changeInsertPopupMenu('table')">{{ $t('table') }}
           </div>
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'music' }"
-               @click="changeInsertPopupMenu('music')">音乐
+               @click="changeInsertPopupMenu('music')">{{ $t('music') }}
           </div>
         </div>
         <div class="insert-content">
           <template v-if="insertNodePopup.curMenu == 'custom'">
             <div @click="selectedInsertNode('panel', {}, {})">
-              空白面板
+              {{ $t('blankPanel') }}
             </div>
           </template>
           <template v-if="insertNodePopup.curMenu == 'words'">
-            <div class="canclick content-item" style="font-weight: bold;" @click="selectDomStructure('words', $event)">我是标题-块级</div>
-            <div class="canclick content-item" style="font-weight: bold;text-align: center;" @click="selectDomStructure('words', $event)">我是标题-块级-居中</div>
+            <div class="canclick content-item" style="font-weight: bold;" @click="selectDomStructure('words', $event)">{{ $t('iamtitle') }}-{{ $t('block') }}</div>
+            <div class="canclick content-item" style="font-weight: bold;text-align: center;" @click="selectDomStructure('words', $event)">{{ $t('iamtitle') }}-{{ $t('block') }}-{{ $t('center') }}</div>
 
-            <div class="canclick content-item" style="font-weight: bold;text-align: right;" @click="selectDomStructure('words', $event)">我是标题-块级-居右</div>
-            <div class="canclick content-item" style="font-weight: bold; display: inline;" @click="selectDomStructure('words', $event)">我是标题-内联
+            <div class="canclick content-item" style="font-weight: bold;text-align: right;" @click="selectDomStructure('words', $event)">{{ $t('iamtitle') }}-{{ $t('block') }}-{{ $t('right') }}</div>
+            <div class="canclick content-item" style="font-weight: bold; display: inline;" @click="selectDomStructure('words', $event)">{{ $t('iamtitle') }}-{{ 'inline' }}
             </div>
-            <div class="canclick content-item" @click="selectDomStructure('words', $event)">我是内容-块级</div>
-            <div class="canclick content-item" style="text-align: center;" @click="selectDomStructure('words', $event)">我是内容-块级-居中</div>
-            <div class="canclick content-item" style="text-align: right;" @click="selectDomStructure('words', $event)">我是内容-块级-居右</div>
-            <div class="canclick content-item" style="display: inline;" @click="selectDomStructure('words', $event)">我是内容-内联</div>
+            <div class="canclick content-item" @click="selectDomStructure('words', $event)">{{ $t('iamcontent') }}-{{ $t('block') }}</div>
+            <div class="canclick content-item" style="text-align: center;" @click="selectDomStructure('words', $event)">{{ $t('iamcontent') }}-{{ $t('block') }}-{{ $t('center') }}</div>
+            <div class="canclick content-item" style="text-align: right;" @click="selectDomStructure('words', $event)">{{ $t('iamcontent') }}-{{ $t('block') }}-{{ $t('right') }}</div>
+            <div class="canclick content-item" style="display: inline;" @click="selectDomStructure('words', $event)">{{ $t('iamcontent') }}-{{ 'inline' }}</div>
           </template>
           <template v-if="insertNodePopup.curMenu === 'image'">
             <i-upload ref="nodeUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*"
                       :on-success="uploadNodeImgSuccess" data-type="node">
-              <i-button icon="ios-cloud-upload-outline">上传图片</i-button>
+              <i-button icon="ios-cloud-upload-outline">{{ $t('uploadImage') }}</i-button>
             </i-upload>
           </template>
           <template v-if="insertNodePopup.curMenu === 'layout'">
             <div class="content-item canclick" style="display: flex;" @click="selectDomStructure('layout', $event)">
-              <div style="flex: 1;">两列</div>
-              <div style="flex: 1;">两列</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 2 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 2 }) }}</div>
             </div>
             <div class="content-item canclick" style="display: flex;" @click="selectDomStructure('layout', $event)">
-              <div style="flex: 1;">三列</div>
-              <div style="flex: 1;">三列</div>
-              <div style="flex: 1;">三列</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 3 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 3 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 3 }) }}</div>
             </div>
             <div class="content-item canclick" style="display: flex;" @click="selectDomStructure('layout', $event)">
-              <div style="flex: 1;">四列</div>
-              <div style="flex: 1;">四列</div>
-              <div style="flex: 1;">四列</div>
-              <div style="flex: 1;">四列</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 4 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 4 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 4 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 4 }) }}</div>
             </div>
             <div class="content-item canclick" style="display: flex;" @click="selectDomStructure('layout', $event)">
-              <div style="flex: 1;">五列</div>
-              <div style="flex: 1;">五列</div>
-              <div style="flex: 1;">五列</div>
-              <div style="flex: 1;">五列</div>
-              <div style="flex: 1;">五列</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 5 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 5 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 5 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 5 }) }}</div>
+              <div style="flex: 1;">{{ $t('columnNums', { num: 5 }) }}</div>
             </div>
           </template>
           <template v-if="insertNodePopup.curMenu === 'list'">
             <div class="content-item canclick" @click="selectDomStructure('list', $event)">
               <div style="position: relative;border: solid 1px #000;border-radius: .8rem;width: .6rem;display: inline-block;height: .6rem;background-color: transparent;flex-shrink: 0;margin-right: .5rem;"></div>
-              列表前面有一个圆圈</div>
+              {{ $t('listDefaultMsg') }}</div>
           </template>
           <template v-if="insertNodePopup.curMenu === 'panel'">
             <div class="content-item" style="width: 100%;background-color: #fff;border-radius: 4px;box-shadow: 0rem 0.5rem 0.5rem 0.5px #7C7CF5;padding: .5rem 1rem;min-height: 5rem;" @click="selectDomStructure('panel', $event)">
@@ -738,9 +731,9 @@
       </div>
     </i-modal>
 
-    <i-modal v-model="preferences.isShowModal" title="首选项" :footer-hide="true">
+    <i-modal v-model="preferences.isShowModal" :title="$t('preferences')" :footer-hide="true">
       <i-form>
-        <i-form-item label="长度单位">
+        <i-form-item :label="$t('lengthUnit')">
           <i-select v-model="preferences.setting.unit" style="width: 100px" @on-change="resetFormDefaultValue">
             <i-option value="rem">rem</i-option>
             <i-option value="px">px</i-option>
@@ -778,7 +771,8 @@
           generateDomTreeObj(vnodeObj, createElement) {
             const $this = this;
             const children = [];
-            const curChildren = ['节点：' + vnodeObj.nickName];
+            const curChildren = [this.$t('node') + ': ' + vnodeObj.nickName];
+
             if (vnodeObj.parentVNode) {
               curChildren.push(createElement('a', {
                 style: {
@@ -791,7 +785,7 @@
                   },
                 }
               }, [
-                '复制'
+                this.$t('copy')
               ]));
 
               if (this.copiedData && this.copiedData !== vnodeObj) {
@@ -807,7 +801,7 @@
                     },
                   }
                 }, [
-                  '粘贴'
+                  this.$t('paste')
                 ]));
               }
             }
@@ -1442,8 +1436,8 @@
       removePanel() {
         const $this = this;
         this.$Modal.confirm({
-          title: '提示',
-          content: '确认要删除此节点吗？',
+          title: this.$t('notice'),
+          content: this.$t('removeNodeNotice'),
           onOk() {
             $this.form.parentVNode.children.some((elem, index) => {
               if (elem === $this.form.vnode) {
@@ -1790,6 +1784,7 @@
 
   .page-canvas .domtreenode {
     margin-left: 10px;
+    cursor: pointer;
   }
 
   .page-canvas .domtreenode.curselected {
