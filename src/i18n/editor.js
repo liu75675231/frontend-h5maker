@@ -104,6 +104,8 @@ export default new VueI18n({
       useNotice4: '4. 除了根节点外，其他节点都是可以复制的，可以尝试下复制节点来吧当前节点的内容替换到其他节点中',
       useNotice5: '5. 如果您在使用过程中遇到任何问题，请发邮件liu75675231@126.com, 谢谢您的反馈',
       tapTarget: '点击目标',
+      type: '类型',
+      delay: '延迟',
     },
     en: {
       preferences: 'Preferences',
@@ -204,6 +206,8 @@ export default new VueI18n({
       useNotice4: '4. except for the root node, other node can be copied, just try a node to another one.',
       useNotice5: '5. If you have any trouble using my online tool, please send liu75675231@126.com to me, thanks to your feedback.',
       tapTarget: 'Tap Target',
+      type: 'Type',
+      delay: 'Delay',
     },
   },
 })

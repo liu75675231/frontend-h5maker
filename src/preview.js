@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import {generateVNodeTree} from './utils/render'
 import {initDragger} from './utils/drag';
-
+import 'animate.css'
 
 const app = new Vue({
   el: '#app',

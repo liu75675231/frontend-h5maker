@@ -1,4 +1,5 @@
 <template>
+
   <div class="page-canvas">
     <div class="main-container">
       <div class="panel-canvas">
@@ -586,7 +587,118 @@
               </i-form>
             </div>
           </i-tab-pane>
-          <i-tab-pane :label="$t('animation')"></i-tab-pane>
+          <i-tab-pane :label="$t('animation')">
+            <i-form class="form" :label-width="80" v-if="form.vnode">
+              <i-form-item  :label="$t('animation')">
+                <i-checkbox v-model="form.style.animation.isShow" @on-change="changeAnimation">{{ $t('on') }}
+                </i-checkbox>
+              </i-form-item>
+              <i-form-item :label="$t('type')" v-if="form.style.animation.isShow">
+                <i-select v-model="form.style.animation.animationName" style="width: 70px" @on-change="changeAnimation">
+                  <i-option value="bounce">bounce</i-option>
+                  <i-option value="flash">flash</i-option>
+                  <i-option value="pulse">pulse</i-option>
+                  <i-option value="rubberBand">rubberBand</i-option>
+                  <i-option value="shakeX">shakeX</i-option>
+                  <i-option value="shakeY">shakeY</i-option>
+                  <i-option value="headShake">headShake</i-option>
+                  <i-option value="swing">swing</i-option>
+                  <i-option value="tada">tada</i-option>
+                  <i-option value="wobble">wobble</i-option>
+                  <i-option value="jello">jello</i-option>
+                  <i-option value="heartBeat">heartBeat</i-option>
+                  <i-option value="backInDown">backInDown</i-option>
+                  <i-option value="backInLeft">backInLeft</i-option>
+                  <i-option value="backInRight">backInRight</i-option>
+                  <i-option value="backInUp">backInUp</i-option>
+                  <i-option value="backOutDown">backOutDown</i-option>
+                  <i-option value="backOutLeft">backOutLeft</i-option>
+                  <i-option value="backOutRight">backOutRight</i-option>
+                  <i-option value="backOutUp">backOutUp</i-option>
+                  <i-option value="bounceIn">bounceIn</i-option>
+                  <i-option value="bounceInDown">bounceInDown</i-option>
+                  <i-option value="bounceInLeft">bounceInLeft</i-option>
+                  <i-option value="bounceInRight">bounceInRight</i-option>
+                  <i-option value="bounceInUp">bounceInUp</i-option>
+                  <i-option value="bounceOut">bounceOut</i-option>
+                  <i-option value="bounceOutDown">bounceOutDown</i-option>
+                  <i-option value="bounceOutLeft">bounceOutLeft</i-option>
+                  <i-option value="bounceOutRight">bounceOutRight</i-option>
+                  <i-option value="bounceOutUp">bounceOutUp</i-option>
+                  <i-option value="fadeIn">fadeIn</i-option>
+                  <i-option value="fadeInDown">fadeInDown</i-option>
+                  <i-option value="fadeInDownBig">fadeInDownBig</i-option>
+                  <i-option value="fadeInLeft">fadeInLeft</i-option>
+                  <i-option value="fadeInLeftBig">fadeInLeftBig</i-option>
+                  <i-option value="fadeInRight">fadeInRight</i-option>
+                  <i-option value="fadeInUp">fadeInUp</i-option>
+                  <i-option value="fadeInUpBig">fadeInUpBig</i-option>
+                  <i-option value="fadeInTopLeft">fadeInTopLeft</i-option>
+                  <i-option value="fadeInTopRight">fadeInTopRight</i-option>
+                  <i-option value="fadeInBottomLeft">fadeInBottomLeft</i-option>
+                  <i-option value="fadeInBottomRight">fadeInBottomRight</i-option>
+                  <i-option value="fadeOut">fadeOut</i-option>
+                  <i-option value="fadeOutDown">fadeOutDown</i-option>
+                  <i-option value="fadeOutDownBig">fadeOutDownBig</i-option>
+                  <i-option value="fadeOutLeft">fadeOutLeft</i-option>
+                  <i-option value="fadeOutLeftBig">fadeOutLeftBig</i-option>
+                  <i-option value="fadeOutRight">fadeOutRight</i-option>
+                  <i-option value="fadeOutRightBig">fadeOutRightBig</i-option>
+                  <i-option value="fadeOutUp">fadeOutUp</i-option>
+                  <i-option value="fadeOutUpBig">fadeOutUpBig</i-option>
+                  <i-option value="fadeOutTopLeft">fadeOutTopLeft</i-option>
+                  <i-option value="fadeOutTopRight">fadeOutTopRight</i-option>
+                  <i-option value="fadeOutBottomRight">fadeOutBottomRight</i-option>
+                  <i-option value="fadeOutBottomLeft">fadeOutBottomLeft</i-option>
+                  <i-option value="flip">flip</i-option>
+                  <i-option value="flipInX">flipInX</i-option>
+                  <i-option value="flipInY">flipInY</i-option>
+                  <i-option value="flipOutX">flipOutX</i-option>
+                  <i-option value="flipOutY">flipOutY</i-option>
+                  <i-option value="lightSpeedInRight">lightSpeedInRight</i-option>
+                  <i-option value="lightSpeedInLeft">lightSpeedInLeft</i-option>
+                  <i-option value="lightSpeedOutRight">lightSpeedOutRight</i-option>
+                  <i-option value="lightSpeedOutLeft">lightSpeedOutLeft</i-option>
+                  <i-option value="rotateIn">rotateIn</i-option>
+                  <i-option value="rotateInDownLeft">rotateInDownLeft</i-option>
+                  <i-option value="rotateInDownRight">rotateInDownRight</i-option>
+                  <i-option value="rotateInUpLeft">rotateInUpLeft</i-option>
+                  <i-option value="rotateInUpRight">rotateInUpRight</i-option>
+                  <i-option value="rotateOut">rotateOut</i-option>
+                  <i-option value="rotateOutDownLeft">rotateOutDownLeft</i-option>
+                  <i-option value="rotateOutDownRight">rotateOutDownRight</i-option>
+                  <i-option value="rotateOutUpLeft">rotateOutUpLeft</i-option>
+                  <i-option value="rotateOutUpRight">rotateOutUpRight</i-option>
+                  <i-option value="hinge">hinge</i-option>
+                  <i-option value="jackInTheBox">jackInTheBox</i-option>
+                  <i-option value="rollIn">rollIn</i-option>
+                  <i-option value="rollOut">rollOut</i-option>
+                  <i-option value="zoomIn">zoomIn</i-option>
+                  <i-option value="zoomInDown">zoomInDown</i-option>
+                  <i-option value="zoomInLeft">zoomInLeft</i-option>
+                  <i-option value="zoomInRight">zoomInRight</i-option>
+                  <i-option value="zoomInUp">zoomInUp</i-option>
+                  <i-option value="zoomOut">zoomOut</i-option>
+                  <i-option value="zoomOutDown">zoomOutDown</i-option>
+                  <i-option value="zoomOutLeft">zoomOutLeft</i-option>
+                  <i-option value="zoomOutRight">zoomOutRight</i-option>
+                  <i-option value="zoomOutUp">zoomOutUp</i-option>
+                  <i-option value="slideInDown">slideInDown</i-option>
+                  <i-option value="slideInLeft">slideInLeft</i-option>
+                  <i-option value="slideInRight">slideInRight</i-option>
+                  <i-option value="slideInUp">slideInUp</i-option>
+                  <i-option value="slideOutDown">slideOutDown</i-option>
+                  <i-option value="slideOutLeft">slideOutLeft</i-option>
+                  <i-option value="slideOutRight">slideOutRight</i-option>
+                  <i-option value="slideOutUp">slideOutUp</i-option>
+                </i-select>
+              </i-form-item>
+              <i-form-item :label="$t('delay')" v-if="form.style.animation.isShow">
+                <i-input-number v-model="form.style.animation.animationDelay"  @on-change="changeAnimation">
+                </i-input-number>
+              </i-form-item>
+            </i-form>
+          </i-tab-pane>
           <i-tab-pane :label="$t('event')">
             <i-form class="form" :label-width="80" v-if="form.vnode">
               <i-form-item :label="$t('drag')">
@@ -1035,6 +1147,11 @@
               },
               color: ''
             },
+            animation: {
+              isShow: false,
+              animationName: '',
+              animationDelay: null,
+            },
           },
           textList: [],
         },
@@ -1099,6 +1216,11 @@
       },
     },
     methods: {
+      changeAnimation () {
+        this.form.vnode.class.animate__animated = this.form.style.animation.isShow;
+        this.form.vnode.style.animationName = this.form.style.animation.animationName;
+        this.form.vnode.style.animationDelay = this.form.style.animation.animationDelay + 's';
+      },
       resetFormDefaultValue () {
         const $this = this;
         iteratorSetting(this.form.style);
@@ -1288,6 +1410,9 @@
           this.form.textList = [];
           this.form.vnode = curNode;
           this.form.parentVNode = curNode.parentVNode;
+          this.form.style.animation.isShow = curNode.class.animate__animated;
+          this.form.style.animation.animationName = curNode.style.animationName;
+          this.form.style.animation.animationDelay = curNode.style.animationDelay && parseFloat(curNode.style.animationDelay);
           const handler = this.parseVNodeToFormFuncDic();
           Object.keys(this.form.style).forEach((key) => {
             if (key === 'margin' || key === 'padding') {
@@ -1368,14 +1493,6 @@
           this.form.parentVNode = undefined;
           this.form.textList = [];
         }
-
-        // this.$nextTick(() => {
-        //   if ($(".curselected").length > 0) {
-        //     this.switchSelectedRect($('.curselected').get(0), 'show');
-        //   } else {
-        //     this.switchSelectedRect($('.curselected').get(0), 'hide');
-        //   }
-        // })
 
       },
       uploadReplaceImgSuccess(res) {
@@ -1459,7 +1576,6 @@
             });
             $this.form.vnode = undefined;
             $this.form.parentVNode = undefined;
-//            $this.switchSelectedRect(undefined, 'hide');
           },
         });
       },
@@ -1512,6 +1628,8 @@
           backgroundColor: '',
           boxShadow: '',
           backgroundImage: null,
+          animationName: null,
+          animationDelay: null,
         }
 
         if (data && data.style) {
@@ -1531,6 +1649,7 @@
             draggable: false,
             dropzone: false,
             taptarget: false,
+            animate__animated: false,
           },
           event: {
             targetArea: {
