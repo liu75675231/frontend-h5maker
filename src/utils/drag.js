@@ -110,9 +110,36 @@ function initDropZone () {
   })
 }
 
+function initTapTarget () {
+  interact('.taptarget')
+    .on('tap', function (event) {
+      var $target = $(event.target);
+      const tapTargetEvent = JSON.parse($target.attr('event')).tapTarget;
+      console.log(tapTargetEvent);
+      if (tapTargetEvent.backgroundColor) {
+        $target.css(tapTargetEvent);
+      }
+
+      event.preventDefault()
+    })
+    .on('doubletap', function (event) {
+//      console.log('abcd');
+//      event.currentTarget.classList.toggle('large')
+//      event.currentTarget.classList.remove('rotate')
+      event.preventDefault()
+    })
+    .on('hold', function (event) {
+//      console.log('sdf');
+//      event.currentTarget.classList.toggle('rotate')
+//      event.currentTarget.classList.remove('large')
+      event.preventDefault()
+    })
+}
+
 export function initDragger () {
   initDragMove();
   initDropZone();
+  initTapTarget();
 }
 
 export function enterDropZone () {

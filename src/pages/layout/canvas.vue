@@ -603,6 +603,14 @@
                 <i-form-item v-if="form.class.dropzone" :label="$t('backgroundColor')">
                   <i-color-picker v-model="form.vnode.event.targetArea.backgroundColor"/>
                 </i-form-item>
+                <i-form-item :label="$t('tapTarget')" :label-width="80">
+                  <i-checkbox v-model="form.class.taptarget" @on-change="changeClass('taptarget')">
+                    {{ $t('on') }}
+                  </i-checkbox>
+                </i-form-item>
+                <i-form-item v-if="form.class.taptarget" :label="$t('backgroundColor')">
+                  <i-color-picker v-model="form.vnode.event.tapTarget.backgroundColor"/>
+                </i-form-item>
               </i-form-item>
             </i-form>
           </i-tab-pane>
@@ -1522,11 +1530,15 @@
             curselected: false,
             draggable: false,
             dropzone: false,
+            taptarget: false,
           },
           event: {
             targetArea: {
               backgroundColor: '',
-            }
+            },
+            tapTarget: {
+              backgroundColor: '',
+            },
           },
           style,
           on: {
