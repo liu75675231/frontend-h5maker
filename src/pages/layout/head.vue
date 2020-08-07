@@ -13,6 +13,7 @@
       <div>{{ $t('useNotice2') }}</div>
       <div>{{ $t('useNotice3') }}</div>
       <div>{{ $t('useNotice4') }}</div>
+      <div>{{ $t('useNotice5') }}</div>
     </i-modal>
   </div>
 </template>

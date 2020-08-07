@@ -8,6 +8,7 @@ export function generateVNodeTree (treeNode, createElement) {
     }
   });
 
+  treeNode.attrs['event'] = JSON.stringify(treeNode.event);
   return createElement(treeNode.tag, {
     attrs: JSON.parse(JSON.stringify(treeNode.attrs || {})),
     on: treeNode.on || {},

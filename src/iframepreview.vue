@@ -25,6 +25,7 @@
 
 <script>
   import {initDragger} from './utils/drag';
+  import { generateVNodeTree } from './utils/render'
   import _ from 'lodash';
   import $ from 'jquery';
   export default {
@@ -38,31 +39,13 @@
           if (!this.vnode) {
             return createElement('div');
           }
-          const renderData = this.generateElementObj(this.vnode, createElement);
+          const renderData = generateVNodeTree(this.vnode, createElement);
           return renderData;
         },
         mounted() {
           initDragger();
         },
         methods: {
-          generateElementObj(vnodeObj, createElement) {
-            const $this = this;
-            const children = [];
-            vnodeObj.children && vnodeObj.children.forEach((elem) => {
-              if (typeof elem === 'string') {
-                children.push(elem);
-              } else {
-                children.push($this.generateElementObj(elem, createElement));
-              }
-            });
-
-            return createElement(vnodeObj.tag, {
-              attrs: JSON.parse(JSON.stringify(vnodeObj.attrs || {})),
-              on: vnodeObj.on || {},
-              style: vnodeObj.style || {},
-              class: vnodeObj.class || {},
-            }, children);
-          },
         },
       },
     },

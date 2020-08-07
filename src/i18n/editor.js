@@ -102,6 +102,7 @@ export default new VueI18n({
       useNotice2: '2. 除了根节点，其他节点都是可以被删除的，点击新增附近的删除按钮，可以删除此节点',
       useNotice3: '3. 可以点击屏幕显示面板旁边的首选项，来设置您的页面的一些通用样式和字体大小，依次来加速您的页面构建过程',
       useNotice4: '4. 除了根节点外，其他节点都是可以复制的，可以尝试下复制节点来吧当前节点的内容替换到其他节点中',
+      useNotice5: '5. 如果您在使用过程中遇到任何问题，请发邮件liu75675231@126.com, 谢谢您的反馈',
     },
     en: {
       preferences: 'Preferences',
@@ -200,6 +201,7 @@ export default new VueI18n({
       useNotice2: '2. except for the root node, other nodes can be removed. just click the remove button near the add button to remove.',
       useNotice3: '3. on the display panel, you can see the preference panel, you can click to open the dialog which you can change the default page settings, such as font unit, background color, font color, font size etc.',
       useNotice4: '4. except for the root node, other node can be copied, just try a node to another one.',
+      useNotice5: '5. If you have any trouble using my online tool, please send liu75675231@126.com to me, thanks to your feedback.',
     },
   },
 })

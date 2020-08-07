@@ -600,6 +600,9 @@
                     {{ $t('on') }}
                   </i-checkbox>
                 </i-form-item>
+                <i-form-item v-if="form.class.dropzone" :label="$t('backgroundColor')">
+                  <i-color-picker v-model="form.vnode.event.targetArea.backgroundColor"/>
+                </i-form-item>
               </i-form-item>
             </i-form>
           </i-tab-pane>
@@ -1519,6 +1522,11 @@
             curselected: false,
             draggable: false,
             dropzone: false,
+          },
+          event: {
+            targetArea: {
+              backgroundColor: '',
+            }
           },
           style,
           on: {
