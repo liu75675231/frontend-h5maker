@@ -208,6 +208,7 @@ export default new VueI18n({
       tapTarget: 'Tap Target',
       type: 'Type',
       delay: 'Delay',
+      mypage: 'My Page',
     },
   },
 })

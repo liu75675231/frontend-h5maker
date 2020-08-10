@@ -9,7 +9,6 @@ module.exports = {
     show: './src/show.js',
     preview: './src/preview.js',
     iframepreview: './src/iframepreview.js',
-    list: './src/list.js',
     editor: './src/editor.js',
   },
   mode: 'development',
@@ -72,12 +71,6 @@ module.exports = {
       chunks: ['show'],
       template: 'show.html',
       filename:  `show.html`,
-    }),
-    new HtmlWebpackPlugin({
-      inject: true,
-      chunks: ['list'],
-      template: 'list.html',
-      filename:  `list.html`,
     }),
     new HtmlWebpackPlugin({
       inject: true,

@@ -1,7 +1,7 @@
 <template>
   <div class="page-list">
     <div class="box-panel">
-      <div class="box-title">My page</div>
+      <div class="box-title">{{ $t('mypage') }}</div>
       <div class="card-list">
         <web-card class="card-item"></web-card>
         <web-card class="card-item"></web-card>
@@ -14,7 +14,7 @@
       </div>
     </div>
     <div class="box-panel">
-      <div class="box-title">Templates</div>
+      <div class="box-title">{{ $t('templates') }}</div>
       <div class="card-list">
         <web-card class="card-item"></web-card>
       </div>

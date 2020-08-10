@@ -1,10 +1,10 @@
 <template>
   <div class="page-register">
     <div class="register-panel">
-      <div class="register-title">Sign Up. Start designing for free</div>
-      <input class="register-input" type="text" name="username" placeholder="Enter a valid email address"/>
-      <input class="register-input" type="password" name="password" placeholder="Password"/>
-      <div class="register-btn">Sign up</div>
+      <div class="register-title">{{ $t('signupPanelTitle') }}</div>
+      <input class="register-input" type="text" name="username" :placeholder="$t('loginInputUsername')"/>
+      <input class="register-input" type="password" name="password" :placeholder="$t('loginInputPassword')"/>
+      <div class="register-btn">{{ $t('signup') }}</div>
     </div>
   </div>
 

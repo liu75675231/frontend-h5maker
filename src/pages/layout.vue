@@ -5,9 +5,9 @@
         <router-link to="/" class="company-name">h5Online</router-link>
       </div>
       <div class="layout-head-right">
-        <a href="/editor.html" class="label-item" target="_blank">New website</a>
-        <router-link to="/login" class="label-item">Log in</router-link>
-        <router-link to="/register" class="label-item">Sign up</router-link>
+        <a href="/editor.html" class="label-item" target="_blank">{{ $t('newpage') }}</a>
+        <router-link to="/login" class="label-item">{{ $t('login') }}</router-link>
+        <router-link to="/register" class="label-item">{{ $t('signup') }}</router-link>
       </div>
     </div>
     <div class="layout-body">

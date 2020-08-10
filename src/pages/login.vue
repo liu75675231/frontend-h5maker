@@ -1,10 +1,10 @@
 <template>
   <div class="page-login">
     <div class="login-panel">
-      <div class="login-title">Please log in</div>
-      <input class="login-input" type="text" name="username" placeholder="Enter a valid email address"/>
-      <input class="login-input" type="password" name="password" placeholder="Password"/>
-      <div class="login-btn">Log in</div>
+      <div class="login-title">{{ $t('pleaseLogin') }}</div>
+      <input class="login-input" type="text" name="username" :placeholder="$t('loginInputUsername')"/>
+      <input class="login-input" type="password" name="password" :placeholder="$t('loginInputPassword')"/>
+      <div class="login-btn">{{ $t('login') }}</div>
     </div>
   </div>
 
