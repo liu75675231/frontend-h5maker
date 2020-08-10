@@ -5,7 +5,7 @@
         <router-link to="/" class="company-name">h5Online</router-link>
       </div>
       <div class="layout-head-right">
-        <a href="/editor.html" class="label-item">New website</a>
+        <a href="/editor.html" class="label-item" target="_blank">New website</a>
         <router-link to="/login" class="label-item">Log in</router-link>
         <router-link to="/register" class="label-item">Sign up</router-link>
       </div>
