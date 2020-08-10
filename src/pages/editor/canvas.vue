@@ -1195,8 +1195,11 @@
 
           this.tree = tree;
           this.$nextTick(() => {
-            document.querySelector(".domtreenode.curselected").click()
-            document.querySelector(".domtreenode.curselected").click();
+            if (document.querySelector(".domtreenode.curselected")) {
+              document.querySelector(".domtreenode.curselected").click()
+              document.querySelector(".domtreenode.curselected").click();
+            }
+
           });
         });
       } else {
