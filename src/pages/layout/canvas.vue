@@ -1171,10 +1171,17 @@
       }
     },
     created() {
+      const $this = this;
       if (this.id) {
         httpGetH5Data(this.id).then((res) => {
           function iteratorSetParentVNode (curNode, parentVNode) {
             curNode.parentVNode = parentVNode;
+            curNode.on.click = function (e) {
+              e.stopPropagation();
+              console.log($this);
+              $this.handleNodeClick(curNode);
+            }
+
             curNode.children.forEach((item) => {
               if (typeof item === 'object' && item !== null) {
                 iteratorSetParentVNode(item, curNode);
@@ -1183,6 +1190,7 @@
             });
           }
           const tree = JSON.parse(res.data.data.data);
+          console.log(tree);
           iteratorSetParentVNode(tree, null);
 
           this.tree = tree;
