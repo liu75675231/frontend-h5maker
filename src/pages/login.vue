@@ -2,17 +2,31 @@
   <div class="page-login">
     <div class="login-panel">
       <div class="login-title">{{ $t('pleaseLogin') }}</div>
-      <input class="login-input" type="text" name="username" :placeholder="$t('loginInputUsername')"/>
-      <input class="login-input" type="password" name="password" :placeholder="$t('loginInputPassword')"/>
-      <div class="login-btn">{{ $t('login') }}</div>
+      <input class="login-input" type="text" name="username" v-model="username" :placeholder="$t('loginInputUsername')"/>
+      <input class="login-input" type="password" name="password" v-model="password" :placeholder="$t('loginInputPassword')"/>
+      <div class="login-btn" @click="login">{{ $t('login') }}</div>
     </div>
   </div>
 
 </template>
 
 <script>
+  import { login } from '../http/user';
   export default {
-    name: "login"
+    name: "login",
+    data () {
+      return {
+        username: '',
+        password: '',
+      }
+    },
+    methods: {
+      login () {
+        login(this.username, this.password).then((res) => {
+          console.log(res);
+        });
+      },
+    }
   }
 </script>
 
