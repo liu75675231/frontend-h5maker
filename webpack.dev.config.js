@@ -46,7 +46,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      H5_ONLINE_HOST: JSON.stringify("http://localhost:8080"),
+      H5_ONLINE_HOST: JSON.stringify(process.env.WEBSITE_URL),
     }),
     new HtmlWebpackPlugin({
       inject: true,

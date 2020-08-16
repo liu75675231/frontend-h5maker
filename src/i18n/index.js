@@ -15,6 +15,12 @@ export default new VueI18n({
       loginInputPassword: '请输入密码',
       pleaseLogin: '请登录',
       signupPanelTitle: '请先注册，然后开启您的网页设计之旅',
+      userDuplicate: '此用户名已被注册',
+      emptyUsername: '请输入用户名',
+      emptyPassword: '请输入密码',
+      invalidUsername: '用户名不合法，请输入一个合法的邮箱',
+      invalidPassword: '密码不合法，请输入至少9个字符',
+      incorrectUsernameOrPassword: '用户名或者密码不合法',
     },
     en: {
       mypage: 'My page',
@@ -26,6 +32,12 @@ export default new VueI18n({
       loginInputPassword: 'Password',
       pleaseLogin: 'Please log in',
       signupPanelTitle: 'Sign up and Starting your design journey',
+      userDuplicate: 'This username was registered',
+      emptyUsername: 'Please input username',
+      emptyPassword: 'Please input password',
+      invalidUsername: 'Username is invalid, please input a valid email',
+      invalidPassword: 'Password is invalid, please input at least 9 characters',
+      incorrectUsernameOrPassword: 'Incorrect username or password',
     }
   }
 });

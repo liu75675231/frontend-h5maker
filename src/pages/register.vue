@@ -2,17 +2,62 @@
   <div class="page-register">
     <div class="register-panel">
       <div class="register-title">{{ $t('signupPanelTitle') }}</div>
-      <input class="register-input" type="text" name="username" :placeholder="$t('loginInputUsername')"/>
-      <input class="register-input" type="password" name="password" :placeholder="$t('loginInputPassword')"/>
-      <div class="register-btn">{{ $t('signup') }}</div>
+      <input class="register-input" type="text" name="username" v-model="username" :placeholder="$t('loginInputUsername')" maxlength="64"/>
+      <input class="register-input" type="password" name="password" v-model="password" :placeholder="$t('loginInputPassword')" maxlength="16"/>
+      <div class="register-btn" @click="register">{{ $t('signup') }}</div>
     </div>
   </div>
 
 </template>
 
 <script>
+  import { register } from '../http/user'
   export default {
-    name: "register"
+    name: "register",
+    data () {
+      return {
+        username: '',
+        password: '',
+      }
+    },
+    methods: {
+      checkEmail (email) {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+      },
+      validate () {
+        if (!this.username) {
+          alert(this.$t('emptyUsername'));
+          return false;
+        }
+        if (!this.checkEmail(this.username)) {
+          alert(this.$t('invalidUsername'));
+          return false;
+        }
+        if (!this.password) {
+          alert(this.$t('emptyPassword'));
+          return false;
+        }
+        if (this.password.length < 9) {
+          alert(this.$t('invalidPassword'));
+          return false;
+        }
+
+        return true;
+      },
+      register () {
+        if (!this.validate()) {
+          return;
+        }
+        register(this.username, this.password).then((res) => {
+          if (res.data.msg !== true) {
+            alert(this.$t(res.data.msg));
+            return;
+          }
+          this.$router.push('/');
+        });
+      },
+    },
   }
 </script>
 

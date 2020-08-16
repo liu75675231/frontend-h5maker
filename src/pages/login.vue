@@ -21,9 +21,40 @@
       }
     },
     methods: {
+      checkEmail (email) {
+        var re = /\S+@\S+\.\S+/;
+        return re.test(email);
+      },
+      validate () {
+        if (!this.username) {
+          alert(this.$t('emptyUsername'));
+          return false;
+        }
+        if (!this.checkEmail(this.username)) {
+          alert(this.$t('invalidUsername'));
+          return false;
+        }
+        if (!this.password) {
+          alert(this.$t('emptyPassword'));
+          return false;
+        }
+        if (this.password.length < 9) {
+          alert(this.$t('invalidPassword'));
+          return false;
+        }
+
+        return true;
+      },
       login () {
+        if (!this.validate()) {
+          return;
+        }
         login(this.username, this.password).then((res) => {
-          console.log(res);
+          if (res.data.errMsg) {
+            alert(this.$t(res.data.errMsg.password[0]));
+            return;
+          }
+          this.$router.push('/');
         });
       },
     }
