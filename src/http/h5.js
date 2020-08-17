@@ -1,4 +1,17 @@
 import axios from '../utils/http';
+import http from "../utils/http";
+
+export function httpSaveH5 (id, title, data) {
+  return http.request({
+    url: '/h5/save',
+    method: 'post',
+    data: {
+      id: id,
+      title: title,
+      data: data,
+    },
+  })
+}
 
 export function httpGetH5Data (id) {
   return axios.request({

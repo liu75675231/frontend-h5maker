@@ -37,6 +37,10 @@
     },
     mounted () {
       this.$root.$on("resTreeNodeData", (data) => {
+        if (!this.title) {
+          this.$Message.warning(this.$t('titleNotice'));
+          return;
+        }
 
         const str = JSON.stringify(data, (key, val) => {
           if (key == 'parentVNode') {

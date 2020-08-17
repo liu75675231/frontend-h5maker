@@ -110,6 +110,7 @@ export default new VueI18n({
       musicInputNotice: '请输入音乐链接地址',
       or: '或者',
       uploadMusic: '上传音乐',
+      titleNotice: '请输入H5页面的标题',
     },
     en: {
       preferences: 'Preferences',
@@ -217,6 +218,7 @@ export default new VueI18n({
       musicInputNotice: 'Please input the music link',
       or: 'Or',
       uploadMusic: 'Upload music',
+      titleNotice: 'Please input the title',
     },
   },
 })
