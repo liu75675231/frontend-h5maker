@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './pages/editor/index.vue'
-import store from './store'
+import store from './editor'
 
 import { locale, Button, Layout, Header, Sider, Content, Input, Form, FormItem, Select, Option, RadioGroup, Radio, ColorPicker, Checkbox, Upload, Modal, Message, Icon, Tabs, TabPane, Collapse, Panel, InputNumber  } from 'view-design'
 import 'view-design/dist/styles/iview.css'

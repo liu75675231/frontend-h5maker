@@ -54,7 +54,8 @@
             alert(this.$t(res.data.msg));
             return;
           }
-          this.$router.push('/');
+          alert(this.$t('registerSuccess'));
+          this.$router.push('/login');
         });
       },
     },

@@ -5,22 +5,11 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    vnode: {
-      tag: 'div',
-      title: '',
-      attrs: {},
-      style: {
-        height: 'initial',
-      },
-      class: {
-        curselected: false,
-      },
-      children: [],
+    user: {},
+  },
+  mutations: {
+    updateUserInfo (state, user) {
+      state.user = user;
     },
   },
-  actions: {
-    generateVNodeData (state, parentVNode, tagName, data) {
-
-    },
-  }
 })

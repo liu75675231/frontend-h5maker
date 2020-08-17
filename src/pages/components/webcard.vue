@@ -2,20 +2,43 @@
   <div class="web-card-panel">
     <img class="web-card-img" src="https://library.elementor.com/wp-content/uploads/2020/04/Main-Library-Pic.jpg">
     <div class="web-card-info">
-      <div class="web-card-title">my title</div>
+      <div class="web-card-title">{{ title }}</div>
       <div class="web-card-opt">
-        <div class="web-card-opt-item">View</div>
-        <div class="web-card-opt-item">Edit</div>
-        <div class="web-card-opt-item">Clone</div>
-        <div class="web-card-opt-item">Delete</div>
+        <div class="web-card-opt-item" @click="openPreview">{{ $t('view') }}</div>
+        <div class="web-card-opt-item" @click="openEditor">{{ $t('edit') }}</div>
+        <div class="web-card-opt-item" @click="cloneH5">{{ $t('clone') }}</div>
+        <div class="web-card-opt-item" @click="removeH5">{{ $t('remove') }}</div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import { httpRemoveH5, httpCloneH5 } from '../../http/h5'
   export default {
-    name: "webcard"
+    name: "webcard",
+    props: {
+      id: Number,
+      title: String,
+    },
+    methods: {
+      cloneH5 () {
+        httpCloneH5(this.id).then((res) => {
+
+        });
+      },
+      removeH5 () {
+        httpRemoveH5(this.id).then((res) => {
+
+        });
+      },
+      openEditor () {
+        window.open('/editor.html?id=' + this.id, '_blank');
+      },
+      openPreview () {
+        window.open('/show.html?id=' + this.id, '_blank');
+      },
+    },
   }
 </script>
 

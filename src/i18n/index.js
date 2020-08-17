@@ -21,6 +21,12 @@ export default new VueI18n({
       invalidUsername: '用户名不合法，请输入一个合法的邮箱',
       invalidPassword: '密码不合法，请输入至少9个字符',
       incorrectUsernameOrPassword: '用户名或者密码不合法',
+      registerSuccess: '注册成功',
+      loginNotice: '请先登录',
+      view: '查看',
+      edit: '编辑',
+      remove: '删除',
+      clone: '克隆',
     },
     en: {
       mypage: 'My page',
@@ -38,6 +44,12 @@ export default new VueI18n({
       invalidUsername: 'Username is invalid, please input a valid email',
       invalidPassword: 'Password is invalid, please input at least 9 characters',
       incorrectUsernameOrPassword: 'Incorrect username or password',
+      registerSuccess: 'Register Successful',
+      loginNotice: 'You need to login first',
+      view: 'View',
+      edit: 'Edit',
+      remove: 'Remove',
+      clone: 'Clone',
     }
   }
 });

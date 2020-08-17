@@ -1,5 +1,4 @@
 <template>
-
   <div class="page-canvas">
     <div class="main-container">
       <div class="panel-canvas">
@@ -850,6 +849,11 @@
             <div class="content-item" style="width: 100%;background-color: #fff;border-radius: 4px;box-shadow: 0rem 0.5rem 0.5rem 0.5px #7C7CF5;padding: .5rem 1rem;min-height: 5rem;" @click="selectDomStructure('panel', $event)">
             </div>
           </template>
+          <template v-if="insertNodePopup.curMenu === 'music'">
+            <div>
+              <i-input search :enter-button="$t('submit')" :placeholder="$t('musicInputNotice')" @on-search="submitMusic"/>
+            </div>
+          </template>
         </div>
       </div>
     </i-modal>
@@ -1253,6 +1257,47 @@
         this.previewWindowHandler = window.open('/preview.html', '_blank');
         this.previewWindowHandler.vnode = this.tree;
       },
+      submitMusic () {
+        const data = {
+          nickName: 'audio-panel',
+          style: {
+            position: 'fixed',
+            top: '.3rem',
+            right: '.3rem',
+          },
+          children: [
+            {
+              nickName: 'img',
+              nodeType: 'img',
+              attrs: {
+                src: 'http://special.dajie.com/html/vsite/pingan/images/music.png',
+              },
+              style: {
+                width: '2rem',
+              },
+              children: [],
+            },
+            {
+              nickName: 'audio',
+              nodeType: 'audio',
+              attrs: {
+                autoplay: true,
+              },
+              children: [
+                {
+                  nickName: 'source',
+                  nodeType: 'source',
+                  attrs: {
+                    src: 'http://100.100.100.100:8081/IXC7d44dd7ae8b813fae82e87901087c596/html/vsite/pingan/audio/bgm.mp3',
+                    type: 'audio/mpeg',
+                  },
+                }
+              ],
+            }
+          ],
+        };
+        this.submitInsertNodePopup(data);
+      },
       selectDomStructure (type, e) {
         let $root = $(e.target);
         if (!$root.hasClass("content-item")) {
@@ -1373,6 +1418,7 @@
         if (this.insertNodePopup.form.type === 'img') {
           data.src = data.src;
         }
+
         if (this.insertNodePopup.form.pos === 'child') {
           this.addPanel(this.insertNodePopup.formVNode, this.insertNodePopup.form.type, data);
         } else {
@@ -1380,9 +1426,6 @@
           data.curVNode = this.insertNodePopup.formVNode;
           this.addPanel(this.insertNodePopup.formVNode.parentVNode, this.insertNodePopup.form.type, data);
         }
-//        this.$nextTick(() => {
-//          $(".curselected").length > 0 && this.switchSelectedRect($(".curselected").get(0), 'show');
-//        });
         this.insertNodePopup.isShow = false;
       },
       showInsertNodePopup(formVNode) {
@@ -1514,6 +1557,9 @@
         this.$refs.rootUploadBtn.clearFiles();
         this.addPanel(this.tree, 'img', {src: res.url});
       },
+      uploadNodeMusicSuccess (res) {
+
+      },
       uploadNodeImgSuccess(res) {
         this.$refs.nodeUploadBtn.clearFiles();
         this.selectedInsertNode('image', {}, {src: res.url});
@@ -1593,7 +1639,6 @@
       generateVNodeData(parentVNode, tagName, data) {
         const $this = this;
 
-        console.log('generatevnodedata');
         const style = {
           width: null,
           height: null,
@@ -1686,18 +1731,20 @@
             if (typeof elem === 'string') {
               curNode.children.push(elem);
             } else {
-              curNode.children.push(this.generateVNodeData(curNode, 'div', elem));
+              let nodeType = 'div';
+              if (elem.nodeType) {
+                console.log(elem);
+                nodeType = elem.nodeType;
+              }
+              curNode.children.push(this.generateVNodeData(curNode, nodeType, elem));
             }
           });
         }
 
-        if (tagName === 'img') {
-          curNode.attrs = {
-            src: data.src,
-            width: '100%',
-          }
-          curNode.style.display = 'inline-block';
+        if (data.attrs) {
+          curNode.attrs = $.extend(true, {}, curNode.attrs, data.attrs);
         }
+
         if (tagName === 'span') {
           curNode.style.display = 'inline';
         }

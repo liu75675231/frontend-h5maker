@@ -106,6 +106,10 @@ export default new VueI18n({
       tapTarget: '点击目标',
       type: '类型',
       delay: '延迟',
+      submit: '确定',
+      musicInputNotice: '请输入音乐链接地址',
+      or: '或者',
+      uploadMusic: '上传音乐',
     },
     en: {
       preferences: 'Preferences',
@@ -209,6 +213,10 @@ export default new VueI18n({
       type: 'Type',
       delay: 'Delay',
       mypage: 'My Page',
+      submit: 'Submit',
+      musicInputNotice: 'Please input the music link',
+      or: 'Or',
+      uploadMusic: 'Upload music',
     },
   },
 })

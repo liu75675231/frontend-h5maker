@@ -54,6 +54,9 @@
             alert(this.$t(res.data.errMsg.password[0]));
             return;
           }
+
+          this.$store.commit('updateUserInfo', res.data);
+          sessionStorage.setItem('userInfo', JSON.stringify(res.data));
           this.$router.push('/');
         });
       },
