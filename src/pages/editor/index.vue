@@ -31,7 +31,6 @@
       Setting,
     },
     created () {
-      console.log(this.$store);
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('id')) {
         this.id = urlParams.get('id');
@@ -39,7 +38,6 @@
     },
     methods: {
       updateTreeNode (treeNode) {
-        console.log(treeNode);
         this.treeNode = treeNode;
       },
     },

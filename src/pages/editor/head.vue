@@ -37,12 +37,14 @@
     },
     mounted () {
       this.$root.$on("resTreeNodeData", (data) => {
+
         const str = JSON.stringify(data, (key, val) => {
           if (key == 'parentVNode') {
             return undefined;
           }
           return val;
         })
+        console.log(str);
         http.request({
           url: '/h5/save',
           method: 'post',
@@ -52,7 +54,7 @@
             data: str,
           },
         }).then((res) => {
-          window.location.href = H5_ONLINE_HOST + '/show.html?id=' + res.data.data;
+          window.location.href =  '/show.html?id=' + res.data.data;
         });
       });
     },

@@ -47,6 +47,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       H5_ONLINE_HOST: JSON.stringify(process.env.WEBSITE_URL),
+      H5_PREVIEW_HOST: JSON.stringify(process.env.PREVIEW_URL),
     }),
     new HtmlWebpackPlugin({
       inject: true,
