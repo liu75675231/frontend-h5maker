@@ -543,41 +543,59 @@
                   <i-panel name="3">
                     {{ $t('background') }}
                     <p slot="content">
-                      <i-form-item :label="$t('backgroundColor')">
-                        <i-color-picker v-model="form.style.backgroundColor"
-                                        @on-change="changeStyle('backgroundColor')"/>
+                      <i-form-item :label="$t('backgroundType')">
+                        <i-radio-group v-model="form.style.background.type" @on-change="changeBackground">
+                          <i-radio label="color">
+                            {{ $t('color') }}
+                          </i-radio>
+                          <i-radio label="image">{{ $t('image') }}</i-radio>
+                          <i-radio label="gradients">{{ $t('gradients') }}</i-radio>
+                        </i-radio-group>
+                      </i-form-item>
+                      <i-form-item :label="$t('backgroundColor')" v-if="form.style.background.type == 'color'">
+                        <i-color-picker v-model="form.style.background.color"
+                                        @on-change="changeBackground"/>
                       </i-form-item>
 
-                      <i-form-item :label="$t('gradients')">
-                        <i-input-number v-model="form.style.backgroundImage.direction"
-                                 @on-change="changeBackgroundImage"></i-input-number>
+                      <i-form-item :label="$t('image')" v-if="form.style.background.type == 'image'">
+                        <i-upload ref="backgroundImageUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*"
+                                  :on-success="backgroundImageUploadSuccess">
+                          <i-button icon="ios-cloud-upload-outline">{{ $t('uploadImage') }}</i-button>
+                        </i-upload>
+                        <div v-if="form.style.background.image">
+                          <img :src="form.style.background.image" style="width: 50%">
+                        </div>
+                      </i-form-item>
+                      <i-form-item :label="$t('gradients')" v-if="form.style.background.type == 'gradients'">
+                        <i-input-number v-model="form.style.background.gradients.direction"
+                                 @on-change="changeBackground"></i-input-number>
                         <i-form-item :label="$t('backgroundColor') + '1'" :label-width="80">
-                          <i-input-number v-model="form.style.backgroundImage.color0.len.val"
-                                   @on-change="changeBackgroundImage">
+                          <i-input-number v-model="form.style.background.gradients.color0.len.val"
+                                   @on-change="changeBackground">
                           </i-input-number>
-                          <i-select v-model="form.style.backgroundImage.color0.len.unit"
-                                    style="width: 70px" @on-change="changeBackgroundImage">
+                          <i-select v-model="form.style.background.gradients.color0.len.unit"
+                                    style="width: 70px" @on-change="changeBackground">
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
                             <i-option value="vw">vw</i-option>
                           </i-select>
-                          <i-color-picker v-model="form.style.backgroundImage.color0.color"
-                                          @on-change="changeBackgroundImage"/>
+                          <i-color-picker v-model="form.style.background.gradients.color0.color"
+                                          @on-change="changeBackground"/>
                         </i-form-item>
                         <i-form-item :label="$t('backgroundColor') + '2'" :label-width="80">
-                          <i-input-number v-model="form.style.backgroundImage.color1.len.val"
-                                   @on-change="changeBackgroundImage">
+                          <i-input-number v-model="form.style.background.gradients.color1.len.val"
+                                   @on-change="changeBackground">
                           </i-input-number>
-                          <i-select v-model="form.style.backgroundImage.color1.len.unit"
-                                    style="width: 70px" @on-change="changeBackgroundImage">
+                          <i-select v-model="form.style.background.gradients.color1.len.unit"
+                                    style="width: 70px" @on-change="changeBackground">
                             <i-option value="rem">rem</i-option>
                             <i-option value="px">px</i-option>
                             <i-option value="%">%</i-option>
                             <i-option value="vw">vw</i-option>
                           </i-select>
-                          <i-color-picker v-model="form.style.backgroundImage.color1.color"
-                                          @on-change="changeBackgroundImage"/>
+                          <i-color-picker v-model="form.style.background.gradients.color1.color"
+                                          @on-change="changeBackground"/>
                         </i-form-item>
                       </i-form-item>
                     </p>
@@ -1114,22 +1132,26 @@
             },
             textAlign: null,
             fontWeight: 'normal',
-            backgroundColor: '',
-            backgroundImage: {
-              direction: '0',
-              color0: {
-                len: {
-                  val: '',
-                  unit: 'rem',
+            background: {
+              type: 'color',
+              color: '',
+              image: '',
+              gradients: {
+                direction: 0,
+                color0: {
+                  len: {
+                    val: 0,
+                    unit: 'rem',
+                  },
+                  color: '',
                 },
-                color: '#000',
-              },
-              color1: {
-                len: {
-                  val: '',
-                  unit: 'rem',
+                color1: {
+                  len: {
+                    val: 0,
+                    unit: 'rem',
+                  },
+                  color: '',
                 },
-                color: '#000',
               },
             },
             boxShadow: {
@@ -1207,7 +1229,7 @@
           });
         });
       } else {
-        this.tree = this.generateVNodeData(undefined, 'div', {
+        this.tree = this.generateVNodeData(undefined, {
           nickName: 'root',
         });
       }
@@ -1415,16 +1437,12 @@
           data = {};
         }
 
-        if (this.insertNodePopup.form.type === 'img') {
-          data.src = data.src;
-        }
-
         if (this.insertNodePopup.form.pos === 'child') {
-          this.addPanel(this.insertNodePopup.formVNode, this.insertNodePopup.form.type, data);
+          this.addPanel(this.insertNodePopup.formVNode, data);
         } else {
           data.pos = this.insertNodePopup.form.pos;
           data.curVNode = this.insertNodePopup.formVNode;
-          this.addPanel(this.insertNodePopup.formVNode.parentVNode, this.insertNodePopup.form.type, data);
+          this.addPanel(this.insertNodePopup.formVNode.parentVNode, data);
         }
         this.insertNodePopup.isShow = false;
       },
@@ -1450,7 +1468,7 @@
       },
 
       handleExchangeNode (originVNode, targetVNode) {
-        const vnode = this.generateVNodeData(targetVNode.parentVNode, originVNode.tag, originVNode);
+        const vnode = this.generateVNodeData(targetVNode.parentVNode, originVNode);
         const index = targetVNode.parentVNode.children.indexOf(targetVNode);
         targetVNode.parentVNode.children.splice(index, 1, vnode);
       },
@@ -1500,25 +1518,31 @@
               return;
             }
 
-            if (key === 'backgroundImage') {
-              if (curNode.style[key] == null) {
-                this.form.style[key].direction = null;
-                this.form.style[key].color0.len.val = null;
-                this.form.style[key].color0.color = '';
-                this.form.style[key].color1.len.val = null;
-                this.form.style[key].color1.color = '';
-              } else {
-                const itemArr = curNode.style[key].replace("linear-gradient(", "").replace(")", "").split(",");
-                this.form.style[key].direction = Number.parseFloat(itemArr[0]);
+            if (key === 'background') {
+              if (curNode.style.backgroundColor) {
+                this.form.style[key].type = 'color';
+                this.form.style[key].color = curNode.style.backgroundColor;
+              } else if (curNode.style.backgroundImage && curNode.style.backgroundImage.indexOf('linear-gradient') > -1) {
+                this.form.style[key].type = 'gradients';
+                const itemArr = curNode.style.backgroundImage.replace("linear-gradient(", "").replace(")", "").split(",");
+                this.form.style[key].gradients.direction = Number.parseFloat(itemArr[0]);
                 const color0Arr = itemArr[1].split(" ");
-                this.form.style[key].color0.len.val = color0Arr[1];
-                this.form.style[key].color0.color = color0Arr[0];
+                this.form.style[key].gradients.color0.len.val = +color0Arr[1].match(/[\d-]+/)[0];
+                this.form.style[key].gradients.color0.len.unit = color0Arr[1].match(/[\D]+$/)[0];
+                this.form.style[key].gradients.color0.color = color0Arr[0];
                 const color1Arr = itemArr[2].split(" ");
-                this.form.style[key].color1.len.val = color1Arr[1];
-                this.form.style[key].color1.color = color1Arr[0];
+                this.form.style[key].gradients.color1.len.val = +color1Arr[1].match(/[\d-]+/)[0];
+                this.form.style[key].gradients.color1.len.unit = color1Arr[1].match(/[\D]+$/)[0];
+                this.form.style[key].gradients.color1.color = color1Arr[0];
+              } else if (curNode.style.backgroundImage && curNode.style.backgroundImage.indexOf('url') > -1) {
+                this.form.style[key].type = 'image';
+                this.form.style[key].image = curNode.style.backgroundImage.replace("url('", "").replace("')", '');;
+              } else {
+                this.form.style[key].type = 'color';
+                this.form.style[key].color = '';
               }
-              return;
             }
+            console.log(key);
 
             if (typeof this.form.style[key] !== 'object' || this.form.style[key] == null) {
               this.form.style[key] = curNode.style[key];
@@ -1555,21 +1579,47 @@
       },
       uploadRootImgSuccess(res) {
         this.$refs.rootUploadBtn.clearFiles();
-        this.addPanel(this.tree, 'img', {src: res.url});
+        this.addPanel(this.tree, {src: res.url});
       },
       uploadNodeMusicSuccess (res) {
-
       },
       uploadNodeImgSuccess(res) {
         this.$refs.nodeUploadBtn.clearFiles();
-        this.selectedInsertNode('image', {}, {src: res.url});
-      },
-      changeBackgroundImage() {
-        if (this.form.style.backgroundImage.direction === '' || this.form.style.backgroundImage.color0.color === '' || this.form.style.backgroundImage.color0.len.val === '' || this.form.style.backgroundImage.color1.color === '' || this.form.style.backgroundImage.color1.len.val === '') {
-          this.form.vnode.style.backgroundImage = undefined;
-          return;
+        const data = {
+          nickName: 'img',
+          tagName: 'img',
+          attrs: {
+            src: res.url,
+          },
+          style: {
+            width: '100%',
+          }
         }
-        this.form.vnode.style.backgroundImage = `linear-gradient(${this.form.style.backgroundImage.direction}deg,${this.form.style.backgroundImage.color0.color} ${this.form.style.backgroundImage.color0.len.val}${this.form.style.backgroundImage.color0.len.unit},${this.form.style.backgroundImage.color1.color} ${this.form.style.backgroundImage.color1.len.val}${this.form.style.backgroundImage.color1.len.unit})`;
+        this.submitInsertNodePopup(data);
+      },
+      backgroundImageUploadSuccess (res) {
+        this.$refs.backgroundImageUploadBtn.clearFiles();
+        this.form.style.background.image = res.url;
+        this.changeBackground();
+      },
+      changeBackground () {
+        const obj = this.form.style.background;
+        this.form.vnode.style.backgroundColor = this.form.vnode.style.backgroundImage = '';
+
+        if (obj.type === 'color') {
+          this.form.vnode.style.backgroundColor = obj.color;
+        }
+        if (obj.type === 'image') {
+          this.form.vnode.style.backgroundImage = "url('" + obj.image + "')";
+        }
+
+        if (obj.type === 'gradients') {
+          if (this.form.style.background.gradients.direction === '' || this.form.style.background.gradients.color0.color === '' || this.form.style.background.gradients.color0.len.val === '' || this.form.style.background.gradients.color1.color === '' || this.form.style.background.gradients.color1.len.val === '') {
+            this.form.vnode.style.backgroundImage = undefined;
+            return;
+          }
+          this.form.vnode.style.backgroundImage = `linear-gradient(${this.form.style.background.gradients.direction}deg,${this.form.style.background.gradients.color0.color} ${this.form.style.background.gradients.color0.len.val}${this.form.style.background.gradients.color0.len.unit},${this.form.style.background.gradients.color1.color} ${this.form.style.background.gradients.color1.len.val}${this.form.style.background.gradients.color1.len.unit})`;
+        }
       },
       changeBoxShadow() {
         this.form.vnode.style.boxShadow = `${this.form.style.boxShadow.hShadow.val}${this.form.style.boxShadow.hShadow.unit} ${this.form.style.boxShadow.vShadow.val}${this.form.style.boxShadow.vShadow.unit} ${this.form.style.boxShadow.blur.val}${this.form.style.boxShadow.blur.unit} ${this.form.style.boxShadow.spread.val}${this.form.style.boxShadow.spread.unit} ${this.form.style.boxShadow.color}`;
@@ -1636,9 +1686,18 @@
           },
         });
       },
-      generateVNodeData(parentVNode, tagName, data) {
+      generateVNodeData(parentVNode, data) {
         const $this = this;
 
+        if (!data) {
+          data = {};
+        }
+        let tagName = 'div';
+        if (data.tagName) {
+          tagName = data.tagName;
+        }
+
+        console.log(tagName);
         const style = {
           width: null,
           height: null,
@@ -1731,12 +1790,7 @@
             if (typeof elem === 'string') {
               curNode.children.push(elem);
             } else {
-              let nodeType = 'div';
-              if (elem.nodeType) {
-                console.log(elem);
-                nodeType = elem.nodeType;
-              }
-              curNode.children.push(this.generateVNodeData(curNode, nodeType, elem));
+              curNode.children.push(this.generateVNodeData(curNode, elem));
             }
           });
         }
@@ -1750,8 +1804,8 @@
         }
         return curNode;
       },
-      addPanel(parentVNode, tagName, data) {
-        const curNode = this.generateVNodeData(parentVNode, tagName, data);
+      addPanel(parentVNode, data) {
+        const curNode = this.generateVNodeData(parentVNode, data);
         if (data && data.pos) {
           let curIndex = -1;
           parentVNode.children.forEach((elem, index) => {

@@ -45,7 +45,7 @@ export function httpCloneH5 (id) {
 
 export function httpGetH5Templates () {
   return axios.request({
-    url: '/h5/get-template',
+    url: '/h5/get-templates',
     method: 'get',
   });
 }

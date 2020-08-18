@@ -31,7 +31,7 @@
     },
     created () {
       this.getH5Template();
-      if (this.$store.user.id) {
+      if (this.$store.state.user.id) {
         this.getMyH5();
       }
     },

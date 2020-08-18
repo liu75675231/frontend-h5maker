@@ -111,6 +111,7 @@ export default new VueI18n({
       or: '或者',
       uploadMusic: '上传音乐',
       titleNotice: '请输入H5页面的标题',
+      backgroundType: '背景类型',
     },
     en: {
       preferences: 'Preferences',
@@ -219,6 +220,7 @@ export default new VueI18n({
       or: 'Or',
       uploadMusic: 'Upload music',
       titleNotice: 'Please input the title',
+      backgroundType: 'Background type',
     },
   },
 })
