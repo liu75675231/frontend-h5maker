@@ -44,7 +44,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      H5_ONLINE_HOST: JSON.stringify("https://h5online.lht.ren"),
+      H5_ONLINE_HOST: JSON.stringify("https://wx.huiyou.lht.ren"),
     }),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
