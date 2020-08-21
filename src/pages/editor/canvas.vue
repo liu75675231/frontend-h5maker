@@ -741,6 +741,28 @@
                   <i-color-picker v-model="form.vnode.event.tapTarget.backgroundColor"/>
                 </i-form-item>
               </i-form-item>
+              <i-form-item :label="$t('click')">
+                <i-form-item :label="$t('status')" :label-width="80">
+                  <i-checkbox v-model="form.class.clickable"
+                              @on-change="changeClass('clickable')">{{ $t('on') }}
+                  </i-checkbox>
+                </i-form-item>
+                <i-form-item v-if="form.class.clickable" :label="$t('target')">
+                  <i-select v-model="form.vnode.event.clickable.target">
+                    <i-option v-for="item in form.nickNameList" :value="item">{{ item }}</i-option>
+                  </i-select>
+                </i-form-item>
+                <i-form-item v-if="form.class.clickable" :label="$t('display')">
+                  <i-select style="width: 200px" v-model="form.vnode.event.clickable.target.display"
+                            @on-change="changeStyle('display')">
+                    <i-option value="none">{{ $t('hidden') }}</i-option>
+                    <i-option value="block">{{ $t('block') }}</i-option>
+                    <i-option value="inline-block">{{ $t('inlineBlock') }}</i-option>
+                    <i-option value="inline">{{ $t('inline') }}</i-option>
+                    <i-option value="flex">flex</i-option>
+                  </i-select>
+                </i-form-item>
+              </i-form-item>
             </i-form>
           </i-tab-pane>
         </i-tabs>
@@ -750,7 +772,7 @@
           {{ $t('structureTree') }}
         </div>
         <div class="editable-content">
-          <dom-tree :vnode="tree" @nodeclick="handleNodeClick" @exchangenode="handleExchangeNode"></dom-tree>
+          <dom-tree :vnode="tree" @nodeclick="handleNodeClick" @exchangenode="handleExchangeNode" @openrenamepopup="openRenamePopup"></dom-tree>
         </div>
 
       </div>
@@ -888,6 +910,17 @@
         </i-form-item>
       </i-form>
     </i-modal>
+
+    <i-modal v-model="renamePopup.isShow" :title="$t('renamenode')"  :footer-hide="true">
+      <i-form>
+        <i-form-item :label="$t('originname')">
+          {{ renamePopup.originName }}
+        </i-form-item>
+        <i-form-item :label="$t('newname')">
+          <i-input v-model="renamePopup.vnode.nickName"></i-input>
+        </i-form-item>
+      </i-form>
+    </i-modal>
   </div>
 
 </template>
@@ -918,6 +951,20 @@
             const children = [];
             const curChildren = [this.$t('node') + ': ' + vnodeObj.nickName];
 
+            curChildren.push(createElement('a', {
+              style: {
+                marginLeft: '10px',
+              },
+              on: {
+                click (e) {
+                  e.stopPropagation();
+                  $this.$emit('openrenamepopup', vnodeObj);
+                },
+              }
+            }, [
+              this.$t('rename')
+            ]));
+
             if (vnodeObj.parentVNode) {
               curChildren.push(createElement('a', {
                 style: {
@@ -926,7 +973,7 @@
                 on: {
                   click (e) {
                     e.stopPropagation();
-                    $this.copiedData = vnodeObj;
+
                   },
                 }
               }, [
@@ -1016,6 +1063,7 @@
           class: {
             draggable: false,
             dropzone: false,
+            clickable: false,
           },
           style: {
             width: {
@@ -1180,6 +1228,7 @@
             },
           },
           textList: [],
+          nickNameList: [],
         },
         tree: {
           tag: 'div',
@@ -1194,6 +1243,11 @@
           },
           children: [],
         },
+        renamePopup: {
+          isShow: false,
+          originName: '',
+          vnode: {},
+        },
       }
     },
     created() {
@@ -1204,7 +1258,6 @@
             curNode.parentVNode = parentVNode;
             curNode.on.click = function (e) {
               e.stopPropagation();
-              console.log($this);
               $this.handleNodeClick(curNode);
             }
 
@@ -1216,7 +1269,6 @@
             });
           }
           const tree = JSON.parse(res.data.data.data);
-          console.log(tree);
           iteratorSetParentVNode(tree, null);
 
           this.tree = tree;
@@ -1466,13 +1518,35 @@
           },
         }
       },
-
+      openRenamePopup: function (vnode) {
+        this.renamePopup.isShow = true;
+        this.renamePopup.vnode = vnode;
+        this.renamePopup.originName = vnode.nickName;
+      },
       handleExchangeNode (originVNode, targetVNode) {
         const vnode = this.generateVNodeData(targetVNode.parentVNode, originVNode);
         const index = targetVNode.parentVNode.children.indexOf(targetVNode);
         targetVNode.parentVNode.children.splice(index, 1, vnode);
       },
+      iterateTree: function (node, callback) {
+        if (!(typeof node == 'object' && node != null)) {
+          return;
+        }
+
+        callback && callback(node);
+        if (node.children && node.children.length > 0) {
+          for (let i = 0; i < node.children.length; i++) {
+            this.iterateTree(node.children[i], callback);
+          }
+        }
+      },
       handleNodeClick(curNode) {
+        const nickNameList = [];
+        this.iterateTree(this.tree, (node) => {
+          nickNameList.push(node.nickName);
+        })
+
+        this.form.nickNameList = nickNameList;
         if (typeof this.form.vnode === 'object' && curNode !== this.form.vnode) {
           this.form.vnode.class.curselected = false;
         }
@@ -1542,7 +1616,6 @@
                 this.form.style[key].color = '';
               }
             }
-            console.log(key);
 
             if (typeof this.form.style[key] !== 'object' || this.form.style[key] == null) {
               this.form.style[key] = curNode.style[key];
@@ -1697,7 +1770,6 @@
           tagName = data.tagName;
         }
 
-        console.log(tagName);
         const style = {
           width: null,
           height: null,
@@ -1762,6 +1834,7 @@
           class: {
             curselected: false,
             draggable: false,
+            clickable: false,
             dropzone: false,
             taptarget: false,
             animate__animated: false,
@@ -1772,6 +1845,10 @@
             },
             tapTarget: {
               backgroundColor: '',
+            },
+            click: {
+              target: '',
+              action: 'show',
             },
           },
           style,

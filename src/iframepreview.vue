@@ -25,6 +25,7 @@
 
 <script>
   import {initDragger} from './utils/drag';
+  import {initClick} from "./utils/click";
   import { generateVNodeTree } from './utils/render'
   import _ from 'lodash';
   import $ from 'jquery';
@@ -44,6 +45,7 @@
         },
         mounted() {
           initDragger();
+          initClick();
         },
         methods: {
         },
