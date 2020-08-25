@@ -9,6 +9,7 @@ export function generateVNodeTree (treeNode, createElement) {
   });
 
   treeNode.attrs['event'] = JSON.stringify(treeNode.event);
+  treeNode.attrs['nickname'] = treeNode.nickName;
   return createElement(treeNode.tag, {
     attrs: JSON.parse(JSON.stringify(treeNode.attrs || {})),
     on: treeNode.on || {},

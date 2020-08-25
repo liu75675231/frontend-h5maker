@@ -36,11 +36,6 @@
         this.id = urlParams.get('id');
       }
     },
-    methods: {
-      updateTreeNode (treeNode) {
-        this.treeNode = treeNode;
-      },
-    },
   }
 </script>
 

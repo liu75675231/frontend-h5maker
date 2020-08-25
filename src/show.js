@@ -7,6 +7,7 @@ const urlParams = new URLSearchParams(window.location.search);
 import 'animate.css'
 
 httpGetH5Data(urlParams.get('id')).then((res) => {
+  document.title = res.data.data.title;
   const data = JSON.parse(res.data.data.data);
   new Vue({
     el: '#app',

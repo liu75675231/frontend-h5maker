@@ -29,7 +29,6 @@
     },
     data: function () {
       return {
-        title: '',
         helpPopup: {
           isShow: false,
         }
@@ -88,6 +87,16 @@
         );
         this.$Message.info('源代码已成功保存到剪贴板');
       },
+    },
+    computed: {
+      title: {
+        get () {
+          return this.$store.state.title
+        },
+        set (val) {
+          this.$store.commit('setTitle', val)
+        }
+      }
     },
   }
 </script>

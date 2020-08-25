@@ -9,13 +9,13 @@
             <div class="editable-title-opt">
               <span class="editable-title-opt-item" @click="preferences.isShowModal = true">{{ $t('preferences') }}</span>
               <span class="editable-title-opt-item" @click="showInsertNodePopup(tree)">{{ $t('add') }}</span>
+              <span class="editable-title-opt-item" @click="insertPage()">{{ $t('page') }}</span>
               <span class="editable-title-opt-item" @click="transToAnotherPage">{{ $t('moreResolution') }}</span>
             </div>
           </div>
           <div id="renderedHtml">
 
             <iframe class="iframepreview" src="/iframepreview.html" @load="initIframePreview"></iframe>
-<!--            <rendered-html v-if="isShow" :vnode="tree" :previewWindowHandler="previewWindowHandler"></rendered-html>-->
           </div>
         </div>
       </div>
@@ -746,22 +746,33 @@
                   <i-checkbox v-model="form.class.clickable"
                               @on-change="changeClass('clickable')">{{ $t('on') }}
                   </i-checkbox>
+                  <a href="javascript:void(0)" v-if="form.class.clickable" @click="addClickStep">{{ $t('add') }}</a>
                 </i-form-item>
-                <i-form-item v-if="form.class.clickable" :label="$t('target')">
-                  <i-select v-model="form.vnode.event.clickable.target">
-                    <i-option v-for="item in form.nickNameList" :value="item">{{ item }}</i-option>
-                  </i-select>
-                </i-form-item>
-                <i-form-item v-if="form.class.clickable" :label="$t('display')">
-                  <i-select style="width: 200px" v-model="form.vnode.event.clickable.target.display"
-                            @on-change="changeStyle('display')">
-                    <i-option value="none">{{ $t('hidden') }}</i-option>
-                    <i-option value="block">{{ $t('block') }}</i-option>
-                    <i-option value="inline-block">{{ $t('inlineBlock') }}</i-option>
-                    <i-option value="inline">{{ $t('inline') }}</i-option>
-                    <i-option value="flex">flex</i-option>
-                  </i-select>
-                </i-form-item>
+                <template v-if="form.class.clickable">
+                  <div v-for="(item, index) in form.vnode.event.clickable.actionList">
+                    <i-form-item :label="$t('target')">
+                      <i-select v-model="item.target.nickName" style="width: 180px" @on-change="changeClickTargetTag(item.target)">
+                        <i-option v-for="item in form.nickNameList" :value="item.nickName">{{ item.nickName }}</i-option>
+                      </i-select>
+                      <a v-if="index > 0" href="javascript:void(0)" @click="removeClickStep(index)">{{ $t('remove') }}</a>
+                    </i-form-item>
+                    <i-form-item  :label="$t('display')">
+                      <i-select style="width: 180px" v-model="item.target.display"
+                                @on-change="changeStyle('display')">
+                        <i-option value="none">{{ $t('hidden') }}</i-option>
+                        <i-option value="block">{{ $t('block') }}</i-option>
+                        <i-option value="inline-block">{{ $t('inlineBlock') }}</i-option>
+                        <i-option value="inline">{{ $t('inline') }}</i-option>
+                        <i-option value="flex">flex</i-option>
+                      </i-select>
+                    </i-form-item>
+                    <i-form-item :label="$t('play')" :label-width="80" v-if="item.target.tag === 'video'">
+                      <i-checkbox v-model="item.target.play">{{ $t('on') }}
+                      </i-checkbox>
+                    </i-form-item>
+                  </div>
+                </template>
+
               </i-form-item>
             </i-form>
           </i-tab-pane>
@@ -831,6 +842,9 @@
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'music' }"
                @click="changeInsertPopupMenu('music')">{{ $t('music') }}
           </div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'video' }"
+               @click="changeInsertPopupMenu('video')">{{ $t('video') }}
+          </div>
         </div>
         <div class="insert-content">
           <template v-if="insertNodePopup.curMenu == 'custom'">
@@ -853,6 +867,10 @@
           <template v-if="insertNodePopup.curMenu === 'image'">
             <i-upload ref="nodeUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*"
                       :on-success="uploadNodeImgSuccess" data-type="node">
+              <i-button icon="ios-cloud-upload-outline">{{ $t('uploadImage') }}</i-button>
+            </i-upload>
+            <i-upload ref="nodeUploadBtn" action="https://wx.huiyou.lht.ren/h5/upload-img" accept="image/*"
+                      :on-success="uploadNodeBackgroundSuccess" data-type="node">
               <i-button icon="ios-cloud-upload-outline">{{ $t('uploadImage') }}</i-button>
             </i-upload>
           </template>
@@ -892,6 +910,11 @@
           <template v-if="insertNodePopup.curMenu === 'music'">
             <div>
               <i-input search :enter-button="$t('submit')" :placeholder="$t('musicInputNotice')" @on-search="submitMusic"/>
+            </div>
+          </template>
+          <template v-if="insertNodePopup.curMenu === 'video'">
+            <div>
+              <i-input search :enter-button="$t('submit')" :placeholder="$t('videoInputNotice')" @on-search="submitVideo"/>
             </div>
           </template>
         </div>
@@ -1235,9 +1258,7 @@
           title: '',
           nickName: 'root',
           attrs: {},
-          style: {
-            height: 'initial',
-          },
+          style: {},
           class: {
             curselected: false,
           },
@@ -1254,6 +1275,7 @@
       const $this = this;
       if (this.id) {
         httpGetH5Data(this.id).then((res) => {
+          this.$store.commit('setTitle', res.data.data.title);
           function iteratorSetParentVNode (curNode, parentVNode) {
             curNode.parentVNode = parentVNode;
             curNode.on.click = function (e) {
@@ -1283,9 +1305,12 @@
       } else {
         this.tree = this.generateVNodeData(undefined, {
           nickName: 'root',
+          style: {
+            position: 'relative',
+          }
         });
+        this.insertPage();
       }
-
     },
     mounted() {
       const $this = this;
@@ -1305,6 +1330,28 @@
       },
     },
     methods: {
+      changeClickTargetTag (target) {
+        this.form.nickNameList.some((elem) => {
+          if (elem.nickName === target.nickName) {
+            target.tag = elem.tagName;
+            return true;
+          }
+          return false;
+        });
+      },
+      addClickStep () {
+        this.form.vnode.event.clickable.actionList.push({
+          target: {
+            tag: '',
+            nickName: '',
+            display: '',
+            play: false,
+          },
+        });
+      },
+      removeClickStep (index) {
+        this.form.vnode.event.clickable.actionList.splice(index, 1)
+      },
       changeAnimation () {
         this.form.vnode.class.animate__animated = this.form.style.animation.isShow;
         this.form.vnode.style.animationName = this.form.style.animation.animationName;
@@ -1367,6 +1414,25 @@
                   },
                 }
               ],
+            }
+          ],
+        };
+        this.submitInsertNodePopup(data);
+      },
+      submitVideo (link) {
+        const data = {
+          nickName: 'video',
+          tagName: 'video',
+          style: {
+            width: '100%',
+          },
+          children: [
+            {
+              nickName: 'source',
+              tagName: 'source',
+              attrs: {
+                src: link,
+              },
             }
           ],
         };
@@ -1498,6 +1564,19 @@
         }
         this.insertNodePopup.isShow = false;
       },
+      insertPage () {
+        const data = {
+          nickName: 'page',
+          style: {
+            position: 'relative',
+          },
+          attrs: {
+            role: 'page',
+          },
+          children: [],
+        };
+        this.addPanel(this.tree, data);
+      },
       showInsertNodePopup(formVNode) {
         this.insertNodePopup.curMenu = 'custom';
         this.insertNodePopup.isShow = true;
@@ -1542,8 +1621,12 @@
       },
       handleNodeClick(curNode) {
         const nickNameList = [];
+        const pageList = [];
         this.iterateTree(this.tree, (node) => {
-          nickNameList.push(node.nickName);
+          nickNameList.push({
+            nickName: node.nickName,
+            tagName: node.tag,
+          });
         })
 
         this.form.nickNameList = nickNameList;
@@ -1657,6 +1740,20 @@
       uploadNodeMusicSuccess (res) {
       },
       uploadNodeImgSuccess(res) {
+        this.$refs.nodeUploadBtn.clearFiles();
+        const data = {
+          nickName: 'img',
+          tagName: 'img',
+          attrs: {
+            src: res.url,
+          },
+          style: {
+            width: '100%',
+          }
+        }
+        this.submitInsertNodePopup(data);
+      },
+      uploadNodeBackgroundSuccess () {
         this.$refs.nodeUploadBtn.clearFiles();
         const data = {
           nickName: 'img',
@@ -1846,9 +1943,15 @@
             tapTarget: {
               backgroundColor: '',
             },
-            click: {
-              target: '',
-              action: 'show',
+            clickable: {
+              actionList: [{
+                target: {
+                  tag: '',
+                  nickName: '',
+                  display: '',
+                  play: false,
+                },
+              }],
             },
           },
           style,

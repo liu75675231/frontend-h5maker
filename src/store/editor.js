@@ -5,6 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    title: '',
     vnode: {
       tag: 'div',
       title: '',
@@ -16,6 +17,11 @@ export default new Vuex.Store({
         curselected: false,
       },
       children: [],
+    },
+  },
+  mutations: {
+    setTitle (state, title) {
+      state.title = title;
     },
   },
   actions: {
