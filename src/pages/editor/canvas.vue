@@ -676,6 +676,7 @@
                   <i-option value="lightSpeedInLeft">lightSpeedInLeft</i-option>
                   <i-option value="lightSpeedOutRight">lightSpeedOutRight</i-option>
                   <i-option value="lightSpeedOutLeft">lightSpeedOutLeft</i-option>
+                  <i-option value="rotate">rotate</i-option>
                   <i-option value="rotateIn">rotateIn</i-option>
                   <i-option value="rotateInDownLeft">rotateInDownLeft</i-option>
                   <i-option value="rotateInDownRight">rotateInDownRight</i-option>
@@ -746,7 +747,7 @@
                   <i-checkbox v-model="form.class.clickable"
                               @on-change="changeClass('clickable')">{{ $t('on') }}
                   </i-checkbox>
-                  <a href="javascript:void(0)" v-if="form.class.clickable" @click="addClickStep">{{ $t('add') }}</a>
+                  <a href="javascript:void(0)" v-if="form.class.clickable" @click="addActionListStep(form.vnode.event.clickable.actionList)">{{ $t('add') }}</a>
                 </i-form-item>
                 <template v-if="form.class.clickable">
                   <div v-for="(item, index) in form.vnode.event.clickable.actionList">
@@ -754,7 +755,7 @@
                       <i-select v-model="item.target.nickName" style="width: 180px" @on-change="changeClickTargetTag(item.target)">
                         <i-option v-for="item in form.nickNameList" :value="item.nickName">{{ item.nickName }}</i-option>
                       </i-select>
-                      <a v-if="index > 0" href="javascript:void(0)" @click="removeClickStep(index)">{{ $t('remove') }}</a>
+                      <a v-if="index > 0" href="javascript:void(0)" @click="removeActionListStep(form.vnode.event.clickable.actionList, index)">{{ $t('remove') }}</a>
                     </i-form-item>
                     <i-form-item  :label="$t('display')">
                       <i-select style="width: 180px" v-model="item.target.display"
@@ -766,13 +767,44 @@
                         <i-option value="flex">flex</i-option>
                       </i-select>
                     </i-form-item>
-                    <i-form-item :label="$t('play')" :label-width="80" v-if="item.target.tag === 'video'">
+                    <i-form-item :label="$t('play')" :label-width="80" v-if="item.target.tag === 'video' || item.target.tag === 'audio'">
                       <i-checkbox v-model="item.target.play">{{ $t('on') }}
                       </i-checkbox>
                     </i-form-item>
                   </div>
                 </template>
-
+              </i-form-item>
+              <i-form-item :label="$t('playend')" v-if="form.vnode.tag === 'video'">
+                <i-form-item :label="$t('status')" :label-width="80">
+                  <i-checkbox v-model="form.class.playend"
+                              @on-change="changeClass('playend')">{{ $t('on') }}
+                  </i-checkbox>
+                  <a href="javascript:void(0)" v-if="form.class.playend" @click="addActionListStep(form.vnode.event.playend.actionList)">{{ $t('add') }}</a>
+                </i-form-item>
+                <template v-if="form.class.playend">
+                  <div v-for="(item, index) in form.vnode.event.playend.actionList">
+                    <i-form-item :label="$t('target')">
+                      <i-select v-model="item.target.nickName" style="width: 180px" @on-change="changeClickTargetTag(item.target)">
+                        <i-option v-for="item in form.nickNameList" :value="item.nickName">{{ item.nickName }}</i-option>
+                      </i-select>
+                      <a v-if="index > 0" href="javascript:void(0)" @click="removeActionListStep(form.vnode.event.playend.actionList, index)">{{ $t('remove') }}</a>
+                    </i-form-item>
+                    <i-form-item  :label="$t('display')">
+                      <i-select style="width: 180px" v-model="item.target.display"
+                                @on-change="changeStyle('display')">
+                        <i-option value="none">{{ $t('hidden') }}</i-option>
+                        <i-option value="block">{{ $t('block') }}</i-option>
+                        <i-option value="inline-block">{{ $t('inlineBlock') }}</i-option>
+                        <i-option value="inline">{{ $t('inline') }}</i-option>
+                        <i-option value="flex">flex</i-option>
+                      </i-select>
+                    </i-form-item>
+                    <i-form-item :label="$t('play')" :label-width="80" v-if="item.target.tag === 'video' || item.target.tag === 'audio'">
+                      <i-checkbox v-model="item.target.play">{{ $t('on') }}
+                      </i-checkbox>
+                    </i-form-item>
+                  </div>
+                </template>
               </i-form-item>
             </i-form>
           </i-tab-pane>
@@ -1087,6 +1119,7 @@
             draggable: false,
             dropzone: false,
             clickable: false,
+            playend: false,
           },
           style: {
             width: {
@@ -1339,18 +1372,21 @@
           return false;
         });
       },
-      addClickStep () {
-        this.form.vnode.event.clickable.actionList.push({
+      addActionListStep (list) {
+        list.push(this.getEmptyActionListItem());
+      },
+      getEmptyActionListItem () {
+        return {
           target: {
             tag: '',
             nickName: '',
             display: '',
             play: false,
           },
-        });
+        }
       },
-      removeClickStep (index) {
-        this.form.vnode.event.clickable.actionList.splice(index, 1)
+      removeActionListStep (list, index) {
+        list.splice(index, 1)
       },
       changeAnimation () {
         this.form.vnode.class.animate__animated = this.form.style.animation.isShow;
@@ -1378,18 +1414,18 @@
         this.previewWindowHandler = window.open('/preview.html', '_blank');
         this.previewWindowHandler.vnode = this.tree;
       },
-      submitMusic () {
+      submitMusic (link) {
         const data = {
           nickName: 'audio-panel',
           style: {
-            position: 'fixed',
+            position: 'absolute',
             top: '.3rem',
             right: '.3rem',
           },
           children: [
             {
               nickName: 'img',
-              nodeType: 'img',
+              tagName: 'img',
               attrs: {
                 src: 'http://special.dajie.com/html/vsite/pingan/images/music.png',
               },
@@ -1400,16 +1436,13 @@
             },
             {
               nickName: 'audio',
-              nodeType: 'audio',
-              attrs: {
-                autoplay: true,
-              },
+              tagName: 'audio',
               children: [
                 {
                   nickName: 'source',
-                  nodeType: 'source',
+                  tagName: 'source',
                   attrs: {
-                    src: 'http://100.100.100.100:8081/IXC7d44dd7ae8b813fae82e87901087c596/html/vsite/pingan/audio/bgm.mp3',
+                    src: link,
                     type: 'audio/mpeg',
                   },
                 }
@@ -1932,6 +1965,7 @@
             curselected: false,
             draggable: false,
             clickable: false,
+            playend: false,
             dropzone: false,
             taptarget: false,
             animate__animated: false,
@@ -1944,15 +1978,11 @@
               backgroundColor: '',
             },
             clickable: {
-              actionList: [{
-                target: {
-                  tag: '',
-                  nickName: '',
-                  display: '',
-                  play: false,
-                },
-              }],
+              actionList: [this.getEmptyActionListItem()],
             },
+            playend: {
+              actionList: [this.getEmptyActionListItem()],
+            }
           },
           style,
           on: {

@@ -1,11 +1,10 @@
 import $ from 'jquery';
-export function initClick () {
-  $(document).on("click", ".clickable", (e) => {
+export function initEvent () {
+  // video play end event handler
+  $(".playend").on("ended", (e) => {
     const $origin = $(e.target);
-    const clickConf = JSON.parse($origin.attr('event'))['clickable'];
+    const clickConf = JSON.parse($origin.attr('event'))['playend'];
     clickConf.actionList.forEach((item) => {
-
-
       if (!item.target.nickName) {
         return;
       }
@@ -22,6 +21,5 @@ export function initClick () {
         }
       }
     });
-
   });
 }

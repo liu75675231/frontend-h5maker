@@ -125,6 +125,7 @@ export default new VueI18n({
       video: '视频',
       play: '播放',
       jumpTo: '跳转到',
+      playend: '结束播放',
     },
     en: {
       preferences: 'Preferences',
@@ -246,7 +247,8 @@ export default new VueI18n({
       page: 'Page',
       video: 'Video',
       play: 'Play',
-      jumpTo: 'jump To',
+      jumpTo: 'Jump to',
+      playend: 'Play end',
     },
   },
 })
