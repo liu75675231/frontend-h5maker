@@ -6,8 +6,7 @@
       <div class="web-card-opt">
         <div class="web-card-opt-item" @click="openPreview">{{ $t('view') }}</div>
         <div class="web-card-opt-item" @click="openEditor">{{ $t('edit') }}</div>
-        <div class="web-card-opt-item" @click="cloneH5">{{ $t('clone') }}</div>
-        <div class="web-card-opt-item" @click="removeH5">{{ $t('remove') }}</div>
+        <div class="web-card-opt-item" @click="removeH5" v-if="$store.state.user.id === userId">{{ $t('remove') }}</div>
       </div>
     </div>
   </div>
@@ -20,6 +19,7 @@
     props: {
       id: Number,
       title: String,
+      userId: Number,
     },
     methods: {
       cloneH5 () {
@@ -33,7 +33,15 @@
         });
       },
       openEditor () {
-        window.open('/editor.html?id=' + this.id, '_blank');
+        console.log(this.userId);
+        if (this.$store.state.user.id == this.userId) {
+          window.location.href = '/editor.html?id=' + this.id;
+        } else {
+          httpCloneH5(this.id).then((res) => {
+            window.location.href = '/editor.html?id=' + res.data.data;
+          });
+        }
+
       },
       openPreview () {
         window.open('/show.html?id=' + this.id, '_blank');

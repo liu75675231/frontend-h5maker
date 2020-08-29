@@ -3,7 +3,7 @@
     <div class="box-panel" v-if="myH5List.length > 0">
       <div class="box-title">{{ $t('mypage') }}</div>
       <div class="card-list">
-        <web-card v-for="item in myH5List" class="card-item" :title="item.title" :id="item.id"></web-card>
+        <web-card v-for="item in myH5List" class="card-item" :title="item.title" :id="item.id" :user-id="item.user_id"></web-card>
       </div>
     </div>
     <div class="box-panel" v-if="templateList.length > 0">
