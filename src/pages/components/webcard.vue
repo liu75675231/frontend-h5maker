@@ -6,7 +6,7 @@
       <div class="web-card-opt">
         <div class="web-card-opt-item" @click="openPreview">{{ $t('view') }}</div>
         <div class="web-card-opt-item" @click="openEditor">{{ $t('edit') }}</div>
-        <div class="web-card-opt-item" @click="removeH5" v-if="$store.state.user.id === userId">{{ $t('remove') }}</div>
+        <div class="web-card-opt-item" @click="removeH5" v-if="$store.state.user.id && $store.state.user.id === userId">{{ $t('remove') }}</div>
       </div>
     </div>
   </div>
@@ -28,12 +28,19 @@
         });
       },
       removeH5 () {
-        httpRemoveH5(this.id).then((res) => {
+        const r = confirm(this.$t('removePageNotice'));
+        if (r) {
+          httpRemoveH5(this.id).then((res) => {
+            this.$emit('removed')
+          });
+        }
 
-        });
       },
       openEditor () {
-        console.log(this.userId);
+        if (!this.$store.state.user.id) {
+          this.$router.push('/login');
+          return;
+        }
         if (this.$store.state.user.id == this.userId) {
           window.location.href = '/editor.html?id=' + this.id;
         } else {

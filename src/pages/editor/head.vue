@@ -20,7 +20,8 @@
 
 <script>
   import copy from 'copy-to-clipboard';
-  import http from '../../utils/http'
+  import http from '../../utils/http';
+  import { stringifyVNode } from '../../utils/vnode';
 
   export default {
     name: "head.vue",
@@ -41,12 +42,7 @@
           return;
         }
 
-        const str = JSON.stringify(data, (key, val) => {
-          if (key == 'parentVNode') {
-            return undefined;
-          }
-          return val;
-        })
+        const str = stringifyVNode(data);
         console.log(str);
         http.request({
           url: '/h5/save',

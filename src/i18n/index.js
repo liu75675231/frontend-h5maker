@@ -27,6 +27,7 @@ export default new VueI18n({
       edit: '编辑',
       remove: '删除',
       clone: '克隆',
+      removePageNotice: '确定删除此页面吗？',
     },
     en: {
       mypage: 'My page',
@@ -50,6 +51,7 @@ export default new VueI18n({
       edit: 'Edit',
       remove: 'Remove',
       clone: 'Clone',
+      removePageNotice: 'Are you sure to remove this page?',
     }
   }
 });
