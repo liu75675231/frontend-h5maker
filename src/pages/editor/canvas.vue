@@ -983,6 +983,7 @@
 <script>
   import {httpGetH5Data} from '../../http/h5';
   import $ from 'jquery';
+  import {deepCloneVNodeWithoutEvent, stringifyVNode} from "../../utils/vnode";
 
   export default {
     name: "canvas.vue",
@@ -1355,8 +1356,11 @@
       tree: {
         handler () {
           if (this.iframePreview) {
+            sessionStorage.setItem('vnodeForView', stringifyVNode(this.tree));
             this.iframePreview.vnode = this.tree;
           }
+
+
         },
         deep: true,
 
@@ -1408,6 +1412,8 @@
       },
       initIframePreview () {
         this.iframePreview = $(".iframepreview").get(0).contentWindow;
+        console.log(stringifyVNode(this.tree));
+        sessionStorage.setItem('vnodeForView', stringifyVNode(this.tree));
         this.iframePreview.vnode = this.tree;
       },
       transToAnotherPage() {

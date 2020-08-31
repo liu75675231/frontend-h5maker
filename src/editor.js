@@ -41,9 +41,10 @@ Vue.prototype.$Modal = Modal
 Vue.prototype.$Message = Message
 
 
-new Vue({
+const app = new Vue({
   el: '#app',
   store,
   i18n,
   render: h => h(App)
 })
+

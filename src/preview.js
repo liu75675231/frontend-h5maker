@@ -15,7 +15,7 @@ const app = new Vue({
     };
   },
   created () {
-    this.vnode = deepCloneVNodeWithoutEvent(window.vnode);
+    this.vnode = JSON.parse(sessionStorage.getItem('vnodeForView'));
   },
   render (h) {
     const renderData = generateVNodeTree(this.vnode, h);
@@ -25,12 +25,15 @@ const app = new Vue({
     initDragger();
     initClick();
     initEvent();
+    console.log(window.vnode);
   },
 })
 
-Object.defineProperty(window, 'vnode', {
-  set (val) {
-    app.vnode = deepCloneVNodeWithoutEvent(val);
-    app.$forceUpdate();
-  },
-})
+// console.log(window.vnode);
+// Object.defineProperty(window, 'vnode', {
+//   set (val) {
+//     console.log(val);
+//     app.vnode = deepCloneVNodeWithoutEvent(val);
+//     app.$forceUpdate();
+//   },
+// })
