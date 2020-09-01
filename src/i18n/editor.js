@@ -126,6 +126,10 @@ export default new VueI18n({
       play: '播放',
       jumpTo: '跳转到',
       playend: '结束播放',
+      iteration: '循环次数',
+      infinite: '无限',
+      timingFunction: '平滑度',
+      form: '表单',
     },
     en: {
       preferences: 'Preferences',
@@ -249,6 +253,10 @@ export default new VueI18n({
       play: 'Play',
       jumpTo: 'Jump to',
       playend: 'Play end',
+      iteration: 'Iteration',
+      infinite: 'Infinite',
+      timingFunction: 'Timing function',
+      form: 'Form',
     },
   },
 })

@@ -15,9 +15,10 @@ const app = new Vue({
     };
   },
   created () {
-    this.vnode = JSON.parse(sessionStorage.getItem('vnodeForView'));
+    this.vnode = JSON.parse(localStorage.getItem('vnodeForView'));
   },
   render (h) {
+    console.log(this.vnode);
     const renderData = generateVNodeTree(this.vnode, h);
     return renderData;
   },
@@ -37,3 +38,12 @@ const app = new Vue({
 //     app.$forceUpdate();
 //   },
 // })
+
+
+
+window.addEventListener("message", function(event) {
+  console.log(event.data);
+  if (typeof event.data === 'object' && event.data !== null && event.data.type === 'vnode') {
+    app.vnode = JSON.parse(event.data.data);
+  }
+}, false);

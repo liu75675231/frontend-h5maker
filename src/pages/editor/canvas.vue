@@ -715,6 +715,14 @@
                 <i-input-number v-model="form.style.animation.animationDelay"  @on-change="changeAnimation">
                 </i-input-number>
               </i-form-item>
+              <i-form-item :label="$t('iteration')" v-if="form.style.animation.isShow">
+                <i-checkbox v-model="form.style.animation.animationIterationCount" @on-change="changeAnimation">{{ $t('infinite') }}
+                </i-checkbox>
+              </i-form-item>
+              <i-form-item :label="$t('timingFunction')" v-if="form.style.animation.isShow">
+                <i-checkbox v-model="form.style.animation.animationTimingFunction" @on-change="changeAnimation">{{ $t('infinite') }}
+                </i-checkbox>
+              </i-form-item>
             </i-form>
           </i-tab-pane>
           <i-tab-pane :label="$t('event')">
@@ -877,6 +885,9 @@
           <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'video' }"
                @click="changeInsertPopupMenu('video')">{{ $t('video') }}
           </div>
+          <div class="insert-menu-item" :class="{ selected: insertNodePopup.curMenu == 'form' }"
+               @click="changeInsertPopupMenu('form')">{{ $t('form') }}
+          </div>
         </div>
         <div class="insert-content">
           <template v-if="insertNodePopup.curMenu == 'custom'">
@@ -948,6 +959,9 @@
             <div>
               <i-input search :enter-button="$t('submit')" :placeholder="$t('videoInputNotice')" @on-search="submitVideo"/>
             </div>
+          </template>
+          <template v-if="insertNodePopup.curMenu === 'form'">
+            <input class="content-item canclick" @click="selectDomStructure('input', $event)"></input>
           </template>
         </div>
       </div>
@@ -1091,7 +1105,7 @@
         preferences: {
           isShowModal: false,
           setting: {
-            unit: 'vw',
+            unit: '%',
           }
         },
         previewWindowHandler: undefined,
@@ -1282,6 +1296,8 @@
               isShow: false,
               animationName: '',
               animationDelay: null,
+              animationIterationCount: null,
+              animationTimingFunction: null,
             },
           },
           textList: [],
@@ -1356,11 +1372,16 @@
       tree: {
         handler () {
           if (this.iframePreview) {
-            sessionStorage.setItem('vnodeForView', stringifyVNode(this.tree));
+            localStorage.setItem('vnodeForView', stringifyVNode(this.tree));
             this.iframePreview.vnode = this.tree;
           }
 
-
+          if (this.previewWindowHandler) {
+            this.previewWindowHandler.postMessage({
+              type: 'vnode',
+              data: stringifyVNode(this.tree),
+            }, "*");
+          }
         },
         deep: true,
 
@@ -1395,7 +1416,9 @@
       changeAnimation () {
         this.form.vnode.class.animate__animated = this.form.style.animation.isShow;
         this.form.vnode.style.animationName = this.form.style.animation.animationName;
-        this.form.vnode.style.animationDelay = this.form.style.animation.animationDelay + 's';
+        this.form.vnode.style.animationDelay = this.form.style.animation.animationDelay ? this.form.style.animation.animationDelay + 's' : null;
+        this.form.vnode.style.animationIterationCount = this.form.style.animation.animationIterationCount ? 'infinite' : null;
+        this.form.vnode.style.animationTimingFunction = this.form.style.animation.animationTimingFunction ? 'linear' : null;
       },
       resetFormDefaultValue () {
         const $this = this;
@@ -1412,13 +1435,16 @@
       },
       initIframePreview () {
         this.iframePreview = $(".iframepreview").get(0).contentWindow;
-        console.log(stringifyVNode(this.tree));
-        sessionStorage.setItem('vnodeForView', stringifyVNode(this.tree));
+//        console.log(stringifyVNode(this.tree));
+        localStorage.setItem('vnodeForView', stringifyVNode(this.tree));
         this.iframePreview.vnode = this.tree;
       },
       transToAnotherPage() {
         this.previewWindowHandler = window.open('/preview.html', '_blank');
-        this.previewWindowHandler.vnode = this.tree;
+        this.previewWindowHandler.postMessage({
+          type: 'vnode',
+          data: stringifyVNode(this.tree),
+        }, "*");
       },
       submitMusic (link) {
         const data = {
@@ -1484,6 +1510,7 @@
         }
         const target = $root.get(0);
 
+
         const nodes = target.childNodes;
         const data = {
           children: [],
@@ -1491,6 +1518,9 @@
           style: this.domStyleToVNodeStyleObj(target.getAttribute('style')),
         };
 
+        if ($root[0].tagName.toLowerCase() !== 'div') {
+          data['tagName'] = $root[0].tagName.toLowerCase();
+        }
         for (let i = 0; i < nodes.length; i++) {
           if (nodes[i].nodeType == 3) {
             data.children.push(nodes[i].nodeValue);
@@ -1680,7 +1710,10 @@
           this.form.parentVNode = curNode.parentVNode;
           this.form.style.animation.isShow = curNode.class.animate__animated;
           this.form.style.animation.animationName = curNode.style.animationName;
+          console.log(curNode.style.animationDelay);
           this.form.style.animation.animationDelay = curNode.style.animationDelay && parseFloat(curNode.style.animationDelay);
+          this.form.style.animation.animationIterationCount = curNode.style.animationIterationCount;
+          this.form.style.animation.animationTimingFunction = curNode.style.animationTimingFunction;
           const handler = this.parseVNodeToFormFuncDic();
           Object.keys(this.form.style).forEach((key) => {
             if (key === 'margin' || key === 'padding') {
@@ -1953,6 +1986,8 @@
           backgroundImage: null,
           animationName: null,
           animationDelay: null,
+          animationIterationCount: null,
+          animationTimingFunction: null,
         }
 
         if (data && data.style) {
