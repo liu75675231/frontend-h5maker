@@ -1488,6 +1488,11 @@
         const data = {
           nickName: 'video',
           tagName: 'video',
+          attrs: {
+            'playsinline': '',
+            'webkit-playsinline': '',
+            'poster': 'https://h5maker.oss-cn-zhangjiakou.aliyuncs.com/imgs/d6645bdd86b64b0001ab67a7ac7ca38a.jpg',
+          },
           style: {
             width: '100%',
           },

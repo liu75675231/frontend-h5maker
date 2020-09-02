@@ -1,6 +1,17 @@
 @charset "UTF-8";
 
 /* 以下是对animate.css的扩展 start */
+@media print, (prefers-reduced-motion: reduce) {
+    .animated {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    .animated[class*='Out'] {
+        opacity: 0;
+    }
+}
 @-webkit-keyframes rotate {
     0% {
         -webkit-transform: rotate3d(0, 0, 1, -0deg);
