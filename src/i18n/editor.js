@@ -130,6 +130,9 @@ export default new VueI18n({
       infinite: '无限',
       timingFunction: '平滑度',
       form: '表单',
+      addStep: '增加步骤',
+      addValidate: '增加校验',
+      rule: '规则',
     },
     en: {
       preferences: 'Preferences',
@@ -257,6 +260,9 @@ export default new VueI18n({
       infinite: 'Infinite',
       timingFunction: 'Timing function',
       form: 'Form',
+      addStep: 'Add step',
+      addValidate: 'Add validate',
+      rule: 'Rule',
     },
   },
 })

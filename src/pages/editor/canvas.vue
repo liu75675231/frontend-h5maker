@@ -755,9 +755,30 @@
                   <i-checkbox v-model="form.class.clickable"
                               @on-change="changeClass('clickable')">{{ $t('on') }}
                   </i-checkbox>
-                  <a href="javascript:void(0)" v-if="form.class.clickable" @click="addActionListStep(form.vnode.event.clickable.actionList)">{{ $t('add') }}</a>
+                  <a href="javascript:void(0)" v-if="form.class.clickable" @click="addActionListStep(form.vnode.event.clickable.actionList)">{{ $t('addStep') }}</a>
+                  <a href="javascript:void(0)" v-if="form.class.clickable" @click="addValidateStep(form.vnode.event.clickable.validate)">{{ $t('addValidate') }}</a>
                 </i-form-item>
                 <template v-if="form.class.clickable">
+                  <div>校验</div>
+                  <div v-for="(item, index) in form.vnode.event.clickable.validate">
+                    <i-form-item :label="$t('target')">
+                      <i-select v-model="item.target" style="width: 180px">
+                        <i-option v-for="item in getFormNicknameList(form.nickNameList)" :value="item.nickName">{{ item.nickName }}</i-option>
+                      </i-select>
+                      <a href="javascript:void(0)">{{ $t('remove') }}</a>
+                    </i-form-item>
+                    <i-form-item :label="$t('rule')">
+                      <div v-for="(ruleItem, index) in item.rules">
+                        <i-select v-model="item.rules[index]" style="width: 150px;">
+                          <i-option v-for="optionRule in form.ruleList" :value="optionRule">{{ optionRule }}</i-option>
+                        </i-select>
+                        {{ item.rules[ruleItem] }}
+                        <a href="javascript:void(0)" @click="removeValidateRule(index, item.rules)">{{ $t('remove') }}</a>
+                      </div>
+                      <a href="javascript:void(0)" @click="addValidateRule(item.rules)">{{ $t('add') }}</a>
+                    </i-form-item>
+                  </div>
+                  <div>执行</div>
                   <div v-for="(item, index) in form.vnode.event.clickable.actionList">
                     <i-form-item :label="$t('target')">
                       <i-select v-model="item.target.nickName" style="width: 180px" @on-change="changeClickTargetTag(item.target)">
@@ -1302,6 +1323,7 @@
           },
           textList: [],
           nickNameList: [],
+          ruleList: ['required'],
         },
         tree: {
           tag: 'div',
@@ -1388,6 +1410,30 @@
       },
     },
     methods: {
+      getFormNicknameList (list) {
+        const formList = [];
+        list.forEach((item) => {
+          if (item.tagName === 'input') {
+            formList.push(item);
+          }
+        });
+        return formList;
+      },
+      removeValidateRule (index, list) {
+        list.splice(index, 1);
+      },
+      addValidateRule (list) {
+        list.push(this.form.ruleList[0]);
+      },
+      addValidateStep (list) {
+        list.push(this.getValidateStepItem());
+      },
+      getValidateStepItem () {
+        return {
+          target: '',
+          rules: [],
+        }
+      },
       changeClickTargetTag (target) {
         this.form.nickNameList.some((elem) => {
           if (elem.nickName === target.nickName) {
@@ -2025,6 +2071,7 @@
             },
             clickable: {
               actionList: [this.getEmptyActionListItem()],
+              validate: [],
             },
             playend: {
               actionList: [this.getEmptyActionListItem()],

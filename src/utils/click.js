@@ -7,6 +7,13 @@ export function initClick () {
   $(document).on("click", ".clickable", (e) => {
     const $origin = $(e.target);
     const clickConf = JSON.parse($origin.attr('event'))['clickable'];
+    if (clickConf.validate && clickConf.validate.length > 0) {
+      const errMsg = validate(clickConf.validate);
+      if (errMsg) {
+        alert(errMsg);
+        return false;
+      }
+    }
     clickConf.actionList.forEach((item) => {
       if (!item.target.nickName) {
         return;
@@ -26,4 +33,19 @@ export function initClick () {
     });
 
   });
+}
+
+function validate (confList) {
+  let errMsg = '';
+  confList.forEach((conf) => {
+    const $target = $("[nickname=" + conf.target + "]");
+    conf.rules.forEach((rule) => {
+      const val = $target.val();
+      if (rule === 'required' && (val === '' || $target.val() == null)) {
+        errMsg = '请填写' + conf.target;
+      }
+    });
+  });
+
+  return errMsg;
 }
