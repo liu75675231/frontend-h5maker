@@ -983,6 +983,10 @@
           </template>
           <template v-if="insertNodePopup.curMenu === 'form'">
             <input class="content-item canclick" @click="selectDomStructure('input', $event)"></input>
+            <div class="content-item canclick" @click="selectDomStructure('radio', $event)">
+              <img src="https://h5maker.oss-cn-zhangjiakou.aliyuncs.com/imgs/444bcb3a3fcf8389296c49467f27e1d6.png">
+              <input type="radio" style="display: none;"></input>
+            </div>
           </template>
         </div>
       </div>
@@ -1018,7 +1022,7 @@
 <script>
   import {httpGetH5Data} from '../../http/h5';
   import $ from 'jquery';
-  import {deepCloneVNodeWithoutEvent, stringifyVNode} from "../../utils/vnode";
+  import { generatorVNodeHandler, stringifyVNode} from "../../utils/vnode";
 
   export default {
     name: "canvas.vue",
@@ -1063,8 +1067,8 @@
                 },
                 on: {
                   click (e) {
+                    $this.copiedData = vnodeObj;
                     e.stopPropagation();
-
                   },
                 }
               }, [
@@ -1561,16 +1565,21 @@
         }
         const target = $root.get(0);
 
-
         const nodes = target.childNodes;
         const data = {
           children: [],
           nickName: type,
           style: this.domStyleToVNodeStyleObj(target.getAttribute('style')),
+          attrs: {},
         };
 
-        if ($root[0].tagName.toLowerCase() !== 'div') {
-          data['tagName'] = $root[0].tagName.toLowerCase();
+        const vnodeHandler = generatorVNodeHandler();
+        const tagName = $root[0].tagName.toLowerCase();
+        if (tagName !== 'div') {
+          data['tagName'] = tagName;
+          if (typeof vnodeHandler[tagName] === 'function') {
+            vnodeHandler[tagName]($root[0], data);
+          }
         }
         for (let i = 0; i < nodes.length; i++) {
           if (nodes[i].nodeType == 3) {
@@ -1590,10 +1599,21 @@
               }
             }
 
-            data.children.push({
+            const childData = {
               style: this.domStyleToVNodeStyleObj(nodes[i].getAttribute('style')),
               children: children,
-            });
+              attrs: {},
+            };
+
+            const childTagName = nodes[i].tagName.toLowerCase();
+            if (childTagName !== 'div') {
+              childData['tagName'] = nodes[i].tagName.toLowerCase();
+              console.log(typeof vnodeHandler[childTagName]);
+              if (typeof vnodeHandler[childTagName] === 'function') {
+                vnodeHandler[childTagName](nodes[i], childData);
+              }
+            }
+            data.children.push(childData);
           }
         }
 
@@ -1985,6 +2005,11 @@
         if (!data) {
           data = {};
         }
+
+        if (data.tag && !data.tagName) {
+          data.tagName = data.tag;
+        }
+
         let tagName = 'div';
         if (data.tagName) {
           tagName = data.tagName;
