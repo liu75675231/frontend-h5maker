@@ -1,9 +1,5 @@
 import $ from 'jquery';
 export function initClick () {
-  $(".clickable").bind("click", function () {
-    console.log('abcd');
-  });
-  console.log($(document).find(".clickable"));
   $(document).on("click", ".clickable", (e) => {
     const $origin = $(e.target);
     const clickConf = JSON.parse($origin.attr('event'))['clickable'];
@@ -18,6 +14,7 @@ export function initClick () {
       if (!item.target.nickName) {
         return;
       }
+      console.log(item.target.nickName);
       const $target = $("[nickname="+ item.target.nickName +"]");
       $target.css({
         display: item.target.display,
@@ -30,6 +27,11 @@ export function initClick () {
           $target.get(0).pause();
         }
       }
+
+      console.log($target);
+      if (item.target.tag === 'input' && ['radio'].indexOf($target.attr('type'))) {
+
+      }
     });
 
   });
@@ -39,11 +41,20 @@ function validate (confList) {
   let errMsg = '';
   confList.forEach((conf) => {
     const $target = $("[nickname=" + conf.target + "]");
+
     conf.rules.forEach((rule) => {
-      const val = $target.val();
-      if (rule === 'required' && (val === '' || $target.val() == null)) {
-        errMsg = '请填写' + conf.target;
+      const val = $target.val(),
+        type = $target[0].getAttribute("type");
+      if (['checkbox', 'radio'].indexOf(type) > -1) {
+        if ($("input[name=" + type + "]:checked").length === 0) {
+          errMsg = '请至少选择一个' + $target.attr('nickname');
+        }
+      } else {
+        if (rule === 'required' && (val === '' || $target.val() == null)) {
+          errMsg = '请填写' + conf.target;
+        }
       }
+
     });
   });
 

@@ -800,6 +800,9 @@
                       <i-checkbox v-model="item.target.play">{{ $t('on') }}
                       </i-checkbox>
                     </i-form-item>
+                    <i-form-item :label="$t('selected')" v-if="item.target.tag === 'input'">
+                      <i-checkbox v-model="item.target.selected">{{ $t('on') }}</i-checkbox>
+                    </i-form-item>
                   </div>
                 </template>
               </i-form-item>
@@ -1457,6 +1460,7 @@
             nickName: '',
             display: '',
             play: false,
+            selected: null,
           },
         }
       },
