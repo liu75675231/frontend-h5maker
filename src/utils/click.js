@@ -28,10 +28,14 @@ export function initClick () {
         }
       }
 
-      console.log($target);
-      if (item.target.tag === 'input' && ['radio'].indexOf($target.attr('type'))) {
+      if (item.target.tag === 'input' && ['radio'].indexOf($target.attr('type')) > -1) {
+        $("input[name=" + $target.attr("name") + "]").attr('checked', null);
 
+        $target.attr('checked', 'checked');
+        console.log($("input[name=" + $target.attr("name") + "]:checked").val());
       }
+
+
     });
 
   });
@@ -42,11 +46,12 @@ function validate (confList) {
   confList.forEach((conf) => {
     const $target = $("[nickname=" + conf.target + "]");
 
+    console.log('sdsdf');
     conf.rules.forEach((rule) => {
       const val = $target.val(),
         type = $target[0].getAttribute("type");
       if (['checkbox', 'radio'].indexOf(type) > -1) {
-        if ($("input[name=" + type + "]:checked").length === 0) {
+        if ($("input[name=" + $target.attr('name') + "]:checked").length === 0) {
           errMsg = '请至少选择一个' + $target.attr('nickname');
         }
       } else {

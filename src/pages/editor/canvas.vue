@@ -38,6 +38,14 @@
                            @on-change="changePanelText(item.text, index)"></i-input>
                 </i-form-item>
 
+                <i-form-item v-if="form.vnode.attrs && form.vnode.attrs.value !== undefined" :label="$t('value')">
+                  <i-input v-model="form.vnode.attrs.value"></i-input>
+                </i-form-item>
+
+                <i-form-item v-if="form.vnode.attrs && form.vnode.attrs.name !== undefined" :label="$t('name')">
+                  <i-input v-model="form.vnode.attrs.name"></i-input>
+                </i-form-item>
+
                 <i-form-item label="链接"
                              v-if="form.vnode && form.vnode.attrs && form.vnode.attrs.src">
                   <img class="setting-img-preview" :src="form.vnode.attrs.src">

@@ -19,9 +19,8 @@ export function generatorVNodeHandler () {
   return {
     input (dom, vnode) {
       vnode.attrs.type = dom.getAttribute("type");
-      if (['radio', 'checkbox'].indexOf(vnode.attrs.type) > -1) {
-        vnode.attrs.name = 'name';
-      }
+      vnode.attrs.name = vnode.attrs.type;
+      vnode.attrs.value = '';
     },
     img (dom, vnode) {
       vnode.attrs.src = dom.getAttribute("src");

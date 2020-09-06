@@ -134,6 +134,8 @@ export default new VueI18n({
       addValidate: '增加校验',
       rule: '规则',
       selected: '选中',
+      value: '值',
+      name: '名称',
     },
     en: {
       preferences: 'Preferences',
@@ -265,6 +267,8 @@ export default new VueI18n({
       addValidate: 'Add validate',
       rule: 'Rule',
       selected: 'Selected',
+      value: 'Value',
+      name: 'Name',
     },
   },
 })

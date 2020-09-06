@@ -26,7 +26,6 @@ const app = new Vue({
     initDragger();
     initClick();
     initEvent();
-    console.log(window.vnode);
   },
 })
 
