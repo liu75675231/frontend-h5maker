@@ -1,5 +1,4 @@
 import Vue from 'vue'
-import html2canvas from 'html2canvas'
 import {generateVNodeTree} from './utils/render'
 import {initDragger} from './utils/drag';
 import { initClick } from './utils/click';
@@ -35,17 +34,3 @@ window.addEventListener("message", function(event) {
     app.vnode = JSON.parse(event.data.data);
   }
 }, false);
-
-
-window.getScreenShot = function () {
-  html2canvas(document.body, {
-    letterRendering: 1,
-    allowTaint : true,
-    foreignObjectRendering: true,
-    useCORS: false
-  }).then(canvas => {
-    document.body.appendChild(canvas)
-    window.open(canvas.toDataURL());
-
-  });
-}
