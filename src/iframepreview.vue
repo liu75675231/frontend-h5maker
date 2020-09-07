@@ -105,6 +105,7 @@
 <style scoped>
   .selected-area {
     position: absolute;
+    z-index: 1;
   }
 
   .selected-line {

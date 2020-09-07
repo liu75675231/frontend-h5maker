@@ -2030,7 +2030,7 @@
         const style = {
           width: null,
           height: null,
-          position: 'static',
+          position: 'absolute',
           display: 'block',
           flexGrow: null,
           flexShrink: null,
@@ -2038,7 +2038,7 @@
           justifyContent: null,
           flexWrap: null,
           alignItems: null,
-          top: '',
+          top: '10%',
           bottom: '',
           left: '',
           right: '',
