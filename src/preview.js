@@ -1,9 +1,9 @@
 import Vue from 'vue'
+import html2canvas from 'html2canvas'
 import {generateVNodeTree} from './utils/render'
 import {initDragger} from './utils/drag';
 import { initClick } from './utils/click';
 import { initEvent } from './utils/event';
-import { deepCloneVNodeWithoutEvent } from './utils/vnode';
 import 'animate.css'
 import './style/show.css'
 
@@ -29,20 +29,23 @@ const app = new Vue({
   },
 })
 
-// console.log(window.vnode);
-// Object.defineProperty(window, 'vnode', {
-//   set (val) {
-//     console.log(val);
-//     app.vnode = deepCloneVNodeWithoutEvent(val);
-//     app.$forceUpdate();
-//   },
-// })
-
-
-
 window.addEventListener("message", function(event) {
   console.log(event.data);
   if (typeof event.data === 'object' && event.data !== null && event.data.type === 'vnode') {
     app.vnode = JSON.parse(event.data.data);
   }
 }, false);
+
+
+window.getScreenShot = function () {
+  html2canvas(document.body, {
+    letterRendering: 1,
+    allowTaint : true,
+    foreignObjectRendering: true,
+    useCORS: false
+  }).then(canvas => {
+    document.body.appendChild(canvas)
+    window.open(canvas.toDataURL());
+
+  });
+}
