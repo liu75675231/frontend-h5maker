@@ -10,34 +10,48 @@ export function initClick () {
         return false;
       }
     }
-    clickConf.actionList.forEach((item) => {
-      if (!item.target.nickName) {
-        return;
-      }
-      console.log(item.target.nickName);
-      const $target = $("[nickname="+ item.target.nickName +"]");
-      $target.css({
-        display: item.target.display,
-      });
 
-      if (['video', 'audio'].indexOf(item.target.tag) > -1) {
-        if (item.target.play) {
-          $target.get(0).play();
-        } else {
-          $target.get(0).pause();
-        }
-      }
+    runConfData(clickConf.actionList);
 
-      if (item.target.tag === 'input' && ['radio'].indexOf($target.attr('type')) > -1) {
-        $("input[name=" + $target.attr("name") + "]").attr('checked', null);
+  });
+}
 
-        $target.attr('checked', 'checked');
-        console.log($("input[name=" + $target.attr("name") + "]:checked").val());
-      }
+function runConfData (actionList) {
+  actionList.forEach((item) => {
+    if (!item.target.nickName) {
+      return;
+    }
 
-
+    const $target = $("[nickname="+ item.target.nickName +"]");
+    $target.css({
+      display: item.target.display,
     });
 
+    if (['video', 'audio'].indexOf(item.target.tag) > -1) {
+      if (item.target.play) {
+        $target.get(0).play();
+      } else {
+        $target.get(0).pause();
+      }
+    }
+
+    if (item.target.tag === 'input' && ['radio'].indexOf($target.attr('type')) > -1) {
+      $("input[name=" + $target.attr("name") + "]").attr('checked', null);
+
+      $target.attr('checked', 'checked');
+      console.log($("input[name=" + $target.attr("name") + "]:checked").val());
+    }
+
+    if (item.target.customEvent) {
+      const customEventList = JSON.parse($target.attr('event'))['customEvent'];
+      customEventList.some((customEventItem) => {
+        if (customEventItem.name === item.target.customEvent) {
+          runConfData(customEventItem.actionList);
+          return true;
+        }
+        return false;
+      });
+    }
   });
 }
 

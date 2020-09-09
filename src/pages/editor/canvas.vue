@@ -804,6 +804,11 @@
                         <i-option value="flex">flex</i-option>
                       </i-select>
                     </i-form-item>
+                    <i-form-item :label="$t('trigger')">
+                      <i-select style="width: 180px" v-model="item.target.customEvent">
+                        <i-option v-for="eventItem in form.customEventList" :value="eventItem">{{ eventItem }}</i-option>
+                      </i-select>
+                    </i-form-item>
                     <i-form-item :label="$t('play')" :label-width="80" v-if="item.target.tag === 'video' || item.target.tag === 'audio'">
                       <i-checkbox v-model="item.target.play">{{ $t('on') }}
                       </i-checkbox>
@@ -847,15 +852,18 @@
                 </template>
               </i-form-item>
               <i-form-item :label="$t('customEvent')">
-                <i-button type="primary">{{ $t('add') }}</i-button>
+                <i-button type="primary" @click="addCustomEvent(form.vnode.event.customEvent)">{{ $t('add') }}</i-button>
                 <div v-for="eventItem in form.vnode.event.customEvent">
-                  <i-input v-model="eventItem.name"></i-input>
+                  <i-form-item :label="$t('name')">
+                    <i-input v-model="eventItem.name" style="width: 150px;"></i-input><a href="javascript:void(0);" @click="addCustomEventActionList(eventItem.actionList)">{{ $t('addStep') }}</a>
+                  </i-form-item>
+
                   <div v-for="(item, index) in eventItem.actionList">
                     <i-form-item :label="$t('target')">
                       <i-select v-model="item.target.nickName" style="width: 180px" @on-change="changeClickTargetTag(item.target)">
                         <i-option v-for="item in form.nickNameList" :value="item.nickName">{{ item.nickName }}</i-option>
                       </i-select>
-                      <a v-if="index > 0" href="javascript:void(0)" @click="removeActionListStep(form.vnode.event.clickable.actionList, index)">{{ $t('remove') }}</a>
+                      <a @click="removeCustomEventActionListStep(eventItem.actionList, index)">{{ $t('remove') }}</a>
                     </i-form-item>
                     <i-form-item  :label="$t('display')">
                       <i-select style="width: 180px" v-model="item.target.display"
@@ -1370,6 +1378,7 @@
           },
           textList: [],
           nickNameList: [],
+          customEventList: [],
           ruleList: ['required'],
         },
         tree: {
@@ -1457,6 +1466,22 @@
       },
     },
     methods: {
+      removeCustomEventActionListStep (list, index) {
+        list.splice(index, 1)
+        this.$forceUpdate();
+      },
+      addCustomEventActionList (list) {
+        list.push(this.getEmptyActionListItem());
+        this.$forceUpdate();
+      },
+      addCustomEvent (list) {
+        list.push({
+          name: '',
+          actionList: [],
+          validate: [],
+        });
+        this.$forceUpdate();
+      },
       getFormNicknameList (list) {
         const formList = [];
         list.forEach((item) => {
@@ -1484,6 +1509,7 @@
       changeClickTargetTag (target) {
         this.form.nickNameList.some((elem) => {
           if (elem.nickName === target.nickName) {
+            this.form.customEventList = elem.customEvent;
             target.tag = elem.tagName;
             return true;
           }
@@ -1501,6 +1527,7 @@
             display: '',
             play: false,
             selected: null,
+            customEvent: '',
           },
         }
       },
@@ -1807,9 +1834,15 @@
         const nickNameList = [];
         const pageList = [];
         this.iterateTree(this.tree, (node) => {
+          let customEvent = [];
+          node.event.customEvent && node.event.customEvent.forEach((eventItem) => {
+            customEvent.push(eventItem.name);
+          });
+
           nickNameList.push({
             nickName: node.nickName,
             tagName: node.tag,
+            customEvent,
           });
         })
 
@@ -2145,13 +2178,7 @@
             playend: {
               actionList: [this.getEmptyActionListItem()],
             },
-            customEvent: [
-              {
-                name: '',
-                actionList: [],
-                validate: [],
-              }
-            ]
+            customEvent: []
           },
           style,
           on: {

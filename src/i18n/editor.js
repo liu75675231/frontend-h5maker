@@ -137,6 +137,7 @@ export default new VueI18n({
       value: '值',
       name: '名称',
       customEvent: '自定义事件',
+      trigger: '触发',
     },
     en: {
       preferences: 'Preferences',
@@ -271,6 +272,7 @@ export default new VueI18n({
       value: 'Value',
       name: 'Name',
       customEvent: 'Custom Event',
+      trigger: 'Trigger',
     },
   },
 })
