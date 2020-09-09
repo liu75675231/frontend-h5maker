@@ -156,10 +156,9 @@
 
                 // minimum size
                 interact.modifiers.restrictSize({
-                  min: { width: 100, height: 50 }
+                  min: { width: 4, height: 4 },
                 })
               ],
-
               inertia: true
             })
             .draggable({
@@ -181,13 +180,14 @@
 
                 // call this function on every dragend event
                 end (event) {
-                  var textEl = event.target.querySelector('p')
+                  const $curSelected = $(".curselected");
+                  const offset = $curSelected.offset();
+                  $curSelected.css('transform', "");
+                  $curSelected.attr("data-x", "");
+                  $curSelected.attr("data-y", "");
 
-                  textEl && (textEl.textContent =
-                      'moved a distance of ' +
-                      (Math.sqrt(Math.pow(event.pageX - event.x0, 2) +
-                          Math.pow(event.pageY - event.y0, 2) | 0))
-                          .toFixed(2) + 'px')
+                  $this.selectedRect.curSelectedNode.style.left = $this.convertPxToVw(offset.left);
+                  $this.selectedRect.curSelectedNode.style.top = $this.convertPxToVw(offset.top);
                 }
               }
             })

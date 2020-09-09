@@ -136,6 +136,7 @@ export default new VueI18n({
       selected: '选中',
       value: '值',
       name: '名称',
+      customEvent: '自定义事件',
     },
     en: {
       preferences: 'Preferences',
@@ -269,6 +270,7 @@ export default new VueI18n({
       selected: 'Selected',
       value: 'Value',
       name: 'Name',
+      customEvent: 'Custom Event',
     },
   },
 })

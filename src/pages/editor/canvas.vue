@@ -846,6 +846,38 @@
                   </div>
                 </template>
               </i-form-item>
+              <i-form-item :label="$t('customEvent')">
+                <i-button type="primary">{{ $t('add') }}</i-button>
+                <div v-for="eventItem in form.vnode.event.customEvent">
+                  <i-input v-model="eventItem.name"></i-input>
+                  <div v-for="(item, index) in eventItem.actionList">
+                    <i-form-item :label="$t('target')">
+                      <i-select v-model="item.target.nickName" style="width: 180px" @on-change="changeClickTargetTag(item.target)">
+                        <i-option v-for="item in form.nickNameList" :value="item.nickName">{{ item.nickName }}</i-option>
+                      </i-select>
+                      <a v-if="index > 0" href="javascript:void(0)" @click="removeActionListStep(form.vnode.event.clickable.actionList, index)">{{ $t('remove') }}</a>
+                    </i-form-item>
+                    <i-form-item  :label="$t('display')">
+                      <i-select style="width: 180px" v-model="item.target.display"
+                                @on-change="changeStyle('display')">
+                        <i-option value="none">{{ $t('hidden') }}</i-option>
+                        <i-option value="block">{{ $t('block') }}</i-option>
+                        <i-option value="inline-block">{{ $t('inlineBlock') }}</i-option>
+                        <i-option value="inline">{{ $t('inline') }}</i-option>
+                        <i-option value="flex">flex</i-option>
+                      </i-select>
+                    </i-form-item>
+                    <i-form-item :label="$t('play')" :label-width="80" v-if="item.target.tag === 'video' || item.target.tag === 'audio'">
+                      <i-checkbox v-model="item.target.play">{{ $t('on') }}
+                      </i-checkbox>
+                    </i-form-item>
+                    <i-form-item :label="$t('selected')" v-if="item.target.tag === 'input'">
+                      <i-checkbox v-model="item.target.selected">{{ $t('on') }}</i-checkbox>
+                    </i-form-item>
+                  </div>
+                </div>
+
+              </i-form-item>
             </i-form>
           </i-tab-pane>
         </i-tabs>
@@ -2112,7 +2144,14 @@
             },
             playend: {
               actionList: [this.getEmptyActionListItem()],
-            }
+            },
+            customEvent: [
+              {
+                name: '',
+                actionList: [],
+                validate: [],
+              }
+            ]
           },
           style,
           on: {
